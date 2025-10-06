@@ -1,0 +1,10 @@
+{
+    "name": "Captionaire",
+    "description": "A Chrome extension that generates captions for any image.",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "captionaire.html",
+        "default_icon": "icon.png"
+    }
+}
