@@ -1,3 +1,3 @@
-# Where Was I
+# 🧭 Where Was I
 
-Pickup where you left off.
+A chrome extension that remembers your search sessions and cpatures context when you close a tab.
