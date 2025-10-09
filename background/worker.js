@@ -106,11 +106,17 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
     // Save to storage
     // await StorageService.saveSession(session);
     console.log("Session saved successfully:", session.id);
-
   } catch (error) {
     console.error("Error saving session:", error);
   }
 
   // Cleanup
   delete windowTabs[windowId];
+});
+
+// Keyboard Shortcut to open dashboard
+chrome.commands.onCommand.addListener((command) => {
+  if (command === "open-dashboard") {
+    chrome.tabs.create({ url: "dashboard/dashboard.html" });
+  }
 });

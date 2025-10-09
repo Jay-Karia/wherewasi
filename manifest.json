@@ -12,5 +12,14 @@
     "type": "module"
   },
   "permissions": ["tabs", "storage", "windows"],
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["<all_urls>"],
+  "commands": {
+    "open-dashboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Open WhereWasI Dashboard"
+    }
+  }
 }
