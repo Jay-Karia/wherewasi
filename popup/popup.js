@@ -1,5 +1,5 @@
 document.getElementById('openDashboard').addEventListener('click', () => {
-  chrome.tabs.create({ url: 'src/dashboard/index.html' });
+  chrome.tabs.create({ url: 'dashboard/dashboard.html' });
   window.close();
 });
 
