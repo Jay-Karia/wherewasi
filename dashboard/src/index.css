@@ -12,8 +12,8 @@
   --border: #e6eef6;
   --button-bg: #f9f9f9;
   --button-foreground: #0f1724;
-
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Roboto", system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -72,9 +72,6 @@ button:focus-visible {
     --border: #16202b;
     --button-bg: #0b1220;
     --button-foreground: #e6eef6;
-  }
-
-  a:hover {
     color: #6b87f5;
   }
 }

@@ -1,49 +1,20 @@
 import { useTheme } from "./useTheme";
-import { useState } from "react";
+import { FiSun } from "react-icons/fi";
+import { GoMoon } from "react-icons/go";
+import Logo from "./logo";
+import Search from "./ui/search";
 
 export default function AppBar() {
   const { theme, setTheme } = useTheme();
 
-  const [query, setQuery] = useState("");
-
   return (
     <div className="navbar bg-base-100 shadow-sm px-4 items-center">
-      <div className="flex items-center">
-        <span className="btn btn-ghost text-xl">WhereWasI</span>
+      <div className="flex items-center gap-4">
+        <Logo />
+        <span className="text-2xl">Where Was I</span>
       </div>
 
-      {/* Center: search input */}
-      <div className="flex-1 flex justify-center">
-        <div className="w-full max-w-xl">
-          <label htmlFor="session-search" className="sr-only">
-            Search sessions
-          </label>
-          <div className="relative">
-            <input
-              id="session-search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search sessions, tags or sites"
-              className="input input-bordered w-full pl-10"
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg
-                className="h-4 w-4 text-base-content/60"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Search />
 
       <div className="flex-none flex items-center gap-2">
         <button
@@ -52,23 +23,9 @@ export default function AppBar() {
           aria-label="Toggle theme"
         >
           {theme === "light" ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4.22 4.22a1 1 0 011.42 0L6.64 5.22a1 1 0 11-1.42 1.42L4.22 5.64a1 1 0 010-1.42zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm8 6a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm5.78-1.78a1 1 0 010 1.42l-1.22 1.22a1 1 0 11-1.42-1.42l1.22-1.22a1 1 0 011.42 0zM17 9a1 1 0 100 2h1a1 1 0 100-2h-1z" />
-            </svg>
+            <FiSun className="h-5 w-5" />
           ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M17.293 13.293A8 8 0 116.707 2.707a7 7 0 0010.586 10.586z" />
-            </svg>
+            <GoMoon className="h-5 w-5" />
           )}
         </button>
         <button>
