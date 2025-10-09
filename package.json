@@ -1,0 +1,27 @@
+{
+  "name": "wherewasi",
+  "version": "1.0.0",
+  "description": "A Chrome extension that remembers your search sessions and captures context when you close a tab.",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./input.css -o ./dashboard/dashboard.css --minify",
+    "watch:css": "tailwindcss -i ./input.css -o ./dashboard/dashboard.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jay-Karia/wherewasi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jay-Karia/wherewasi/issues"
+  },
+  "homepage": "https://github.com/Jay-Karia/wherewasi#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.1.14"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.14"
+  }
+}
