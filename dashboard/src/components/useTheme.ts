@@ -9,6 +9,7 @@ export function useTheme() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
       if (saved === "light" || saved === "dark") return saved;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       // ignore
     }
@@ -20,7 +21,8 @@ export function useTheme() {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, theme);
-    } catch (e) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) { /* empty */ }
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
