@@ -46,3 +46,23 @@ button:hover {
   font-size: 13px;
   color: #4b5563;
 }
+
+#openDashboard {
+  margin-top: 10px;
+  background: #059669;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+#openDashboard:hover {
+  background: #047857;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+#openDashboard:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
