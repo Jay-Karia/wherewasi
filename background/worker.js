@@ -33,6 +33,8 @@ chrome.tabs.onCreated.addListener((tab) => {
     title: tab.title,
     favIconUrl: tab.favIconUrl,
   });
+
+  console.log("Tab created:", tab);
 });
 
 // Update tab info when it changes
@@ -52,15 +54,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// Remove tab from tracking when closed
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  const windowId = removeInfo.windowId;
-  if (windowTabs[windowId]) {
-    windowTabs[windowId] = windowTabs[windowId].filter((t) => t.id !== tabId);
-  }
-});
-
-// Save when tabs are closed
+// Save when window is closed
 chrome.windows.onRemoved.addListener(async (windowId) => {
   console.log("Window closed:", windowId);
 
@@ -91,6 +85,7 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
 
   try {
     // Generate AI summary
+    const summary = "AI summary placeholder";
     // const summary = await AIService.generateSummary(validTabs);
 
     // Create session object
