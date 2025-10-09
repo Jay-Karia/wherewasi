@@ -66,3 +66,10 @@ button:hover {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+#shortcut {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #9ca3af;
+}
