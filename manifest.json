@@ -12,8 +12,5 @@
     "type": "module"
   },
   "permissions": ["tabs", "storage", "windows"],
-  "host_permissions": ["<all_urls>"],
-  "chrome_url_overrides": {
-    "newtab": "dashboard/dashboard.html"
-  }
+  "host_permissions": ["<all_urls>"]
 }
