@@ -1,22 +1,19 @@
 {
-    "name": "Where Was I",
-    "description": "A Chrome extension to help you pick up where you left off.",
-    "version": "0.0.1",
-    "manifest_version": 3,
-    "action": {
-        "default_popup": "wherewasi.html",
-        "default_icon": "icon.png"
-    },
-    "background": {
-        "service_worker": "background/service-worker.js",
-        "type": "module"
-    },
-    "permissions": [
-        "tabs",
-        "storage",
-        "windows"
-    ],
-    "host_permissions": [
-        "<all_urls>"
-    ]
+  "name": "Where Was I",
+  "description": "A Chrome extension that remembers your search sessions and captures context.",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "assets/logo.png"
+  },
+  "background": {
+    "service_worker": "background/worker.js",
+    "type": "module"
+  },
+  "permissions": ["tabs", "storage", "windows"],
+  "host_permissions": ["<all_urls>"],
+  "chrome_url_overrides": {
+    "newtab": "dashboard/index.html"
+  }
 }
