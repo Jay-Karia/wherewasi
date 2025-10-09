@@ -112,6 +112,6 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
 // Keyboard Shortcut to open dashboard
 chrome.commands.onCommand.addListener((command) => {
   if (command === "open-dashboard") {
-    chrome.tabs.create({ url: "dashboard/dashboard.html" });
+    chrome.tabs.create({ url: "dashboard/dist/index.html" });
   }
 });

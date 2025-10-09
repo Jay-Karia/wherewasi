@@ -11,6 +11,13 @@
     "service_worker": "background/worker.js",
     "type": "module"
   },
+  "options_page": "dashboard/dist/index.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["dashboard/dist/assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "permissions": ["tabs", "storage", "windows"],
   "host_permissions": ["<all_urls>"],
   "commands": {
