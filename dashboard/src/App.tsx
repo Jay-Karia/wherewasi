@@ -1,9 +1,10 @@
 import "./App.css";
+import AppBar from "./components/app-bar";
 
 function App() {
   return (
-    <div className="text-red-500">
-      Where Was I
+    <div>
+      <AppBar />
     </div>
   );
 }
