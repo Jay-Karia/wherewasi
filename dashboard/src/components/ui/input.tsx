@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils"
 
 export interface InputProps extends React.ComponentProps<"input"> {
   icon?: React.ReactNode;
+  shortcut?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, icon, ...props }, ref) => {
+  ({ className, type, icon, shortcut, ...props }, ref) => {
     return (
       <div className="relative">
         <input
@@ -22,6 +23,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
           {icon}
         </div>
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">
+          {shortcut}
+        </div>
+
       </div>
     )
   }
