@@ -43,14 +43,14 @@ export const StorageService = {
       const sessions = Array.isArray(data.sessions) ? data.sessions : [];
 
       // Add new session to start
-      filtered.unshift(session);
+      sessions.unshift(session);
 
       // Trim sessions based on limit
-      if (filtered.length > MAX_SESSIONS) {
-        filtered.length = MAX_SESSIONS;
+      if (sessions.length > MAX_SESSIONS) {
+        sessions.length = MAX_SESSIONS;
       }
 
-      await setStorage({ sessions: filtered });
+      await setStorage({ sessions: sessions });
       console.log('Session saved successfully:', session.id);
       return session;
     } catch (error) {
@@ -220,6 +220,71 @@ export const StorageService = {
         resolve();
       });
     });
+  },
+
+  /*
+    Updates a session by its ID with new data.
+    @param {string} sessionId - The ID of the session to update.
+  */
+  async updateSession(sessionId, sessionData) {
+    if (!sessionId || !sessionData) {
+      throw new Error('Session ID and data are required for update');
+    }
+
+    const getStorage = keys =>
+      new Promise(resolve => {
+        chrome.storage.local.get(keys, res => resolve(res));
+      });
+
+    const setStorage = obj =>
+      new Promise((resolve, reject) => {
+        chrome.storage.local.set(obj, () => {
+          if (chrome.runtime && chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError);
+          }
+          resolve();
+        });
+      });
+
+    try {
+      const data = await getStorage(['sessions']);
+      const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+
+      const index = sessions.findIndex(s => s.id === sessionId);
+      if (index === -1) {
+        throw new Error('Session not found for update');
+      }
+
+      // Update the session data
+      sessions[index] = { ...sessions[index], ...sessionData };
+
+      await setStorage({ sessions: sessions });
+      console.log('Session updated successfully:', sessionId);
+      return sessions[index];
+    } catch (error) {
+      console.error('Error updating session:', error);
+      throw error;
+    }
+  },
+
+  /*
+    Counts the number of saved sessions.
+    @returns {Promise<number>} - Resolves to the count of sessions.
+  */
+  async countSessions() {
+    const getStorage = keys =>
+      new Promise(resolve => {
+        chrome.storage.local.get(keys, res => resolve(res));
+      });
+
+    try {
+      const data = await getStorage(['sessions']);
+      const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+      return sessions.length;
+    } catch (error) {
+      console.error('Error counting sessions:', error);
+      throw error;
+    }
   },
 };
 

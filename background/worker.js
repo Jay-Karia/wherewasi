@@ -5,7 +5,7 @@
 //======================IMPORTS================================//
 
 import { StorageService } from '../utils/storage.js';
-import { AIService } from '../utils/ai-service';
+import { AIService } from '../utils/ai-service.js';
 
 //=============================================================//
 
@@ -104,6 +104,14 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     };
 
     await StorageService.saveClosedTab(tabRecord);
+
+    // Group the closed tab into a session
+    try {
+      const session = await AIService.groupClosedTab(tabRecord);
+      if (session) console.log('AI grouped closed tabs into session:', session.id);
+    } catch (aiErr) {
+      console.error('AI grouping error:', aiErr);
+    }
   } catch (err) {
     console.error('Error handling tab removal:', err);
   }
