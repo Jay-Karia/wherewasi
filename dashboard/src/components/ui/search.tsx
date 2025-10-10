@@ -8,7 +8,6 @@ export default function Search() {
     const searchInput = document.getElementById("search-input");
     document.onkeydown = (e) => {
         if (e.shiftKey && e.altKey && e.key.toLowerCase() === "k") {
-            e.preventDefault();
             searchInput?.focus();
         }
     };
