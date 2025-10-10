@@ -9,7 +9,6 @@ import { StorageService } from './storage.js';
 //=============================================================//
 
 export const AIService = {
-
   /*
     Handle a closed tab by grouping it into a session.
     @param {Object} tab - The closed tab object.
@@ -20,22 +19,55 @@ export const AIService = {
     const sessionsCount = await StorageService.countSessions();
 
     // Create a new empty session if none exist
-    if (sessionsCount === 0) { 
-      console.log("No existing sessions, creating a new one.");
+    if (sessionsCount === 0) {
+      const session = await StorageService.saveSession({
+        id: new Date().toISOString(),
+        tabsCount: 1,
+        title: '', // generate from AI
+        summary: '', // generate from AI
+        tabs: [tab],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+
+      console.log('No existing sessions found, created a new empty session.');
+
+      return session;
     }
 
-    // Search for a session to add the closed tab
-    else {
-      console.log("Existing sessions found, searching for a suitable one.");
+    // TODO: Search for a session to add the closed tab
+    console.log('Existing sessions found, searching for a suitable one.');
+    const foundSession = null;
 
-      // If not appropriate sesion found, create a new one
+    // If not appropriate sesion found, create a new one
+    if (!foundSession) {
+      const session = await StorageService.saveSession({
+        id: new Date().toISOString(),
+        tabsCount: 1,
+        title: '', // generate from AI
+        summary: '', // generate from AI
+        tabs: [tab],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+
+      console.log('No suitable session found, created a new one.');
+
+      return session;
     }
-    
-    // Add the tab to the appropriate session
-    console.log("Adding closed tab to session:", tab);
 
-    // Update the session if required with AI-generated title and summary
+    console.log('Found a suitable session, adding the closed tab to it.');
 
+    // Add the closed tab to the found session
+    foundSession.tabs.push(tab);
+    foundSession.tabsCount = foundSession.tabs.length;
+    foundSession.updatedAt = Date.now();
+
+    await StorageService.updateSession(foundSession.id, foundSession);
+
+    // TODO: Update the session if required with AI-generated title and summary
+
+    return foundSession;
   },
 
   /*

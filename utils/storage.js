@@ -56,7 +56,6 @@ export const StorageService = {
       }
 
       await setStorage({ sessions: sessions });
-      console.log('Session saved successfully:', session.id);
       return session;
     } catch (error) {
       console.error('Error saving session:', error);
@@ -190,7 +189,6 @@ export const StorageService = {
       if (closed.length > CLOSED_TABS_LIMIT) closed.length = CLOSED_TABS_LIMIT;
 
       await setStorage({ tabs: closed });
-      console.log('Closed tab saved:', tab.url);
       return tab;
     } catch (error) {
       console.error('Error saving closed tab:', error);

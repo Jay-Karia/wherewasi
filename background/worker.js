@@ -26,7 +26,6 @@ chrome.tabs.query({}, tabs => {
       favIconUrl: tab.favIconUrl,
     });
   });
-  console.log('Current tabs tracked:', windowTabs);
 });
 
 //=======================NEW TABS=============================//
@@ -41,8 +40,6 @@ chrome.tabs.onCreated.addListener(tab => {
     title: tab.title,
     favIconUrl: tab.favIconUrl,
   });
-
-  console.log('Tab created:', tab);
 });
 
 ///======================TAB UPDATES=========================//
