@@ -1,12 +1,19 @@
+/*
+  The background service worker for the extension
+*/
+
+//======================IMPORTS================================//
+
 import { StorageService } from "../utils/storage.js";
-// import { AIService } from "../utils/ai-service";
+import { AIService } from "../utils/ai-service";
+
+//=============================================================//
 
 console.log("WhereWasI: Service worker loaded");
-
-// Tabs in each window
 let windowTabs = {};
 
-// Track all current tabs
+//=======================CURRENT TABS==========================//
+
 chrome.tabs.query({}, (tabs) => {
   tabs.forEach((tab) => {
     if (!windowTabs[tab.windowId]) {
@@ -22,7 +29,8 @@ chrome.tabs.query({}, (tabs) => {
   console.log("Current tabs tracked:", windowTabs);
 });
 
-// Track new tabs
+//=======================NEW TABS=============================//
+
 chrome.tabs.onCreated.addListener((tab) => {
   if (!windowTabs[tab.windowId]) {
     windowTabs[tab.windowId] = [];
@@ -37,7 +45,8 @@ chrome.tabs.onCreated.addListener((tab) => {
   console.log("Tab created:", tab);
 });
 
-// Update tab info when it changes
+///======================TAB UPDATES=========================//
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url || changeInfo.title) {
     const windowId = tab.windowId;
@@ -54,7 +63,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// Save individual tabs when they are closed (user prefers single-window workflows)
+//======================TAB REMOVALS========================//
+
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   try {
     const windowId = removeInfo.windowId;
@@ -93,15 +103,19 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   }
 });
 
-// When a window is removed, just cleanup tracking. Individual tabs are saved on removal.
+//=====================WINDOW REMOVALS========================//
+
 chrome.windows.onRemoved.addListener((windowId) => {
   console.log('Window removed, cleaning tracking for:', windowId);
   delete windowTabs[windowId];
 });
 
-// Keyboard Shortcut to open dashboard
+//==================DASHBOARD SHORTCUT========================//
+
 chrome.commands.onCommand.addListener((command) => {
   if (command === "open-dashboard") {
     chrome.tabs.create({ url: "dashboard/dist/index.html" });
   }
 });
+
+//***********************************************************//

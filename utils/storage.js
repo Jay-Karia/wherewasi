@@ -1,7 +1,21 @@
+/*
+  Storage service class to manage saving and retrieving sessions and closed tabs.
+*/
+
+//======================CONSTANTS==============================//
+
 const MAX_SESSIONS = 200;
 const CLOSED_TABS_LIMIT = 1000;
 
+//======================STORAGE SERVICE=======================//
+
 export const StorageService = {
+
+  /*
+    Saves a session object to Chrome's local storage.
+    @param {Object} session - The session object to save. Must contain an 'id' property.
+    @returns {Promise<Object>} - Resolves to the saved session object.
+  */
   async saveSession(session) {
     // Check for session object
     if (!session || !session.id) {
@@ -45,6 +59,11 @@ export const StorageService = {
       throw error;
     }
   },
+
+  /*
+    Retrieves all saved sessions from Chrome's local storage.
+    @returns {Promise<Array>} - Resolves to an array of session objects.
+  */
   async getAllSessions() {
     // Get sessions from storage
     const getStorage = (keys) =>
@@ -60,6 +79,12 @@ export const StorageService = {
       throw error;
     }
   },
+
+  /*
+    Deletes a session by its ID from Chrome's local storage.
+    @param {string} sessionId - The ID of the session to delete.
+    @returns {Promise<boolean>} - Resolves to true if deletion was successful.
+  */
   async deleteSession(sessionId) {
     // Check for session id
     if (!sessionId) {
@@ -98,6 +123,11 @@ export const StorageService = {
       throw error;
     }
   },
+
+  /*
+    Clears all sessions from Chrome's local storage.
+    @returns {Promise<boolean>} - Resolves to true if clearing was successful.
+  */
   async clearAllSessions() {
     // Clear all sessions from storage
     const clearStorage = () =>
@@ -118,29 +148,37 @@ export const StorageService = {
       throw error;
     }
   },
+
+  /*
+    Saves a closed tab record to Chrome's local storage.
+    @param {Object} tab - The tab object to save. Must contain a 'url' property.
+    @returns {Promise<Object>} - Resolves to the saved tab object.
+  */
   async saveClosedTab(tab) {
     // Check for tab
     if (!tab || !tab.url) {
-      throw new Error('Invalid tab record');
+      throw new Error("Invalid tab record");
     }
 
     // Get the tabs from storage
-    const getStorage = (keys) => new Promise((resolve) => {
-      chrome.storage.local.get(keys, (res) => resolve(res));
-    });
+    const getStorage = (keys) =>
+      new Promise((resolve) => {
+        chrome.storage.local.get(keys, (res) => resolve(res));
+      });
 
     // Update the tabs in storage
-    const setStorage = (obj) => new Promise((resolve, reject) => {
-      chrome.storage.local.set(obj, () => {
-        if (chrome.runtime && chrome.runtime.lastError) {
-          return reject(chrome.runtime.lastError);
-        }
-        resolve();
+    const setStorage = (obj) =>
+      new Promise((resolve, reject) => {
+        chrome.storage.local.set(obj, () => {
+          if (chrome.runtime && chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError);
+          }
+          resolve();
+        });
       });
-    });
 
     try {
-      const data = await getStorage(['tabs']);
+      const data = await getStorage(["tabs"]);
       const closed = Array.isArray(data.tabs) ? data.tabs : [];
 
       closed.unshift(tab);
@@ -148,28 +186,42 @@ export const StorageService = {
       if (closed.length > CLOSED_TABS_LIMIT) closed.length = CLOSED_TABS_LIMIT;
 
       await setStorage({ tabs: closed });
-      console.log('Closed tab saved:', tab.url);
+      console.log("Closed tab saved:", tab.url);
       return tab;
     } catch (error) {
-      console.error('Error saving closed tab:', error);
+      console.error("Error saving closed tab:", error);
       throw error;
     }
   },
+
+  /*
+    Retrieves all closed tabs from Chrome's local storage.
+    @returns {Promise<Array>} - Resolves to an array of closed tab objects.
+  */
   async getClosedTabs() {
     // Get tabs from storage
-    const getStorage = (keys) => new Promise((resolve) => {
-      chrome.storage.local.get(keys, (res) => resolve(res));
-    });
-    
-    const data = await getStorage(['tabs']);
+    const getStorage = (keys) =>
+      new Promise((resolve) => {
+        chrome.storage.local.get(keys, (res) => resolve(res));
+      });
+
+    const data = await getStorage(["tabs"]);
     return Array.isArray(data.tabs) ? data.tabs : [];
   },
+
+  /*
+    Clears all closed tabs from Chrome's local storage.
+    @returns {Promise<void>} - Resolves when clearing is complete.
+  */
   async clearClosedTabs() {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.remove(['tabs'], () => {
-        if (chrome.runtime && chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+      chrome.storage.local.remove(["tabs"], () => {
+        if (chrome.runtime && chrome.runtime.lastError)
+          return reject(chrome.runtime.lastError);
         resolve();
       });
     });
   },
 };
+
+//***********************************************************//
