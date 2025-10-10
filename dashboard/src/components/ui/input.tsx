@@ -23,7 +23,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
           {icon}
         </div>
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
           {shortcut}
         </div>
 

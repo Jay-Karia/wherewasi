@@ -11,6 +11,9 @@ module.exports = {
     extend: {
       width: {
         '150': 'calc(var(--spacing) * 150)'
+      },
+      height: {
+        '75': 'calc(var(--spacing) * 7)',
       }
     },
   },
