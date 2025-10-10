@@ -12,7 +12,7 @@ export default function Search() {
                 placeholder="Search sessions, tags, or sites..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className=""
+                icon={<CiSearch size={18} />}
             />
         </div>
     </div>
