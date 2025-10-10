@@ -15,6 +15,11 @@ export const StorageService = {
     @param {Object} session - The session object to save. Must contain an 'id' property.
     @returns {Promise<Object>} - Resolves to the saved session object.
   */
+  /**
+   * Saves a session object to Chrome's local storage.
+   * @param {import('../types/index.js').Session} session - The session object to save. Must contain an 'id' property.
+   * @returns {Promise<import('../types/index.js').Session>} - Resolves to the saved session object.
+   */
   async saveSession(session) {
     // Check for session object
     if (!session || !session.id) {
@@ -225,6 +230,8 @@ export const StorageService = {
   /*
     Updates a session by its ID with new data.
     @param {string} sessionId - The ID of the session to update.
+    @param {Partial<import('../types/index.js').Session>} sessionData - The partial session data to update.
+    @returns {Promise<import('../types/index.js').Session>} - Resolves to the updated session object.
   */
   async updateSession(sessionId, sessionData) {
     if (!sessionId || !sessionData) {
