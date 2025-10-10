@@ -1,7 +1,10 @@
 body {
   width: 300px;
   padding: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   text-align: center;
 }
 

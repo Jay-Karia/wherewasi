@@ -4,18 +4,18 @@
 
 //======================IMPORTS================================//
 
-import { StorageService } from "../utils/storage.js";
-import { AIService } from "../utils/ai-service";
+import { StorageService } from '../utils/storage.js';
+import { AIService } from '../utils/ai-service';
 
 //=============================================================//
 
-console.log("WhereWasI: Service worker loaded");
+console.log('WhereWasI: Service worker loaded');
 let windowTabs = {};
 
 //=======================CURRENT TABS==========================//
 
-chrome.tabs.query({}, (tabs) => {
-  tabs.forEach((tab) => {
+chrome.tabs.query({}, tabs => {
+  tabs.forEach(tab => {
     if (!windowTabs[tab.windowId]) {
       windowTabs[tab.windowId] = [];
     }
@@ -26,12 +26,12 @@ chrome.tabs.query({}, (tabs) => {
       favIconUrl: tab.favIconUrl,
     });
   });
-  console.log("Current tabs tracked:", windowTabs);
+  console.log('Current tabs tracked:', windowTabs);
 });
 
 //=======================NEW TABS=============================//
 
-chrome.tabs.onCreated.addListener((tab) => {
+chrome.tabs.onCreated.addListener(tab => {
   if (!windowTabs[tab.windowId]) {
     windowTabs[tab.windowId] = [];
   }
@@ -42,7 +42,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     favIconUrl: tab.favIconUrl,
   });
 
-  console.log("Tab created:", tab);
+  console.log('Tab created:', tab);
 });
 
 ///======================TAB UPDATES=========================//
@@ -50,7 +50,9 @@ chrome.tabs.onCreated.addListener((tab) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url || changeInfo.title) {
     const windowId = tab.windowId;
-    const tabIndex = windowTabs[windowId] ? windowTabs[windowId].findIndex((t) => t.id === tabId) : -1;
+    const tabIndex = windowTabs[windowId]
+      ? windowTabs[windowId].findIndex(t => t.id === tabId)
+      : -1;
 
     if (tabIndex !== -1) {
       windowTabs[windowId][tabIndex] = {
@@ -70,7 +72,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     const windowId = removeInfo.windowId;
     const tabs = windowTabs[windowId] || [];
 
-    const tabIndex = tabs.findIndex((t) => t.id === tabId);
+    const tabIndex = tabs.findIndex(t => t.id === tabId);
     if (tabIndex === -1) {
       console.log('Closed tab not found in tracking map:', tabId);
       return;
@@ -83,7 +85,11 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     if (tabs.length === 0) delete windowTabs[windowId];
 
     // Filter out chrome:// and extension pages
-    if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+    if (
+      !tab.url ||
+      tab.url.startsWith('chrome://') ||
+      tab.url.startsWith('chrome-extension://')
+    ) {
       console.log('Closed tab ignored (internal):', tab.url);
       return;
     }
@@ -105,16 +111,16 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 
 //=====================WINDOW REMOVALS========================//
 
-chrome.windows.onRemoved.addListener((windowId) => {
+chrome.windows.onRemoved.addListener(windowId => {
   console.log('Window removed, cleaning tracking for:', windowId);
   delete windowTabs[windowId];
 });
 
 //==================DASHBOARD SHORTCUT========================//
 
-chrome.commands.onCommand.addListener((command) => {
-  if (command === "open-dashboard") {
-    chrome.tabs.create({ url: "dashboard/dist/index.html" });
+chrome.commands.onCommand.addListener(command => {
+  if (command === 'open-dashboard') {
+    chrome.tabs.create({ url: 'dashboard/dist/index.html' });
   }
 });
 

@@ -3,9 +3,16 @@
   "version": "0.0.1",
   "description": "Chrome extension that remembers your search sessions and captures context. ",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "eslint": "^9.37.0",
+    "globals": "^16.4.0",
+    "prettier": "3.6.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --ext .js --fix",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",

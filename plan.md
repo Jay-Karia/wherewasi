@@ -24,16 +24,19 @@ Tab Close → Capture Data → AI Summary → Local Storage → Search/Browse �
 ## Dasboard
 
 **Header Section**
+
 - Search bar with natural language input
 - Quick filters (Today, This Week, By Domain, By Tags)
 - Settings/Export buttons
 
 **Main Content Area**
+
 - **Timeline View** (default): Chronological session cards with thumbnails
 - **Grid View**: Compact session tiles with key details
 - **List View**: Dense text-based session listing
 
 **Session Cards Include**
+
 - Session title/auto-generated name
 - Timestamp and duration
 - Tab count and key domains
@@ -41,19 +44,21 @@ Tab Close → Capture Data → AI Summary → Local Storage → Search/Browse �
 - Quick action buttons (Restore All, Restore Selected, Tag, Delete)
 
 **Sidebar Panel**
+
 - Recent sessions (last 10)
 - Saved/starred sessions
 - Tag cloud with counts
 - Storage usage indicator
 
 **Footer**
+
 - Pagination/infinite scroll
 - Bulk actions (Delete, Export, Tag)
 - View options toggle
 
 **Interactive Elements**
+
 - Hover previews for session details
 - Expandable session cards showing individual tabs
 - Drag-and-drop for tagging
 - Keyboard shortcuts for power users
-
