@@ -18,7 +18,7 @@ export default function AppBar() {
 
       <div className="flex-none flex items-center gap-2">
         <button
-          className="btn btn-ghost"
+          className=""
           onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           aria-label="Toggle theme"
         >

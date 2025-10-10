@@ -41,7 +41,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url || changeInfo.title) {
     const windowId = tab.windowId;
-    const tabIndex = windowTabs[windowId]?.findIndex((t) => t.id === tabId);
+    const tabIndex = windowTabs[windowId] ? windowTabs[windowId].findIndex((t) => t.id === tabId) : -1;
 
     if (tabIndex !== -1) {
       windowTabs[windowId][tabIndex] = {
@@ -54,57 +54,48 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// Save when window is closed
-chrome.windows.onRemoved.addListener(async (windowId) => {
-  console.log("Window closed:", windowId);
-
-  const tabs = windowTabs[windowId];
-
-  // Only save if there were tabs (ignore empty windows)
-  if (!tabs || tabs.length === 0) {
-    console.log("No tabs to save");
-    delete windowTabs[windowId];
-    return;
-  }
-
-  // Filter out chrome:// and extension pages
-  const validTabs = tabs.filter(
-    (tab) =>
-      tab.url &&
-      !tab.url.startsWith("chrome://") &&
-      !tab.url.startsWith("chrome-extension://")
-  );
-
-  if (validTabs.length === 0) {
-    console.log("No valid tabs to save");
-    delete windowTabs[windowId];
-    return;
-  }
-
-  console.log(`Saving session with ${validTabs.length} tabs`);
-
+// Save individual tabs when they are closed (user prefers single-window workflows)
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   try {
-    // Generate AI summary
-    const summary = "AI summary placeholder";
-    // const summary = await AIService.generateSummary(validTabs);
+    const windowId = removeInfo.windowId;
+    const tabs = windowTabs[windowId] || [];
 
-    // Create session object
-    const session = {
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      tabs: validTabs,
-      tabCount: validTabs.length,
-      summary: summary,
-      tags: [],
+    const tabIndex = tabs.findIndex((t) => t.id === tabId);
+    if (tabIndex === -1) {
+      console.log('Closed tab not found in tracking map:', tabId);
+      return;
+    }
+
+    const tab = tabs[tabIndex];
+
+    // Remove from tracking
+    tabs.splice(tabIndex, 1);
+    if (tabs.length === 0) delete windowTabs[windowId];
+
+    // Filter out chrome:// and extension pages
+    if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+      console.log('Closed tab ignored (internal):', tab.url);
+      return;
+    }
+
+    // Prepare a compact record
+    const tabRecord = {
+      id: tab.id,
+      url: tab.url,
+      title: tab.title,
+      favIconUrl: tab.favIconUrl,
+      closedAt: new Date().toISOString(),
     };
 
-    // Save to storage
-    await StorageService.saveSession(session);
-  } catch (error) {
-    console.error("Error saving session:", error);
+    await StorageService.saveClosedTab(tabRecord);
+  } catch (err) {
+    console.error('Error handling tab removal:', err);
   }
+});
 
-  // Cleanup
+// When a window is removed, just cleanup tracking. Individual tabs are saved on removal.
+chrome.windows.onRemoved.addListener((windowId) => {
+  console.log('Window removed, cleaning tracking for:', windowId);
   delete windowTabs[windowId];
 });
 

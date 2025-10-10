@@ -1,5 +1,4 @@
-const MAX_SESSIONS = 200;
-const CLOSED_TABS_LIMIT = 1000;
+import { MAX_SESSIONS } from "../constants";
 
 export const StorageService = {
   async saveSession(session) {
