@@ -8,7 +8,11 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,html}'
   ],
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        '150': 'calc(var(--spacing) * 150)'
+      }
+    },
   },
   plugins: [daisyui],
   daisyui: {
