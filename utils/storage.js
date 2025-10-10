@@ -140,14 +140,14 @@ export const StorageService = {
     });
 
     try {
-      const data = await getStorage(['closedTabs']);
-      const closed = Array.isArray(data.closedTabs) ? data.closedTabs : [];
+      const data = await getStorage(['tabs']);
+      const closed = Array.isArray(data.tabs) ? data.tabs : [];
 
       closed.unshift(tab);
 
       if (closed.length > CLOSED_TABS_LIMIT) closed.length = CLOSED_TABS_LIMIT;
 
-      await setStorage({ closedTabs: closed });
+      await setStorage({ tabs: closed });
       console.log('Closed tab saved:', tab.url);
       return tab;
     } catch (error) {
@@ -161,12 +161,12 @@ export const StorageService = {
       chrome.storage.local.get(keys, (res) => resolve(res));
     });
     
-    const data = await getStorage(['closedTabs']);
-    return Array.isArray(data.closedTabs) ? data.closedTabs : [];
+    const data = await getStorage(['tabs']);
+    return Array.isArray(data.tabs) ? data.tabs : [];
   },
   async clearClosedTabs() {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.remove(['closedTabs'], () => {
+      chrome.storage.local.remove(['tabs'], () => {
         if (chrome.runtime && chrome.runtime.lastError) return reject(chrome.runtime.lastError);
         resolve();
       });
