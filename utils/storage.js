@@ -5,7 +5,6 @@
 //======================CONSTANTS==============================//
 
 const MAX_SESSIONS = 200;
-const CLOSED_TABS_LIMIT = 1000;
 
 //======================STORAGE SERVICE=======================//
 
