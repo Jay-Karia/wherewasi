@@ -45,10 +45,12 @@ export const StorageService = {
     }
   },
   async getAllSessions() {
+    // Get sessions from storage
     const getStorage = (keys) =>
       new Promise((resolve) => {
         chrome.storage.local.get(keys, (res) => resolve(res));
       });
+
     try {
       const data = await getStorage(["sessions"]);
       return Array.isArray(data.sessions) ? data.sessions : [];
@@ -57,6 +59,62 @@ export const StorageService = {
       throw error;
     }
   },
-  async deleteSession(sessionId) {},
-  async clearAllSessions() {},
+  async deleteSession(sessionId) {
+    // Check for session id
+    if (!sessionId) {
+      throw new Error("Session ID is required for deletion");
+    }
+
+    // Get sessions from storage
+    const getStorage = (keys) =>
+      new Promise((resolve) => {
+        chrome.storage.local.get(keys, (res) => resolve(res));
+      });
+
+    // Save sessions to storage
+    const setStorage = (obj) =>
+      new Promise((resolve, reject) => {
+        chrome.storage.local.set(obj, () => {
+          if (chrome.runtime && chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError);
+          }
+          resolve();
+        });
+      });
+
+    try {
+      const data = await getStorage(["sessions"]);
+      const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+
+      // Filter out the session to delete
+      const filtered = sessions.filter((s) => s.id !== sessionId);
+
+      await setStorage({ sessions: filtered });
+      console.log("Session deleted successfully:", sessionId);
+      return true;
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      throw error;
+    }
+  },
+  async clearAllSessions() {
+    // Clear all sessions from storage
+    const clearStorage = () =>
+      new Promise((resolve, reject) => {
+        chrome.storage.local.remove(["sessions"], () => {
+          if (chrome.runtime && chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError);
+          }
+          resolve();
+        });
+      });
+    try {
+      await clearStorage();
+      console.log("All sessions cleared successfully");
+      return true;
+    } catch (error) {
+      console.error("Error clearing sessions:", error);
+      throw error;
+    }
+  },
 };
