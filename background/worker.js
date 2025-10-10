@@ -1,4 +1,4 @@
-// import { StorageService } from "../utils/storage";
+import { StorageService } from "../utils/storage.js";
 // import { AIService } from "../utils/ai-service";
 
 console.log("WhereWasI: Service worker loaded");
@@ -99,8 +99,7 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
     };
 
     // Save to storage
-    // await StorageService.saveSession(session);
-    console.log("Session saved successfully:", session.id);
+    await StorageService.saveSession(session);
   } catch (error) {
     console.error("Error saving session:", error);
   }
