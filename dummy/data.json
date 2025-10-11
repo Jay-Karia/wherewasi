@@ -1,0 +1,36 @@
+[
+  {
+    "createdAt": 1760199492959,
+    "id": "2025-10-11T16:18:12.959Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-11T16:18:12.940Z",
+        "favIconUrl": "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico?v=ec617d715196",
+        "id": 926975759,
+        "title": "Stack Overflow - Where Developers Learn, Share, & Build Careers",
+        "url": "https://stackoverflow.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760199492959
+  },
+  {
+    "createdAt": 1760199491651,
+    "id": "2025-10-11T16:18:11.651Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-11T16:18:11.629Z",
+        "favIconUrl": "https://github.githubassets.com/favicons/favicon-dark.svg",
+        "id": 926975758,
+        "title": "GitHub · Build and ship software on a single, collaborative platform · GitHub",
+        "url": "https://github.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760199491651
+  }
+]

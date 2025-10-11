@@ -1,17 +1,24 @@
-import { useStorage } from "@/hooks/useStorage";
+import sessions from "../../../dummy/data.json"
+import { useAtomValue } from "jotai";
+import { currentViewAtom } from "../../atoms";
+import SessionsView from "./views/sessions";
 
 export default function Main() {
-    const [sessions, , loading, error] = useStorage({
-        key: "sessions",
-        initialValue: [],
-    });
+    // const [sessions, , loading, error] = useStorage({
+    //     key: "sessions",
+    //     initialValue: [],
+    // });
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {JSON.stringify(error)}</div>;
+    // if (loading) return <div>Loading...</div>;
+    // if (error) return <div>Error: {JSON.stringify(error)}</div>;
 
-    return (
-        <div className="max-w-5xl mx-auto px-4 py-4">
-            {JSON.stringify(sessions)}
-        </div>
-    );
+    const currentView = useAtomValue(currentViewAtom);
+
+    if (currentView === "sessions") {
+        return (
+            <div>
+                <SessionsView sessions={sessions} />
+            </div>
+        )
+    }
 }
