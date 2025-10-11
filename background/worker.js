@@ -4,7 +4,6 @@
 
 //======================IMPORTS================================//
 
-import { StorageService } from '../utils/storage.js';
 import { AIService } from '../utils/ai-service.js';
 
 //=============================================================//
@@ -99,8 +98,6 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
       favIconUrl: tab.favIconUrl,
       closedAt: new Date().toISOString(),
     };
-
-    await StorageService.saveClosedTab(tabRecord);
 
     // Group the closed tab into a session
     try {
