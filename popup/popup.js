@@ -12,7 +12,7 @@ document.getElementById('openDashboard').addEventListener('click', () => {
   const builtUrl = chrome.runtime.getURL('dashboard/dist/index.html');
 
   const url = builtUrl;
-  chrome.tabs.create({ url: chrome.runtime.getURL(url) });
+  chrome.tabs.create({ url });
   window.close();
 });
 
