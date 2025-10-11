@@ -122,7 +122,9 @@ chrome.windows.onRemoved.addListener(windowId => {
 
 chrome.commands.onCommand.addListener(command => {
   if (command === 'open-dashboard') {
-    chrome.tabs.create({ url: 'dashboard/dist/index.html' });
+    chrome.tabs.create({ url: 
+      chrome.runtime.getURL('dashboard/dist/index.html')
+     });
   }
 });
 

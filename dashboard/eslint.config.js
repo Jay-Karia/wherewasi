@@ -15,6 +15,9 @@ export default defineConfig([
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
+    rules: {
+      "@typesscript-eslint/no-unused-vars": "warn",
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: {

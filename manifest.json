@@ -14,7 +14,11 @@
   "options_page": "dashboard/dist/index.html",
   "web_accessible_resources": [
     {
-      "resources": ["dashboard/dist/assets/*", "dasboard/dist/*"],
+      "resources": [
+        "dashboard/dist/assets/*",
+        "dasboard/dist/*",
+        "dashboard/index.html"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
