@@ -1,7 +1,6 @@
 import type { Session } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { useState } from "react";
 
 type Props = {
     sessions: Session[];
@@ -9,8 +8,6 @@ type Props = {
 };
 
 export default function SessionsView({ sessions, className }: Props) {
-    const [expandedSessionId, setExpandedSessionId] = useState<string[] | null>([]);
-    
     if (!sessions || sessions.length === 0) {
         return (
             <div
@@ -27,45 +24,65 @@ export default function SessionsView({ sessions, className }: Props) {
         );
     }
 
+    const variants = [
+        "w-full sm:w-[14rem] lg:w-[18rem]",
+        "w-full sm:w-[18rem] lg:w-[24rem]",
+        "w-full sm:w-[22rem] lg:w-[30rem]",
+        "w-full sm:w-[26rem] lg:w-[36rem]",
+        "w-full sm:w-[30rem] lg:w-[42rem]",
+    ] as const;
+
+    let prevIdx = -1;
     return (
-        <div className={cn("grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3", className)}>
-            {sessions.map((s) => (
-                <article
-                    key={s.id}
-                    className="group relative overflow-hidden rounded-xl border bg-card/60 p-4 px-8 shadow-sm transition hover:shadow-md"
-                >
-                    <header className="mb-2 flex items-start justify-between gap-3">
-                        <h3 className="line-clamp-1 text-base font-semibold text-foreground">
-                            {s.title || "Untitled session"}
-                        </h3>
-                        {typeof s.tabsCount === "number" && (
-                            <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                {s.tabsCount} tabs
-                            </span>
+        <div className={cn("flex flex-row justify-center items-center gap-6 mt-8 flex-wrap", className)}>
+            {sessions.map((s, idx) => {
+                const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
+                const { gradient, fg } = randomGreenGradientForSeed(s.id);
+                prevIdx = pick;
+                return (
+                    <article
+                        key={s.id}
+                        className={cn(
+                            "group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-4 px-8 shadow-sm transition hover:shadow-md",
+                            variants[pick],
                         )}
-                        <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
-                            <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                    </header>
+                    >
+                        <header className="mb-2 flex items-start justify-between gap-3">
+                            <h3 className="line-clamp-1 text-base font-semibold text-foreground">
+                                {s.title || "Untitled session"}
+                            </h3>
+                            {typeof s.tabsCount === "number" && (
+                                <span
+                                    className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium border border-black/5 opacity-60"
+                                    style={{ background: gradient, color: fg }}
+                                >
+                                    {s.tabsCount} tabs
+                                </span>
+                            )}
+                            <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
+                                <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                        </header>
 
-                    {s.summary && (
-                        <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-                            {s.summary}
-                        </p>
-                    )}
+                        {s.summary && (
+                            <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                                {s.summary}
+                            </p>
+                        )}
 
-                    <footer className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                        <time dateTime={toDateTimeAttr(s.updatedAt ?? s.createdAt)}>
-                            {formatRelativeDate(s.updatedAt ?? s.createdAt)}
-                        </time>
-                        <div className="opacity-70">
-                            {Array.isArray(s.tabs) ? `${s.tabs.length} items` : null}
-                        </div>
-                    </footer>
+                        <footer className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                            <time dateTime={toDateTimeAttr(s.updatedAt ?? s.createdAt)}>
+                                {formatRelativeDate(s.updatedAt ?? s.createdAt)}
+                            </time>
+                            <div className="opacity-70">
+                                {Array.isArray(s.tabs) ? `${s.tabs.length} items` : null}
+                            </div>
+                        </footer>
 
-                    <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-b from-transparent via-transparent to-foreground/5 group-hover:block" />
-                </article>
-            ))}
+                        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-b from-transparent via-transparent to-foreground/5 group-hover:block" />
+                    </article>
+                );
+            })}
         </div>
     );
 }
@@ -93,3 +110,45 @@ function formatRelativeDate(ts?: number) {
     if (diffDay < 7) return `${diffDay}d ago`;
     return d.toLocaleDateString();
 }
+
+function pickWidthVariant(id: string, index: number, prevIdx: number, len: number): number {
+    const base = seededIndex(id, index, len);
+    if (prevIdx < 0) return base;
+    const distance = Math.abs(base - prevIdx);
+    if (distance <= 1) {
+        const toStart = prevIdx;
+        const toEnd = (len - 1) - prevIdx;
+        return toStart > toEnd ? 0 : len - 1;
+    }
+    return base;
+}
+
+function seededIndex(id: string, index: number, len: number): number {
+    let h = 2166136261 ^ index;
+    for (let i = 0; i < id.length; i++) {
+        h ^= id.charCodeAt(i);
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+    }
+    if (h < 0) h = ~h;
+    return h % len;
+}
+
+function randomGreenGradientForSeed(seed: string): { gradient: string; fg: string } {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) {
+        h = (h << 5) - h + seed.charCodeAt(i);
+        h |= 0;
+    }``
+    const abs = Math.abs(h);
+    const hue1 = 120 + (abs % 12);
+    const hue2 = hue1 + (((abs >> 2) % 6) - 3);
+    const sat1 = 30 + ((abs >> 3) % 11);
+    const sat2 = sat1 + 5;
+    let l1 = 94 + ((abs >> 5) % 4);
+    let l2 = l1 + 2;
+    if (l2 > 99) l2 = 99;
+    const gradient = `linear-gradient(135deg, hsl(${hue1}, ${sat1}%, ${l1}%) 0%, hsl(${hue2}, ${sat2}%, ${l2}%) 100%)`;
+    const fg = "#0f172a";
+    return { gradient, fg };
+}
+
