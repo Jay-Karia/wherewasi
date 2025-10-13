@@ -37,7 +37,7 @@ export default function SessionsView({ sessions, className }: Props) {
         <div className={cn("flex flex-row justify-center items-center gap-6 mt-8 flex-wrap", className)}>
             {sessions.map((s, idx) => {
                 const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
-                const { gradient, fg, accent } = randomGreenGradientForSeed(s.id);
+                const { gradient, fg } = randomGreenGradientForSeed(s.id);
                 prevIdx = pick;
                 return (
                     <article
@@ -47,12 +47,7 @@ export default function SessionsView({ sessions, className }: Props) {
                             variants[pick],
                         )}
                     >
-                        <div
-                            className="absolute left-0 top-0 h-full w-1 opacity-70"
-                            style={{ backgroundColor: accent }}
-                        />
                         <header className="mb-2 flex items-center justify-between gap-3">
-                            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
                             <h3 className="line-clamp-1 text-base font-semibold text-foreground">
                                 {s.title || "Untitled session"}
                             </h3>
@@ -138,7 +133,7 @@ function seededIndex(id: string, index: number, len: number): number {
     return h % len;
 }
 
-function randomGreenGradientForSeed(seed: string): { gradient: string; fg: string, accent: string } {
+function randomGreenGradientForSeed(seed: string): { gradient: string; fg: string } {
     let h = 0;
     for (let i = 0; i < seed.length; i++) {
         h = (h << 5) - h + seed.charCodeAt(i);
@@ -155,8 +150,7 @@ function randomGreenGradientForSeed(seed: string): { gradient: string; fg: strin
 
     const gradient = `linear-gradient(135deg, hsl(${hue1}, ${sat1}%, ${l1}%) 0%, hsl(${hue2}, ${sat2}%, ${l2}%) 100%)`;
     const fg = "#0f172a";
-    const accent = `hsl(${hue1}, ${sat1}%, ${Math.max(l1 - 30, 20)}%)`;
 
-    return { gradient, fg, accent };
+    return { gradient, fg };
 }
 
