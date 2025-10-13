@@ -53,7 +53,7 @@ export default function SessionsView({ sessions, className }: Props) {
                             </h3>
                             {typeof s.tabsCount === "number" && (
                                 <span
-                                    className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium border border-black/5 opacity-60"
+                                    className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium border border-black/5 opacity-70"
                                     style={{ background: gradient, color: fg }}
                                 >
                                     {s.tabsCount} tabs
