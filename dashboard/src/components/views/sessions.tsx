@@ -1,4 +1,4 @@
-import type { Session } from "@/types";
+import type { Session, SortOption } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useState } from "react";
@@ -6,10 +6,11 @@ import { tinyAccentForSeed } from "./timeline";
 
 type Props = {
   sessions: Session[];
+  sortOption: SortOption;
   className?: string;
 };
 
-export default function SessionsView({ sessions, className }: Props) {
+export default function SessionsView({ sessions, sortOption, className }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
 

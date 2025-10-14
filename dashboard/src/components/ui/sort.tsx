@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PiSortAscendingThin, PiSortDescendingThin } from "react-icons/pi";
 import { useMemo, useState } from "react";
-
-type SortOption = "tabs-asc" | "tabs-desc" | "date-asc" | "date-desc";
+import type { SortOption } from "@/types";
 
 export default function Sort({
   value,
@@ -64,20 +63,20 @@ export default function Sort({
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup value={selected} onValueChange={handleChange}>
           <DropdownMenuRadioItem value="tabs-asc">
-            <PiSortAscendingThin className="mr-2" aria-hidden /> Tabs (fewest
+            <PiSortDescendingThin className="mr-2" aria-hidden /> Tabs (fewest
             first)
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="tabs-desc">
-            <PiSortDescendingThin className="mr-2" aria-hidden /> Tabs (most
+            <PiSortAscendingThin className="mr-2" aria-hidden /> Tabs (most
             first)
           </DropdownMenuRadioItem>
           <DropdownMenuSeparator />
           <DropdownMenuRadioItem value="date-asc">
-            <PiSortAscendingThin className="mr-2" aria-hidden /> Date (oldest
+            <PiSortDescendingThin className="mr-2" aria-hidden /> Date (oldest
             first)
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="date-desc">
-            <PiSortDescendingThin className="mr-2" aria-hidden /> Date (newest
+            <PiSortAscendingThin className="mr-2" aria-hidden /> Date (newest
             first)
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

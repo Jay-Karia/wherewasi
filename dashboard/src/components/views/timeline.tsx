@@ -1,10 +1,11 @@
-import type { Session } from "@/types";
+import type { Session, SortOption } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useState } from "react";
 
 type Props = {
   sessions: Session[];
+  sortOption: SortOption;
   className?: string;
 };
 
@@ -22,7 +23,7 @@ export function tinyAccentForSeed(seed: string) {
   return `hsl(${hue}, ${sat}%, ${light}%)`;
 }
 
-export default function TimelineView({ sessions, className }: Props) {
+export default function TimelineView({ sessions, sortOption, className }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
   const normalized = (sessions || [])
