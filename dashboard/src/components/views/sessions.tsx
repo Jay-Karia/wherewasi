@@ -38,7 +38,6 @@ export default function SessionsView({ sessions, className }: Props) {
         <div className={cn("flex flex-row justify-center items-center gap-6 mt-8 flex-wrap", className)}>
             {sessions.map((s, idx) => {
                 const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
-                const { gradient, fg } = randomGreenGradientForSeed(s.id);
                 const accent = tinyAccentForSeed(s.id);
                 prevIdx = pick;
                 return (
@@ -56,8 +55,7 @@ export default function SessionsView({ sessions, className }: Props) {
                             </h3>
                             {typeof s.tabsCount === "number" && (
                                 <span
-                                    className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium border border-black/5 opacity-70"
-                                    style={{ background: gradient, color: fg }}
+                                    className="shrink-0 rounded-full py-0.5 text-xs font-medium border border-black/5 opacity-70 bg-muted/60 px-2 text-[11px] text-muted-foreground"
                                 >
                                     {s.tabsCount} tabs
                                 </span>
@@ -134,25 +132,4 @@ function seededIndex(id: string, index: number, len: number): number {
     }
     if (h < 0) h = ~h;
     return h % len;
-}
-
-function randomGreenGradientForSeed(seed: string): { gradient: string; fg: string } {
-    let h = 0;
-    for (let i = 0; i < seed.length; i++) {
-        h = (h << 5) - h + seed.charCodeAt(i);
-        h |= 0;
-    }
-    const abs = Math.abs(h);
-    const hue1 = 120 + (abs % 12);
-    const hue2 = hue1 + (((abs >> 2) % 6) - 3);
-    const sat1 = 30 + ((abs >> 3) % 11);
-    const sat2 = sat1 + 5;
-    let l1 = 94 + ((abs >> 5) % 4);
-    let l2 = l1 + 2;
-    if (l2 > 99) l2 = 99;
-
-    const gradient = `linear-gradient(135deg, hsl(${hue1}, ${sat1}%, ${l1}%) 0%, hsl(${hue2}, ${sat2}%, ${l2}%) 100%)`;
-    const fg = "#0f172a";
-
-    return { gradient, fg };
 }
