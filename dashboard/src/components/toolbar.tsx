@@ -7,8 +7,9 @@ import { CiExport } from "react-icons/ci";
 import { CiFilter } from "react-icons/ci";
 import { Clock } from "lucide-react";
 import { FaSort } from "react-icons/fa";
-import { CiGrid31 } from "react-icons/ci";
+import { FaList } from "react-icons/fa";
 import { FaLayerGroup } from "react-icons/fa";
+import type { SessionViews } from "@/types";
 
 export default function Toolbar() {
     const [currentView, setCurrentView] = useAtom(currentViewAtom);
@@ -25,7 +26,7 @@ export default function Toolbar() {
                     </Button>
                 </div>
             </div>
-            <Tabs defaultValue="account" className="w-full" value={currentView} onValueChange={(value) => setCurrentView(value as "sessions" | "timeline" | "grid")}>
+            <Tabs defaultValue="account" className="w-full" value={currentView} onValueChange={(value) => setCurrentView(value as SessionViews)}>
                 <TabsList>
                     <TabsTrigger value="sessions" className="px-12">
                         <FaLayerGroup className="mr-2" size={13} />
@@ -35,9 +36,9 @@ export default function Toolbar() {
                         <Clock className="mr-2" size={15} />
                         Timeline
                     </TabsTrigger>
-                    <TabsTrigger value="grid" className="px-12">
-                        <CiGrid31 className="mr-2" size={17} />
-                        Grid
+                    <TabsTrigger value="List" className="px-12">
+                        <FaList className="mr-2" size={14} />
+                        List
                     </TabsTrigger>
                 </TabsList>
             </Tabs>

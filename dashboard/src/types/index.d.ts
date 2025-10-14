@@ -7,3 +7,5 @@ export type Session = {
     createdAt: number;
     updatedAt: number;
 }
+
+export type SessionViews = "sessions" | "timeline" | "list"
