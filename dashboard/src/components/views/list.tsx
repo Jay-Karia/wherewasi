@@ -185,12 +185,15 @@ export default function ListView({ sessions }: { sessions: Session[] }) {
                                               <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block" />
                                             )}
                                             <span
-                                                className="truncate text-foreground block"
-                                                title={title || "Untitled tab"}
+                                              className="truncate text-foreground block"
+                                              title={title || "Untitled tab"}
                                             >
-                                                {(title || "Untitled tab").length > 50 
-                                                    ? (title || "Untitled tab").substring(0, 50) + "..." 
-                                                    : (title || "Untitled tab")}
+                                              {(title || "Untitled tab")
+                                                .length > 50
+                                                ? (
+                                                    title || "Untitled tab"
+                                                  ).substring(0, 50) + "..."
+                                                : title || "Untitled tab"}
                                             </span>
                                           </div>
                                         </td>
