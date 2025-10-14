@@ -7,7 +7,6 @@ type Props = {
 };
 
 export default function TimelineView({ sessions, className }: Props) {
-    // Normalize and sort sessions (newest first)
     const normalized = (sessions || [])
         .map((s) => ({
             ...s,
@@ -33,40 +32,92 @@ export default function TimelineView({ sessions, className }: Props) {
     }
 
     return (
-        <div className={cn("mx-auto max-w-5xl px-2 sm:px-4 md:px-6 lg:px-8", className)}>
+        <div className={cn("mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8 mb-12", className)}>
             {dayKeys.map((dayKey, idx) => {
                 const dayTs = Number(dayKey);
                 const items = groups[dayKey];
                 return (
-                    <section key={dayKey} className={cn(idx > 0 && "mt-10")}>
+                    <section key={dayKey} className={cn("relative", idx > 0 && "mt-10")}>
                         <DayHeader ts={dayTs} count={items.length} />
-                        <ol className="relative ml-4 mt-4 border-l border-border/60 pl-6">
+                        <div className="pointer-events-none absolute left-1/2 top-16 bottom-2 -translate-x-1/2 hidden w-px bg-border/60 md:block" />
+                        <ul className="mt-4 space-y-6">
                             {items.map((s, i) => {
                                 const accent = tinyAccentForSeed(s.id);
+                                const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
                                 return (
-                                    <li key={s.id} className={cn(i > 0 && "mt-6")}> 
-                                        <div className="absolute -left-[7px] mt-1 h-3 w-3 rounded-full ring-2 ring-background" style={{ backgroundColor: accent }} />
-                                        <article className="rounded-lg border bg-card/60 p-3 shadow-sm transition hover:shadow-md">
-                                            <header className="flex items-center justify-between gap-3">
-                                                <h4 className="line-clamp-1 text-sm font-semibold text-foreground">{s.title || "Untitled session"}</h4>
-                                                {typeof s.tabsCount === "number" && (
-                                                    <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                                                        {s.tabsCount} tabs
-                                                    </span>
-                                                )}
-                                            </header>
-                                            {s.summary && (
-                                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</p>
+                                    <li key={s.id}>
+                                        <div className="md:grid md:grid-cols-[1fr_16px_1fr] md:items-center md:gap-0">
+                                            {side === "left" ? (
+                                                <>
+                                                    <div className="md:pr-6">
+                                                        <article className="relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md">
+                                                            {/* small-screen left rail connector only */}
+                                                            <div className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden" style={{ top: -14, bottom: -14 }} />
+                                                            <header className="flex items-center justify-between gap-2">
+                                                                <div className="flex min-w-0 items-center gap-2">
+                                                                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
+                                                                    <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">{s.title || "Untitled session"}</h4>
+                                                                </div>
+                                                                {typeof s.tabsCount === "number" && (
+                                                                    <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                                                        {s.tabsCount} tabs
+                                                                    </span>
+                                                                )}
+                                                            </header>
+                                                            {s.summary && (
+                                                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</p>
+                                                            )}
+                                                            <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                                                                <time dateTime={toISO(s._ts)}>{formatTime(s._ts)}</time>
+                                                                <span className="opacity-80">{formatRelative(s._ts)}</span>
+                                                            </footer>
+                                                        </article>
+                                                    </div>
+                                                    <div className="relative hidden items-center justify-center md:flex">
+                                                        <span className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-px bg-transparent" />
+                                                        <span className="absolute left-0 right-1/2 top-1/2 h-px -translate-y-1/2 bg-border/60" />
+                                                        <span className="relative z-10 h-3 w-3 rounded-full ring-2 ring-background" style={{ backgroundColor: accent }} />
+                                                    </div>
+                                                    <div className="hidden md:block" />
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="hidden md:block" />
+                                                    <div className="relative hidden items-center justify-center md:flex">
+                                                        <span className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-px bg-transparent" />
+                                                        <span className="absolute left-1/2 right-0 top-1/2 h-px -translate-y-1/2 bg-border/60" />
+                                                        <span className="relative z-10 h-3 w-3 rounded-full ring-2 ring-background" style={{ backgroundColor: accent }} />
+                                                    </div>
+                                                    <div className="md:pl-6">
+                                                        <article className="relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md">
+                                                            <div className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden" style={{ top: -14, bottom: -14 }} />
+                                                            <header className="flex items-center justify-between gap-2">
+                                                                <div className="flex min-w-0 items-center gap-2">
+                                                                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
+                                                                    <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">{s.title || "Untitled session"}</h4>
+                                                                </div>
+                                                                {typeof s.tabsCount === "number" && (
+                                                                    <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                                                        {s.tabsCount} tabs
+                                                                    </span>
+                                                                )}
+                                                            </header>
+                                                            {s.summary && (
+                                                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</p>
+                                                            )}
+                                                            <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                                                                <time dateTime={toISO(s._ts)}>{formatTime(s._ts)}</time>
+                                                                <span className="opacity-80">{formatRelative(s._ts)}</span>
+                                                            </footer>
+                                                        </article>
+                                                    </div>
+                                                </>
                                             )}
-                                            <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                                                <time dateTime={toISO(s._ts)}>{formatTime(s._ts)}</time>
-                                                <span className="opacity-80">{formatRelative(s._ts)}</span>
-                                            </footer>
-                                        </article>
+                                        </div>
                                     </li>
                                 );
                             })}
-                        </ol>
+                        </ul>
                     </section>
                 );
             })}
@@ -88,9 +139,18 @@ function groupByDay(list: Array<Session & { _ts: number }>) {
 function DayHeader({ ts, count }: { ts: number; count: number }) {
     const label = formatDay(ts);
     return (
-        <div className="flex items-baseline justify-between">
-            <h3 className="text-base font-semibold text-foreground">{label}</h3>
-            <span className="text-xs text-muted-foreground">{count} {count === 1 ? "entry" : "entries"}</span>
+        <div className="relative mt-2 mb-2">
+            {/* horizontal lines */}
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-border/60" />
+            </div>
+            {/* centered chip */}
+            <div className="relative flex justify-center">
+                <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-border/60 shadow-sm">
+                    {label}
+                    <span className="ml-2 text-muted-foreground">• {count} {count === 1 ? "entry" : "entries"}</span>
+                </span>
+            </div>
         </div>
     );
 }
@@ -134,7 +194,6 @@ function toISO(ts: number) {
 }
 
 function tinyAccentForSeed(seed: string) {
-    // deterministic small accent around teal/green/blue to avoid loud colors
     let h = 0;
     for (let i = 0; i < seed.length; i++) {
         h = (h << 5) - h + seed.charCodeAt(i);

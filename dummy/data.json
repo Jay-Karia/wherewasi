@@ -1,5 +1,123 @@
 [
   {
+    "createdAt": 1760449733877,
+    "id": "2025-10-14T13:48:53.877Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-14T13:48:53.860Z",
+        "favIconUrl": "https://www.youtube.com/s/desktop/26a38178/img/favicon_32x32.png",
+        "id": 926976182,
+        "title": "YouTube",
+        "url": "https://www.youtube.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760449733877
+  },
+  {
+    "createdAt": 1760449612093,
+    "id": "2025-10-14T13:46:52.093Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-14T13:46:52.085Z",
+        "favIconUrl": "https://www.youtube.com/s/desktop/26a38178/img/favicon_32x32.png",
+        "id": 926976179,
+        "title": "YouTube",
+        "url": "https://www.youtube.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760449612093
+  },
+  {
+    "createdAt": 1760449566111,
+    "id": "2025-10-14T13:46:06.111Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-14T13:46:06.103Z",
+        "favIconUrl": "https://www.upwork.com/favicon.ico",
+        "id": 926976160,
+        "title": "Upwork | Hire Top Freelance Talent with Confidence",
+        "url": "https://www.upwork.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760449566111
+  },
+  {
+    "createdAt": 1760449565090,
+    "id": "2025-10-14T13:46:05.090Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-14T13:46:05.087Z",
+        "favIconUrl": "https://www.youtube.com/s/desktop/26a38178/img/favicon_32x32.png",
+        "id": 926976161,
+        "title": "YouTube",
+        "url": "https://www.youtube.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760449565090
+  },
+  {
+    "createdAt": 1760449510811,
+    "id": "2025-10-14T13:45:10.811Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-14T13:45:10.790Z",
+        "favIconUrl": "https://secure.logmeinrescue.com/favicon.ico",
+        "id": 926976026,
+        "title": "LogMeIn123.com – Start Support Connection",
+        "url": "https://secure.logmeinrescue.com/Customer/Code.aspx?murl=/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760449510811
+  },
+  {
+    "createdAt": 1760280791541,
+    "id": "2025-10-12T14:53:11.541Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-12T14:53:11.524Z",
+        "favIconUrl": "https://fast.com/assets/favicons/favicon-32x32.png",
+        "id": 926975958,
+        "title": "Internet Speed Test | Fast.com",
+        "url": "https://fast.com/"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760280791541
+  },
+  {
+    "createdAt": 1760280490650,
+    "id": "2025-10-12T14:48:10.650Z",
+    "summary": "",
+    "tabs": [
+      {
+        "closedAt": "2025-10-12T14:48:10.626Z",
+        "id": 926975954,
+        "title": "otd remote access - Google Search",
+        "url": "https://www.google.com/search?q=oty+remote+acces&oq=oty+remote+acces&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDI1OTRqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
+      }
+    ],
+    "tabsCount": 1,
+    "title": "",
+    "updatedAt": 1760280490650
+  },
+  {
     "createdAt": 1760203230119,
     "id": "2025-10-11T17:20:30.119Z",
     "summary": "",
