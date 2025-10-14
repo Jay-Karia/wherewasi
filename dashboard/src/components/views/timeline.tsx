@@ -95,7 +95,7 @@ export default function TimelineView({ sessions, className }: Props) {
                                 </div>
                               </header>
                               {s.summary && (
-                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground" title={s.summary}>
                                   {s.summary}
                                 </p>
                               )}
@@ -156,7 +156,7 @@ export default function TimelineView({ sessions, className }: Props) {
                                 </div>
                               </header>
                               {s.summary && (
-                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground" title={s.summary}>
                                   {s.summary}
                                 </p>
                               )}
@@ -203,7 +203,7 @@ function DayHeader({ ts, count }: { ts: number; count: number }) {
         <div className="w-full border-t border-gray-600" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-600 shadow-sm">
+        <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-500 shadow-sm">
           {label}
           <span className="ml-2 text-muted-foreground">
             • {count} {count === 1 ? "entry" : "entries"}

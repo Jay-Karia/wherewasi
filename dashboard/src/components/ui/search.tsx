@@ -17,7 +17,7 @@ export default function Search() {
       <div className="w-full max-w-3xl">
         <Input
           type="text"
-          placeholder="Search sessions, tags, or sites..."
+          placeholder="Search sessions, keywords, or sites..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           icon={<CiSearch size={18} />}

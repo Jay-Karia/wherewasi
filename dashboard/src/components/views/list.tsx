@@ -58,11 +58,11 @@ export default function ListView({ sessions }: { sessions: Session[] }) {
                             className="h-2 w-2 shrink-0 rounded-full"
                             style={{ backgroundColor: accent }}
                           />
-                          <h4 className="min-w-0 truncate text-sm font-medium text-foreground">
+                          <h4 className="min-w-0 truncate text-sm font-medium text-foreground" title={s.title}>
                             {s.title || "Untitled session"}
                           </h4>
                         </div>
-                        <p className="min-w-0 text-xs text-muted-foreground sm:line-clamp-2">
+                        <p className="min-w-0 text-xs text-muted-foreground sm:line-clamp-2" title={s.summary}>
                           {s.summary}
                         </p>
                         <div className="flex items-center justify-between sm:justify-end sm:whitespace-nowrap">
@@ -272,10 +272,10 @@ function DaySeparator({ ts, count }: { ts: number; count: number }) {
   return (
     <div className="relative mt-2 mb-2">
       <div className="absolute inset-0 flex items-center" aria-hidden="true">
-        <div className="w-full border-t border-border/60" />
+        <div className="w-full border-t border-border/90" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-border/60 shadow-sm">
+        <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-700 shadow-sm">
           {label}
           <span className="ml-2 text-muted-foreground">
             • {count} {count === 1 ? "entry" : "entries"}
