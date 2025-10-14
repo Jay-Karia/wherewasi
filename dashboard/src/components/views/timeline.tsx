@@ -36,19 +36,6 @@ export default function TimelineView({ sessions, className }: Props) {
   const groups = groupByDay(normalized);
   const dayKeys = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
 
-  if (dayKeys.length === 0) {
-    return (
-      <div
-        className={cn(
-          "rounded-xl border border-dashed border-muted-foreground/20 p-8 text-center text-muted-foreground",
-          className,
-        )}
-      >
-        No activity yet
-      </div>
-    );
-  }
-
   return (
     <div
       className={cn(

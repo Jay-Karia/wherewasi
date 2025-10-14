@@ -16,18 +16,6 @@ export default function ListView({ sessions }: { sessions: Session[] }) {
   const groups = groupByDay(normalized);
   const dayKeys = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
 
-  if (dayKeys.length === 0) {
-    return (
-      <div
-        className={cn(
-          "rounded-xl border border-dashed border-muted-foreground/20 p-8 text-center text-muted-foreground",
-        )}
-      >
-        No sessions
-      </div>
-    );
-  }
-
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
 

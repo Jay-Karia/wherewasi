@@ -12,23 +12,6 @@ type Props = {
 export default function SessionsView({ sessions, className }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
-  if (!sessions || sessions.length === 0) {
-    return (
-      <div
-        className={cn(
-          "flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-muted-foreground/20 p-10 text-center text-muted-foreground",
-          className,
-        )}
-      >
-        <div className="text-lg font-medium text-foreground">
-          No sessions yet
-        </div>
-        <p className="text-sm opacity-80">
-          Start browsing and your sessions will appear here automatically.
-        </p>
-      </div>
-    );
-  }
 
   const variants = [
     "w-full sm:w-[14rem] lg:w-[18rem]",
