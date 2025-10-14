@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSetAtom } from "jotai";
-import { sessionsAtom } from "@/atoms";
+import { sessionsAtom } from "../../atoms";
 
 type UseStorageReturn<T> = [
   T,

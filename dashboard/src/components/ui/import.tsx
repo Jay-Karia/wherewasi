@@ -11,13 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "./label";
 import { useRef, useState } from "react";
-import { useSetAtom } from "jotai";
-import { sessionsAtom } from "@/atoms";
 import { normalizeImportedSessions, writeSessionsToDummyFile } from "@/lib/utils";
 
 export default function Import() {
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const setSessions = useSetAtom(sessionsAtom);
     const [fileName, setFileName] = useState<string>("");
     const [status, setStatus] = useState<
         | { state: "idle" }
@@ -47,19 +44,8 @@ export default function Import() {
             } catch {
                 throw new Error("File is not valid JSON");
             }
-                    const sessions = normalizeImportedSessions(json);
-                    const stored = writeSessionsToDummyFile(sessions);
-            setSessions(stored as any);
-                    // Dev-only: attempt to update dummy/data.json through vite middleware
-                    try {
-                        await fetch("/__update-dummy-data", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(sessions),
-                        });
-                    } catch {
-                        // ignore if not running dev server or request blocked
-                    }
+            const sessions = normalizeImportedSessions(json);
+            writeSessionsToDummyFile(sessions);
             setStatus({ state: "success", count: sessions.length });
         } catch (e) {
             setStatus({ state: "error", message: (e as Error).message });
