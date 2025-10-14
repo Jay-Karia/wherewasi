@@ -1,5 +1,6 @@
 import type { Session } from "@/types";
 import { cn } from "@/lib/utils";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 type Props = {
     sessions: Session[];
@@ -76,6 +77,9 @@ export default function TimelineView({ sessions, className }: Props) {
                                                                         {s.tabsCount} tabs
                                                                     </span>
                                                                 )}
+                                                                <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
+                                                                    <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
+                                                                </div>
                                                             </header>
                                                             {s.summary && (
                                                                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</p>
@@ -114,6 +118,9 @@ export default function TimelineView({ sessions, className }: Props) {
                                                                         {s.tabsCount} tabs
                                                                     </span>
                                                                 )}
+                                                                <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
+                                                                    <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
+                                                                </div>
                                                             </header>
                                                             {s.summary && (
                                                                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</p>
@@ -154,10 +161,10 @@ function DayHeader({ ts, count }: { ts: number; count: number }) {
     return (
         <div className="relative mt-2 mb-2">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-border/60" />
+                <div className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center">
-                <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-border/60 shadow-sm">
+                <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-600 shadow-sm">
                     {label}
                     <span className="ml-2 text-muted-foreground">• {count} {count === 1 ? "entry" : "entries"}</span>
                 </span>
