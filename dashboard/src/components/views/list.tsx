@@ -1,10 +1,16 @@
-import type { Session } from "@/types";
+import type { Session, SortOption } from "@/types";
 import { cn } from "@/lib/utils";
 import { tinyAccentForSeed } from "./timeline";
 import { IoMdExpand } from "react-icons/io";
 import { useState } from "react";
 
-export default function ListView({ sessions, sortOption }: { sessions: Session[], sortOption: SortOption }) {
+export default function ListView({
+  sessions,
+  sortOption,
+}: {
+  sessions: Session[];
+  sortOption: SortOption;
+}) {
   const normalized = (sessions || [])
     .map((s) => ({
       ...s,

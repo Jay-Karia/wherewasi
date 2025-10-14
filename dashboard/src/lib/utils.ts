@@ -63,14 +63,14 @@ export function normalizeImportedSessions(json: unknown): Session[] {
 // NOTE: Only temporily used in dev environment to write to ../dummy/data.json
 export function writeSessionsToDummyFile(sessions: Session[]) {
   // This function is only available in Node.js environment
-  if (typeof window !== 'undefined') {
-    console.warn('writeSessionsToDummyFile cannot run in browser environment');
+  if (typeof window !== "undefined") {
+    console.warn("writeSessionsToDummyFile cannot run in browser environment");
     return;
   }
-  
+
   const filePath = "../../../dummy/data.json";
-  
-  const fs = require('fs');
+
+  const fs = require("fs");
   const dataStr = JSON.stringify(sessions, null, 2);
   fs.writeFileSync(filePath, dataStr, "utf8");
 }

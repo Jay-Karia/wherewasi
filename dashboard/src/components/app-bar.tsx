@@ -3,6 +3,12 @@ import { Button } from "./ui/button";
 import Search from "./ui/search";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { IoSettingsOutline } from "react-icons/io5";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function AppBar() {
   return (
@@ -21,9 +27,18 @@ export default function AppBar() {
         <ThemeToggle />
 
         {/* Settings */}
-        <Button variant="ghost" size="icon">
-          <IoSettingsOutline size={20} />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button variant="ghost" size="icon">
+                <IoSettingsOutline size={20} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Comming Soon!</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
