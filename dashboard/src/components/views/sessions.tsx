@@ -1,6 +1,7 @@
 import type { Session } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { useState } from "react";
 import { tinyAccentForSeed } from "./timeline";
 
 type Props = {
@@ -9,6 +10,8 @@ type Props = {
 };
 
 export default function SessionsView({ sessions, className }: Props) {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
   if (!sessions || sessions.length === 0) {
     return (
       <div
@@ -39,20 +42,22 @@ export default function SessionsView({ sessions, className }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-row justify-center items-center gap-6 mt-8 flex-wrap",
+        "mx-auto max-w-7xl flex flex-row justify-center items-center gap-6 mt-8 flex-wrap",
         className,
       )}
     >
       {sessions.map((s, idx) => {
         const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
         const accent = tinyAccentForSeed(s.id);
+        const isExpanded = !!expanded[s.id];
+        const widthClass = isExpanded ? "w-full sm:w-[42rem] lg:w-[64rem]" : variants[pick];
         prevIdx = pick;
         return (
           <article
             key={s.id}
             className={cn(
               "group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-4 px-8 shadow-sm transition hover:shadow-md",
-              variants[pick],
+              widthClass,
             )}
           >
             <header className="mb-2 flex items-center justify-between gap-3">
@@ -68,9 +73,14 @@ export default function SessionsView({ sessions, className }: Props) {
                   {s.tabsCount} tabs
                 </span>
               )}
-              <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
-                <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
-              </div>
+              <button
+                aria-expanded={!!expanded[s.id]}
+                onClick={() => toggle(s.id)}
+                className="ml-auto flex items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground"
+                title={expanded[s.id] ? "Collapse" : "Expand"}
+              >
+                <MdOutlineKeyboardArrowDown className={cn("h-5 w-5 text-muted-foreground transition-transform", expanded[s.id] && "rotate-180")} />
+              </button>
             </header>
 
             {s.summary && (
@@ -87,6 +97,75 @@ export default function SessionsView({ sessions, className }: Props) {
                 {Array.isArray(s.tabs) ? `${s.tabs.length} items` : null}
               </div>
             </footer>
+
+            {/* Expanded details */}
+            {expanded[s.id] && (
+              <div className="mt-3 rounded-lg border bg-background/60 p-3">
+                <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
+                  <div>
+                    <span className="opacity-70">Session ID:</span>{" "}
+                    <span className="break-all text-foreground/90">{s.id}</span>
+                  </div>
+                  <div>
+                    <span className="opacity-70">Created:</span>{" "}
+                    <span>{formatTimeSafe(s.createdAt)} • {formatRelativeDate(s.createdAt)}</span>
+                  </div>
+                  <div>
+                    <span className="opacity-70">Updated:</span>{" "}
+                    <span>{formatTimeSafe(s.updatedAt)} • {formatRelativeDate(s.updatedAt)}</span>
+                  </div>
+                </div>
+
+                {/* Tabs table */}
+                <div className="mt-3 overflow-x-auto">
+                  <table className="min-w-full text-left">
+                    <thead className="text-[11px] text-muted-foreground">
+                      <tr className="border-b">
+                        <th className="py-1 pr-3 font-medium">Tab</th>
+                        <th className="py-1 pr-3 font-medium">URL</th>
+                        <th className="py-1 pr-3 font-medium">Closed</th>
+                        <th className="py-1 pr-3 font-medium">Tab ID</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs">
+                      {(Array.isArray(s.tabs) ? (s.tabs as any[]) : []).map((t, i) => {
+                        const fav = (t as any)?.favIconUrl as string | undefined;
+                        const title = (t as any)?.title as string | undefined;
+                        const url = (t as any)?.url as string | undefined;
+                        const tabId = (t as any)?.id as number | string | undefined;
+                        const closedAt = (t as any)?.closedAt as string | number | undefined;
+                        const closedMs = typeof closedAt === "string" ? Date.parse(closedAt) : (typeof closedAt === "number" ? closedAt : undefined);
+                        return (
+                          <tr key={i} className="border-b last:border-b-0 align-top">
+                            <td className="py-2 pr-3">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {fav ? (
+                                  <img src={fav} alt="" className="h-4 w-4 rounded-sm" />
+                                ) : (
+                                  <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block" />
+                                )}
+                                <span className="truncate text-foreground" title={title || "Untitled tab"}>{title || "Untitled tab"}</span>
+                              </div>
+                            </td>
+                            <td className="py-2 pr-3 max-w-[28rem]">
+                              {url ? (
+                                <a href={url} target="_blank" rel="noreferrer" className="truncate text-blue-600 hover:underline dark:text-blue-400" title={url}>{url}</a>
+                              ) : (
+                                <span className="opacity-60">—</span>
+                              )}
+                            </td>
+                            <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                              {closedMs ? `${formatTimeSafe(closedMs)} • ${formatRelativeDate(closedMs)}` : <span className="opacity-60">—</span>}
+                            </td>
+                            <td className="py-2 pr-3 text-muted-foreground">{tabId ?? <span className="opacity-60">—</span>}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-b from-transparent via-transparent to-foreground/5 group-hover:block" />
           </article>
@@ -118,6 +197,15 @@ function formatRelativeDate(ts?: number) {
   const diffDay = Math.floor(diffHr / 24);
   if (diffDay < 7) return `${diffDay}d ago`;
   return d.toLocaleDateString();
+}
+
+function formatTimeSafe(ts?: number) {
+  if (!ts) return "";
+  try {
+    return new Date(ts).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "";
+  }
 }
 
 function pickWidthVariant(

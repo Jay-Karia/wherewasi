@@ -81,7 +81,7 @@ export default function TimelineView({ sessions, className }: Props) {
                                     className="h-2 w-2 shrink-0 rounded-full"
                                     style={{ backgroundColor: accent }}
                                   />
-                                  <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground" title={s.title}>
+                                  <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">
                                     {s.title || "Untitled session"}
                                   </h4>
                                 </div>
@@ -95,7 +95,7 @@ export default function TimelineView({ sessions, className }: Props) {
                                 </div>
                               </header>
                               {s.summary && (
-                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground" title={s.summary}>
+                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                                   {s.summary}
                                 </p>
                               )}
