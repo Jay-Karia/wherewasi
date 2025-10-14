@@ -60,17 +60,21 @@ export function normalizeImportedSessions(json: unknown): Session[] {
   return sessions;
 }
 
-// NOTE: Only temporily used in dev environment to write to ../dummy/data.json
-export function writeSessionsToDummyFile(sessions: Session[]) {
-  // This function is only available in Node.js environment
-  if (typeof window !== 'undefined') {
-    console.warn('writeSessionsToDummyFile cannot run in browser environment');
-    return;
+// Persist sessions to extension/browser storage
+export async function writeSessionsToStorage(sessions: Session[]) {
+  const key = "sessions";
+  const payload = sessions as Session[];
+  const c = (globalThis as unknown as { chrome?: typeof chrome }).chrome;
+  if (c?.storage?.local) {
+    await new Promise<void>((resolve, reject) => {
+      c.storage.local.set({ [key]: payload }, () => {
+        const err = c.runtime?.lastError;
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+  } else {
+    globalThis.localStorage?.setItem(key, JSON.stringify(payload));
   }
-  
-  const filePath = "../../../dummy/data.json";
-  
-  const fs = require('fs');
-  const dataStr = JSON.stringify(sessions, null, 2);
-  fs.writeFileSync(filePath, dataStr, "utf8");
+  return payload;
 }

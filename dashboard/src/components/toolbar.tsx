@@ -10,6 +10,7 @@ import { FaLayerGroup } from "react-icons/fa";
 import type { SessionViews } from "@/types";
 import Export from "./ui/export";
 import Import from "./ui/import";
+import Sort from "./ui/sort";
 
 export default function Toolbar() {
   const [currentView, setCurrentView] = useAtom(currentViewAtom);
@@ -45,11 +46,9 @@ export default function Toolbar() {
       </Tabs>
       <div>
         <div className="flex items-center gap-2 ml-4">
+          <Sort />
           <Button className="px-3 py-1" variant={"secondary"} size={"sm"}>
             <CiFilter className="mr" /> Filter
-          </Button>
-          <Button className="px-3 py-1" size={"sm"} variant={"secondary"}>
-            <FaSort className="mr" /> Sort
           </Button>
         </div>
       </div>
