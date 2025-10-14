@@ -24,7 +24,8 @@ function devDummyWriter(): Plugin {
           });
           const raw = Buffer.concat(chunks).toString("utf8");
           const data = JSON.parse(raw);
-          if (!Array.isArray(data)) throw new Error("Payload must be an array of sessions");
+          if (!Array.isArray(data))
+            throw new Error("Payload must be an array of sessions");
           const dest = path.resolve(__dirname, "../dummy/data.json");
           await fsp.writeFile(dest, JSON.stringify(data, null, 2), "utf8");
           res.statusCode = 200;

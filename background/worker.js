@@ -102,7 +102,8 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     // Group the closed tab into a session
     try {
       const session = await AIService.groupClosedTab(tabRecord);
-      if (session) console.log('AI grouped closed tabs into session:', session.id);
+      if (session)
+        console.log('AI grouped closed tabs into session:', session.id);
     } catch (aiErr) {
       console.error('AI grouping error:', aiErr);
     }
@@ -122,9 +123,9 @@ chrome.windows.onRemoved.addListener(windowId => {
 
 chrome.commands.onCommand.addListener(command => {
   if (command === 'open-dashboard') {
-    chrome.tabs.create({ url: 
-      chrome.runtime.getURL('dashboard/dist/index.html')
-     });
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('dashboard/dist/index.html'),
+    });
   }
 });
 
