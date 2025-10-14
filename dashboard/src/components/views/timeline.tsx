@@ -1,6 +1,7 @@
 import type { Session } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { useState } from "react";
 
 type Props = {
   sessions: Session[];
@@ -22,6 +23,8 @@ export function tinyAccentForSeed(seed: string) {
 }
 
 export default function TimelineView({ sessions, className }: Props) {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
   const normalized = (sessions || [])
     .map((s) => ({
       ...s,
@@ -64,13 +67,75 @@ export default function TimelineView({ sessions, className }: Props) {
               {items.map((s, i) => {
                 const accent = tinyAccentForSeed(s.id);
                 const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
+                const isExpanded = !!expanded[s.id];
+                if (isExpanded) {
+                  return (
+                    <li key={s.id}>
+                      {/* Wide standalone layout when expanded */}
+                      <div className="md:mx-auto md:max-w-6xl">
+                        <article
+                          className={cn(
+                            "relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60",
+                          )}
+                        >
+                          <header className="flex items-center justify-between gap-2">
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span
+                                className="h-2 w-2 shrink-0 rounded-full"
+                                style={{ backgroundColor: accent }}
+                              />
+                              <h4 className="line-clamp-1 text-[14px] font-semibold text-foreground">
+                                {s.title || "Untitled session"}
+                              </h4>
+                            </div>
+                            {typeof s.tabsCount === "number" && (
+                              <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                {s.tabsCount} tabs
+                              </span>
+                            )}
+                            <button
+                              onClick={() => toggle(s.id)}
+                              aria-expanded={isExpanded}
+                              className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
+                              title="Collapse"
+                            >
+                              <MdOutlineKeyboardArrowDown className="h-4 w-4 rotate-180 transition-transform" />
+                            </button>
+                          </header>
+                          {s.summary && (
+                            <p
+                              className="mt-1 line-clamp-3 text-xs text-muted-foreground md:text-[13px]"
+                              title={s.summary}
+                            >
+                              {s.summary}
+                            </p>
+                          )}
+                          <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                            <time dateTime={toISO(s._ts)}>
+                              {formatTime(s._ts)}
+                            </time>
+                            <span className="opacity-80">
+                              {formatRelative(s._ts)}
+                            </span>
+                          </footer>
+                          <ExpandedDetails session={s} />
+                        </article>
+                      </div>
+                    </li>
+                  );
+                }
                 return (
                   <li key={s.id}>
-                    <div className="md:grid md:grid-cols-[1fr_16px_1fr] md:items-center md:gap-0">
+                    <div className="md:grid md:grid-cols-[1fr_16px_1fr] md:items-start md:gap-0">
                       {side === "left" ? (
                         <>
                           <div className="md:pr-6">
-                            <article className="relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md">
+                            <article
+                              className={cn(
+                                "relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md",
+                                isExpanded && "ring-1 ring-border/60",
+                              )}
+                            >
                               <div
                                 className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
                                 style={{ top: -14, bottom: -14 }}
@@ -81,7 +146,10 @@ export default function TimelineView({ sessions, className }: Props) {
                                     className="h-2 w-2 shrink-0 rounded-full"
                                     style={{ backgroundColor: accent }}
                                   />
-                                  <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">
+                                  <h4
+                                    className="line-clamp-1 text-[13px] font-semibold text-foreground"
+                                    title={s.title}
+                                  >
                                     {s.title || "Untitled session"}
                                   </h4>
                                 </div>
@@ -90,12 +158,25 @@ export default function TimelineView({ sessions, className }: Props) {
                                     {s.tabsCount} tabs
                                   </span>
                                 )}
-                                <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
-                                  <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
-                                </div>
+                                <button
+                                  onClick={() => toggle(s.id)}
+                                  aria-expanded={isExpanded}
+                                  className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
+                                  title={isExpanded ? "Collapse" : "Expand"}
+                                >
+                                  <MdOutlineKeyboardArrowDown
+                                    className={cn(
+                                      "h-4 w-4 transition-transform",
+                                      isExpanded && "rotate-180",
+                                    )}
+                                  />
+                                </button>
                               </header>
                               {s.summary && (
-                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground" title={s.summary}>
+                                <p
+                                  className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                  title={s.summary}
+                                >
                                   {s.summary}
                                 </p>
                               )}
@@ -107,6 +188,7 @@ export default function TimelineView({ sessions, className }: Props) {
                                   {formatRelative(s._ts)}
                                 </span>
                               </footer>
+                              {isExpanded && <ExpandedDetails session={s} />}
                             </article>
                           </div>
                           <div className="relative hidden items-center justify-center md:flex">
@@ -131,7 +213,12 @@ export default function TimelineView({ sessions, className }: Props) {
                             />
                           </div>
                           <div className="md:pl-6">
-                            <article className="relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md">
+                            <article
+                              className={cn(
+                                "relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md",
+                                isExpanded && "ring-1 ring-border/60",
+                              )}
+                            >
                               <div
                                 className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
                                 style={{ top: -14, bottom: -14 }}
@@ -151,12 +238,25 @@ export default function TimelineView({ sessions, className }: Props) {
                                     {s.tabsCount} tabs
                                   </span>
                                 )}
-                                <div className="ml-auto flex cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground">
-                                  <MdOutlineKeyboardArrowDown className="h-5 w-5 text-muted-foreground" />
-                                </div>
+                                <button
+                                  onClick={() => toggle(s.id)}
+                                  aria-expanded={isExpanded}
+                                  className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
+                                  title={isExpanded ? "Collapse" : "Expand"}
+                                >
+                                  <MdOutlineKeyboardArrowDown
+                                    className={cn(
+                                      "h-4 w-4 transition-transform",
+                                      isExpanded && "rotate-180",
+                                    )}
+                                  />
+                                </button>
                               </header>
                               {s.summary && (
-                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground" title={s.summary}>
+                                <p
+                                  className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                  title={s.summary}
+                                >
                                   {s.summary}
                                 </p>
                               )}
@@ -168,6 +268,7 @@ export default function TimelineView({ sessions, className }: Props) {
                                   {formatRelative(s._ts)}
                                 </span>
                               </footer>
+                              {isExpanded && <ExpandedDetails session={s} />}
                             </article>
                           </div>
                         </>
@@ -259,4 +360,111 @@ function toISO(ts: number) {
   } catch {
     return "";
   }
+}
+
+// Expanded details component replicating structure from other views
+function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
+  return (
+    <div className="mt-3 rounded-md border bg-background/60 p-3">
+      <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
+        <div>
+          <span className="opacity-70">Session ID:</span>{" "}
+          <span className="break-all text-foreground/90">{session.id}</span>
+        </div>
+        <div>
+          <span className="opacity-70">Created:</span>{" "}
+          <span>
+            {formatTime(session.createdAt as number)} •{" "}
+            {formatRelative(session.createdAt as number)}
+          </span>
+        </div>
+        <div>
+          <span className="opacity-70">Updated:</span>{" "}
+          <span>
+            {formatTime(session.updatedAt as number)} •{" "}
+            {formatRelative(session.updatedAt as number)}
+          </span>
+        </div>
+      </div>
+      <div className="mt-3 overflow-x-auto">
+        <table className="min-w-full text-left">
+          <thead className="text-[11px] text-muted-foreground">
+            <tr className="border-b">
+              <th className="py-1 pr-3 font-medium">Tab</th>
+              <th className="py-1 pr-3 font-medium">URL</th>
+              <th className="py-1 pr-3 font-medium">Closed</th>
+              <th className="py-1 pr-3 font-medium">Tab ID</th>
+            </tr>
+          </thead>
+          <tbody className="text-xs">
+            {(Array.isArray((session as any).tabs)
+              ? ((session as any).tabs as any[])
+              : []
+            ).map((t, i) => {
+              const fav = (t as any)?.favIconUrl as string | undefined;
+              const title = (t as any)?.title as string | undefined;
+              const url = (t as any)?.url as string | undefined;
+              const tabId = (t as any)?.id as number | string | undefined;
+              const closedAt = (t as any)?.closedAt as
+                | string
+                | number
+                | undefined;
+              const closedMs =
+                typeof closedAt === "string"
+                  ? Date.parse(closedAt)
+                  : typeof closedAt === "number"
+                    ? closedAt
+                    : undefined;
+              return (
+                <tr key={i} className="border-b last:border-b-0 align-top">
+                  <td className="py-2 pr-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      {fav ? (
+                        <img src={fav} alt="" className="h-4 w-4 rounded-sm" />
+                      ) : (
+                        <span className="inline-block h-4 w-4 rounded-sm bg-muted/60" />
+                      )}
+                      <span
+                        className="truncate text-foreground"
+                        title={title || "Untitled tab"}
+                      >
+                        {(title || "Untitled tab").slice(0, 50)}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="max-w-[20rem] py-2 pr-3">
+                    {url ? (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="truncate text-blue-600 hover:underline dark:text-blue-400"
+                        title={url}
+                      >
+                        {url.slice(0, 50)}
+                      </a>
+                    ) : (
+                      <span className="opacity-60">—</span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap py-2 pr-3 text-muted-foreground">
+                    {closedMs ? (
+                      <>
+                        {formatTime(closedMs)} • {formatRelative(closedMs)}
+                      </>
+                    ) : (
+                      <span className="opacity-60">—</span>
+                    )}
+                  </td>
+                  <td className="py-2 pr-3 text-muted-foreground">
+                    {tabId ?? <span className="opacity-60">—</span>}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
