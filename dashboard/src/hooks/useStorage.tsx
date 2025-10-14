@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSetAtom } from "jotai";
+import { sessionsAtom } from "@/atoms";
 
 type UseStorageReturn<T> = [
   T,
@@ -19,6 +21,7 @@ export function useStorage<T>({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown>(null);
   const valueJsonRef = useRef<string>(JSON.stringify(initialValue));
+  const setSessions = useSetAtom(sessionsAtom);
 
   const hasChrome = () => {
     const c = (globalThis as unknown as { chrome?: typeof chrome }).chrome;
@@ -31,6 +34,15 @@ export function useStorage<T>({
     if (nextJson !== valueJsonRef.current) {
       valueJsonRef.current = nextJson;
       setValue(next);
+      // If this storage key is for sessions, also push to jotai atom
+      if (key === "sessions") {
+        try {
+          // Type assertion: developer ensures generic used with Session[] when key === 'sessions'
+          setSessions(next as unknown as any);
+        } catch {
+          /* no-op */
+        }
+      }
     }
   };
 
@@ -108,6 +120,14 @@ export function useStorage<T>({
           // Also update local state immediately in fallback mode
           setIfChanged(newValue);
           
+        }
+        // After successful write, ensure atom sync as well
+        if (key === "sessions") {
+          try {
+            setSessions(newValue as unknown as any);
+          } catch {
+            /* ignore */
+          }
         }
       } catch (e) {
         setError(e);
