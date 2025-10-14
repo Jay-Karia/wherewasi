@@ -107,6 +107,7 @@ export function useStorage<T>({
           globalThis.localStorage?.setItem(key, JSON.stringify(newValue));
           // Also update local state immediately in fallback mode
           setIfChanged(newValue);
+          
         }
       } catch (e) {
         setError(e);

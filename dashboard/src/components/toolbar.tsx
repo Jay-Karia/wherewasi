@@ -3,13 +3,13 @@ import { useAtom } from "jotai";
 import { currentViewAtom } from "../../atoms";
 import { Button } from "./ui/button";
 import { CiImport } from "react-icons/ci";
-import { CiExport } from "react-icons/ci";
 import { CiFilter } from "react-icons/ci";
 import { Clock } from "lucide-react";
 import { FaSort } from "react-icons/fa";
 import { FaList } from "react-icons/fa";
 import { FaLayerGroup } from "react-icons/fa";
 import type { SessionViews } from "@/types";
+import Export from "./ui/export";
 
 export default function Toolbar() {
   const [currentView, setCurrentView] = useAtom(currentViewAtom);
@@ -21,9 +21,7 @@ export default function Toolbar() {
           <Button className="px-3 py-1" variant={"secondary"} size={"sm"}>
             <CiImport className="mr" /> Import
           </Button>
-          <Button className="px-3 py-1" size={"sm"} variant={"secondary"}>
-            <CiExport className="mr" /> Export
-          </Button>
+          <Export />
         </div>
       </div>
       <Tabs
