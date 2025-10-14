@@ -76,7 +76,7 @@ export default function SessionsView({ sessions, className }: Props) {
               </button>
             </header>
 
-            {s.summary && (
+            {expanded[s.id] && s.summary && (
               <p
                 className="mb-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground"
                 title={s.summary}
