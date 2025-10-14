@@ -20,7 +20,7 @@ export default function Main() {
   if (currentView === "sessions") {
     return (
       <div>
-        <SessionsView sessions={sessions} />
+        <SessionsView sessions={sessions} sortOption={sortOption} />
       </div>
     );
   }
@@ -28,7 +28,7 @@ export default function Main() {
   if (currentView === "timeline") {
     return (
       <div>
-        <TimelineView sessions={sessions} />
+        <TimelineView sessions={sessions} sortOption={sortOption} />
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function Main() {
   if (currentView === "list") {
     return (
       <div>
-        <ListView sessions={sessions} />
+        <ListView sessions={sessions} sortOption={sortOption} />
       </div>
     );
   }

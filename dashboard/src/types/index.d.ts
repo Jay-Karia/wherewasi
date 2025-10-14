@@ -10,4 +10,4 @@ export type Session = {
 
 export type SessionViews = "sessions" | "timeline" | "list";
 
-export type SortOption = "tabs-asc" | "tabs-desc" | "date-asc" | "date-desc";
+export type SortOption = "date-asc" | "date-desc";

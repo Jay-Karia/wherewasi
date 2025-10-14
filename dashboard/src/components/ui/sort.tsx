@@ -6,7 +6,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PiSortAscendingThin, PiSortDescendingThin } from "react-icons/pi";
@@ -25,10 +24,6 @@ export default function Sort({
 
   const label = useMemo(() => {
     switch (selected) {
-      case "tabs-asc":
-        return "Tabs ↑";
-      case "tabs-desc":
-        return "Tabs ↓";
       case "date-asc":
         return "Date ↑";
       case "date-desc":
@@ -62,15 +57,6 @@ export default function Sort({
           Sort by
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup value={selected} onValueChange={handleChange}>
-          <DropdownMenuRadioItem value="tabs-asc">
-            <PiSortDescendingThin className="mr-2" aria-hidden /> Tabs (fewest
-            first)
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="tabs-desc">
-            <PiSortAscendingThin className="mr-2" aria-hidden /> Tabs (most
-            first)
-          </DropdownMenuRadioItem>
-          <DropdownMenuSeparator />
           <DropdownMenuRadioItem value="date-asc">
             <PiSortDescendingThin className="mr-2" aria-hidden /> Date (oldest
             first)

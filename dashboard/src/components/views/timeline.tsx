@@ -5,7 +5,6 @@ import { useState } from "react";
 
 type Props = {
   sessions: Session[];
-  sortOption: SortOption;
   className?: string;
 };
 
@@ -23,7 +22,7 @@ export function tinyAccentForSeed(seed: string) {
   return `hsl(${hue}, ${sat}%, ${light}%)`;
 }
 
-export default function TimelineView({ sessions, sortOption, className }: Props) {
+export default function TimelineView({ sessions, className }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
   const normalized = (sessions || [])

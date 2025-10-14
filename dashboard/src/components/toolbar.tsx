@@ -4,7 +4,6 @@ import { currentViewAtom } from "../../atoms";
 import { Button } from "./ui/button";
 import { CiFilter } from "react-icons/ci";
 import { Clock } from "lucide-react";
-import { FaSort } from "react-icons/fa";
 import { FaList } from "react-icons/fa";
 import { FaLayerGroup } from "react-icons/fa";
 import type { SessionViews } from "@/types";

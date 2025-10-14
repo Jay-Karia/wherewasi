@@ -1,4 +1,4 @@
-import type { Session, SortOption } from "@/types";
+import type { Session } from "@/types";
 import { cn } from "@/lib/utils";
 import { tinyAccentForSeed } from "./timeline";
 import { IoMdExpand } from "react-icons/io";
