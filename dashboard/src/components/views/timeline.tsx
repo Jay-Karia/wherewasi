@@ -153,11 +153,9 @@ function DayHeader({ ts, count }: { ts: number; count: number }) {
     const label = formatDay(ts);
     return (
         <div className="relative mt-2 mb-2">
-            {/* horizontal lines */}
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
                 <div className="w-full border-t border-border/60" />
             </div>
-            {/* centered chip */}
             <div className="relative flex justify-center">
                 <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-border/60 shadow-sm">
                     {label}

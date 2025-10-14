@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 import { currentViewAtom } from "../../atoms";
 import SessionsView from "./views/sessions";
 import TimelineView from "./views/timeline";
+import ListView from "./views/list";
 
 export default function Main() {
     // const [sessions, , loading, error] = useStorage({
@@ -27,6 +28,14 @@ export default function Main() {
         return (
             <div>
                 <TimelineView sessions={sessions} />
+            </div>
+        )
+    }
+
+    if (currentView === "list") {
+        return (
+            <div>
+                <ListView sessions={sessions} />
             </div>
         )
     }

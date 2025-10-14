@@ -36,7 +36,7 @@ export default function Toolbar() {
                         <Clock className="mr-2" size={15} />
                         Timeline
                     </TabsTrigger>
-                    <TabsTrigger value="List" className="px-12">
+                    <TabsTrigger value="list" className="px-12">
                         <FaList className="mr-2" size={14} />
                         List
                     </TabsTrigger>
