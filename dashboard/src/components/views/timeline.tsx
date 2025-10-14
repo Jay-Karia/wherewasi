@@ -6,6 +6,20 @@ type Props = {
     className?: string;
 };
 
+export function tinyAccentForSeed(seed: string) {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) {
+        h = (h << 5) - h + seed.charCodeAt(i);
+        h |= 0;
+    }
+    const abs = Math.abs(h);
+    const huePalette = [170, 150, 200, 185];
+    const hue = huePalette[abs % huePalette.length];
+    const sat = 55 + ((abs >> 3) % 10); // 55..64
+    const light = 48 + ((abs >> 5) % 8); // 48..55
+    return `hsl(${hue}, ${sat}%, ${light}%)`;
+}
+
 export default function TimelineView({ sessions, className }: Props) {
     const normalized = (sessions || [])
         .map((s) => ({
@@ -51,7 +65,6 @@ export default function TimelineView({ sessions, className }: Props) {
                                                 <>
                                                     <div className="md:pr-6">
                                                         <article className="relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md">
-                                                            {/* small-screen left rail connector only */}
                                                             <div className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden" style={{ top: -14, bottom: -14 }} />
                                                             <header className="flex items-center justify-between gap-2">
                                                                 <div className="flex min-w-0 items-center gap-2">
@@ -191,18 +204,4 @@ function toISO(ts: number) {
     } catch {
         return "";
     }
-}
-
-function tinyAccentForSeed(seed: string) {
-    let h = 0;
-    for (let i = 0; i < seed.length; i++) {
-        h = (h << 5) - h + seed.charCodeAt(i);
-        h |= 0;
-    }
-    const abs = Math.abs(h);
-    const huePalette = [170, 150, 200, 185];
-    const hue = huePalette[abs % huePalette.length];
-    const sat = 55 + ((abs >> 3) % 10); // 55..64
-    const light = 48 + ((abs >> 5) % 8); // 48..55
-    return `hsl(${hue}, ${sat}%, ${light}%)`;
 }

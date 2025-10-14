@@ -1,6 +1,7 @@
 import type { Session } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { tinyAccentForSeed } from "./timeline";
 
 type Props = {
     sessions: Session[];
@@ -38,6 +39,7 @@ export default function SessionsView({ sessions, className }: Props) {
             {sessions.map((s, idx) => {
                 const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
                 const { gradient, fg } = randomGreenGradientForSeed(s.id);
+                const accent = tinyAccentForSeed(s.id);
                 prevIdx = pick;
                 return (
                     <article
@@ -48,6 +50,7 @@ export default function SessionsView({ sessions, className }: Props) {
                         )}
                     >
                         <header className="mb-2 flex items-center justify-between gap-3">
+                            <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
                             <h3 className="line-clamp-1 text-base font-semibold text-foreground">
                                 {s.title || "Untitled session"}
                             </h3>
@@ -153,4 +156,3 @@ function randomGreenGradientForSeed(seed: string): { gradient: string; fg: strin
 
     return { gradient, fg };
 }
-
