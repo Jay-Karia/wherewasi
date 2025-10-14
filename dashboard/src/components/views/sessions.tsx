@@ -60,7 +60,7 @@ export default function SessionsView({ sessions, className }: Props) {
                 className="h-2 w-2 shrink-0 rounded-full"
                 style={{ backgroundColor: accent }}
               />
-              <h3 className="line-clamp-1 text-base font-semibold text-foreground">
+              <h3 className="line-clamp-1 text-base font-semibold text-foreground" title={s.title || "Untitled session"}>
                 {s.title || "Untitled session"}
               </h3>
               {typeof s.tabsCount === "number" && (
@@ -74,7 +74,7 @@ export default function SessionsView({ sessions, className }: Props) {
             </header>
 
             {s.summary && (
-              <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+              <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground" title={s.summary}>
                 {s.summary}
               </p>
             )}
