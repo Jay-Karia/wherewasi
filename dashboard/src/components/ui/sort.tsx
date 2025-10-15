@@ -9,8 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PiSortAscendingThin, PiSortDescendingThin } from "react-icons/pi";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { SortOption } from "@/types";
+import { useAtom } from "jotai";
+import { sortOptionAtom } from "../../../atoms";
 
 export default function Sort({
   value,
@@ -19,8 +21,8 @@ export default function Sort({
   value?: SortOption;
   onChange?: (v: SortOption) => void;
 }) {
-  const [internal, setInternal] = useState<SortOption>(value ?? "date-desc");
-  const selected = value ?? internal;
+  const [sortOption, setSortOption] = useAtom(sortOptionAtom);
+  const selected = value ?? sortOption;
 
   const label = useMemo(() => {
     switch (selected) {
@@ -35,7 +37,7 @@ export default function Sort({
   const handleChange = (v: string) => {
     const next = v as SortOption;
     if (onChange) onChange(next);
-    else setInternal(next);
+    else setSortOption(next);
   };
 
   return (

@@ -26,6 +26,20 @@ export default function SessionsView({
     "w-full sm:w-[30rem] lg:w-[42rem]",
   ] as const;
 
+  const sortedSessions = useMemo(() => {
+    if (!sortOption || sortOption === "date-desc") {
+      return [...sessions].sort(
+        (a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt),
+      );
+    }
+    if (sortOption === "date-asc") {
+      return [...sessions].sort(
+        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? b.createdAt),
+      );
+    }
+    return sessions;
+  }, [sessions, sortOption]);
+
   let prevIdx = -1;
   return (
     <div
@@ -34,7 +48,7 @@ export default function SessionsView({
         className,
       )}
     >
-      {sessions.map((s, idx) => {
+      {sortedSessions.map((s, idx) => {
         const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
         const accent = tinyAccentForSeed(s.id);
         const isExpanded = !!expanded[s.id];
