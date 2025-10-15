@@ -1,8 +1,10 @@
 import type { Session, SortOption } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn, filterSessions } from "@/lib/utils";
 import { tinyAccentForSeed } from "./timeline";
 import { IoMdExpand } from "react-icons/io";
 import { useState, useMemo } from "react";
+import { useAtomValue } from "jotai";
+import { filtersAtom } from "../../../atoms";
 
 export default function ListView({
   sessions,
@@ -11,6 +13,8 @@ export default function ListView({
   sessions: Session[];
   sortOption: SortOption;
 }) {
+  const filters = useAtomValue(filtersAtom);
+  
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
@@ -30,7 +34,11 @@ export default function ListView({
     }
   }, [sessions, sortOption]);
 
-  const normalized = (sortedSessions || [])
+  const filteredSessions = useMemo(() => {
+    return filterSessions(sortedSessions, filters);
+  }, [sortedSessions, filters]);
+
+  const normalized = (filteredSessions || [])
     .map((s) => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
