@@ -1,4 +1,4 @@
-import type { Session, SessionViews, SortOption } from "@/types";
+import type { FilterOption, Session, SessionViews, SortOption } from "@/types";
 import { atomWithStorage } from "jotai/utils";
 
 export const currentViewAtom = atomWithStorage<SessionViews>(
@@ -10,3 +10,7 @@ export const sortOptionAtom = atomWithStorage<SortOption>(
   "sortOption",
   "date-desc",
 );
+export const filtersAtom = atomWithStorage<FilterOption>("filters", {
+  dateRange: "all",
+  tabCount: "all",
+});

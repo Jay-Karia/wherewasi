@@ -9,15 +9,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { IoCalendarOutline } from "react-icons/io5";
-import { MdTitle } from "react-icons/md";
+import { TiTabsOutline } from "react-icons/ti";
+import { useAtom } from "jotai";
+import { filtersAtom } from "../../../atoms";
 
 export default function Filter() {
     const [isOpen, setIsOpen] = useState(false);
-    const [dateRange, setDateRange] = useState<string>("all");
-    const [tabCount, setTabCount] = useState<string>("all");
-    const [hasTitle, setHasTitle] = useState<boolean | null>(null);
+    const [filters, setFilters] = useAtom(filtersAtom);
 
-    const hasActiveFilters = dateRange !== "all" || tabCount !== "all" || hasTitle !== null;
+    const hasActiveFilters = filters.dateRange !== "all" || filters.tabCount !== "all";
 
     return (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -48,8 +48,8 @@ export default function Filter() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <button
-                            onClick={() => setDateRange("all")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${dateRange === "all"
+                            onClick={() => setFilters({ ...filters, dateRange: "all" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.dateRange === "all"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -57,8 +57,8 @@ export default function Filter() {
                             All time
                         </button>
                         <button
-                            onClick={() => setDateRange("today")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${dateRange === "today"
+                            onClick={() => setFilters({ ...filters, dateRange: "today" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.dateRange === "today"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -66,8 +66,8 @@ export default function Filter() {
                             Today
                         </button>
                         <button
-                            onClick={() => setDateRange("week")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${dateRange === "week"
+                            onClick={() => setFilters({ ...filters, dateRange: "week" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.dateRange === "week"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -75,8 +75,8 @@ export default function Filter() {
                             This week
                         </button>
                         <button
-                            onClick={() => setDateRange("month")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${dateRange === "month"
+                            onClick={() => setFilters({ ...filters, dateRange: "month" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.dateRange === "month"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -91,13 +91,13 @@ export default function Filter() {
                 {/* Tab Count Filter */}
                 <div className="my-4">
                     <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                        {/* <IoTabsOutline className="text-muted-foreground" /> */}
+                        <TiTabsOutline className="text-muted-foreground" />
                         <span>Tab Count</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <button
-                            onClick={() => setTabCount("all")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${tabCount === "all"
+                            onClick={() => setFilters({ ...filters, tabCount: "all" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.tabCount === "all"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -105,8 +105,8 @@ export default function Filter() {
                             All
                         </button>
                         <button
-                            onClick={() => setTabCount("few")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${tabCount === "few"
+                            onClick={() => setFilters({ ...filters, tabCount: "few" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.tabCount === "few"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -114,8 +114,8 @@ export default function Filter() {
                             {"< 5 tabs"}
                         </button>
                         <button
-                            onClick={() => setTabCount("moderate")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${tabCount === "moderate"
+                            onClick={() => setFilters({ ...filters, tabCount: "moderate" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.tabCount === "moderate"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -123,8 +123,8 @@ export default function Filter() {
                             5-20 tabs
                         </button>
                         <button
-                            onClick={() => setTabCount("many")}
-                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${tabCount === "many"
+                            onClick={() => setFilters({ ...filters, tabCount: "many" })}
+                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${filters.tabCount === "many"
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "bg-background hover:bg-accent border-border"
                                 }`}
@@ -140,9 +140,8 @@ export default function Filter() {
                 {hasActiveFilters && (
                     <button
                         onClick={() => {
-                            setDateRange("all");
-                            setTabCount("all");
-                            setHasTitle(null);
+                            setFilters({ dateRange: "all", tabCount: "all" });
+                            setIsOpen(false);
                         }}
                         className="w-full px-3 py-1.5 text-xs rounded-md bg-accent hover:bg-accent/80 text-accent-foreground transition-colors"
                     >

@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useMemo, useState } from "react";
 import { tinyAccentForSeed } from "./timeline";
+import { useAtomValue } from "jotai";
+import { filtersAtom } from "../../../atoms";
 
 type Props = {
   sessions: Session[];
@@ -17,6 +19,7 @@ export default function SessionsView({
 }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
+  const filters = useAtomValue(filtersAtom);
 
   const variants = [
     "w-full sm:w-[14rem] lg:w-[18rem]",
@@ -40,6 +43,37 @@ export default function SessionsView({
     return sessions;
   }, [sessions, sortOption]);
 
+  const filteredSessions = useMemo(() => {
+    return sortedSessions.filter((s) => {
+      // Filter by date range
+      const now = Date.now();
+      let inDateRange = true;
+      if (filters.dateRange === "today") {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        inDateRange = (s.updatedAt ?? s.createdAt) >= startOfDay.getTime();
+      } else if (filters.dateRange === "week") {
+        const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+        inDateRange = (s.updatedAt ?? s.createdAt) >= weekAgo;
+      } else if (filters.dateRange === "month") {
+        const monthAgo = now - 30 * 24 * 60 * 60 * 1000;
+        inDateRange = (s.updatedAt ?? s.createdAt) >= monthAgo;
+      }
+
+      // Filter by tab count
+      let inTabCount = true;
+      if (filters.tabCount === "few") {
+        inTabCount = s.tabsCount <= 5;
+      } else if (filters.tabCount === "moderate") {
+        inTabCount = s.tabsCount > 5 && s.tabsCount <= 20;
+      } else if (filters.tabCount === "many") {
+        inTabCount = s.tabsCount > 20;
+      }
+
+      return inDateRange && inTabCount;
+    });
+  }, [sortedSessions, filters]);
+
   let prevIdx = -1;
   return (
     <div
@@ -48,7 +82,7 @@ export default function SessionsView({
         className,
       )}
     >
-      {sortedSessions.map((s, idx) => {
+      {filteredSessions.map((s, idx) => {
         const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
         const accent = tinyAccentForSeed(s.id);
         const isExpanded = !!expanded[s.id];

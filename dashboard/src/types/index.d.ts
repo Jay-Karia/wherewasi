@@ -11,3 +11,11 @@ export type Session = {
 export type SessionViews = "sessions" | "timeline" | "list";
 
 export type SortOption = "date-asc" | "date-desc";
+
+export type FilterDateRange = "all" | "today" | "week" | "month";
+export type FilterTabCount = "all" | "few" | "moderate" | "many";
+
+export type FilterOption = {
+  dateRange: FilterDateRange;
+  tabCount: FilterTabCount;
+};
