@@ -1,4 +1,4 @@
-import type { Session } from "@/types";
+import type { FilterDateRange, FilterOption, FilterTabCount, Session } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -73,4 +73,37 @@ export function writeSessionsToDummyFile(sessions: Session[]) {
   const fs = require("fs");
   const dataStr = JSON.stringify(sessions, null, 2);
   fs.writeFileSync(filePath, dataStr, "utf8");
+}
+
+export function filterSessions(
+  sessions: Session[],
+  filters: FilterOption,
+): Session[] {
+  const now = Date.now();
+  return sessions.filter((s) => {
+    // Filter dates
+    let dateMatch = true;
+    if (filters.dateRange === "today") {
+      const oneDayAgo = now - 24 * 60 * 60 * 1000;
+      dateMatch = (s.updatedAt || s.createdAt || 0) >= oneDayAgo;
+    } else if (filters.dateRange === "week") {
+      const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+      dateMatch = (s.updatedAt || s.createdAt || 0) >= oneWeekAgo;
+    } else if (filters.dateRange === "month") {
+      const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;
+      dateMatch = (s.updatedAt || s.createdAt || 0) >= oneMonthAgo;
+    }
+
+    // Filter tab counts
+    let tabCountMatch = true;
+    if (filters.tabCount === "few") {
+      tabCountMatch = (s.tabsCount || 0) <= 5;
+    } else if (filters.tabCount === "moderate") {
+      tabCountMatch = (s.tabsCount || 0) > 5 && (s.tabsCount || 0) <= 15;
+    } else if (filters.tabCount === "many") {
+      tabCountMatch = (s.tabsCount || 0) > 15;
+    }
+
+    return dateMatch && tabCountMatch;
+  });
 }

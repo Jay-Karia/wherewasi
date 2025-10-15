@@ -1,7 +1,9 @@
 import type { Session, SortOption } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn, filterSessions } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useMemo, useState } from "react";
+import { useAtomValue } from "jotai";
+import { filtersAtom } from "../../../atoms";
 
 type Props = {
   sessions: Session[];
@@ -30,6 +32,7 @@ export default function TimelineView({
 }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
+  const filters = useAtomValue(filtersAtom);
 
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
@@ -50,7 +53,11 @@ export default function TimelineView({
     }
   }, [sessions, sortOption]);
 
-  const normalized = (sortedSessions || [])
+  const filteredSessions = useMemo(() => {
+    return filterSessions(sortedSessions, filters);
+  }, [sortedSessions, filters]);
+
+  const normalized = (filteredSessions || [])
     .map((s) => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
