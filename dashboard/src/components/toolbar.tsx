@@ -1,8 +1,6 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAtom } from "jotai";
 import { currentViewAtom } from "../../atoms";
-import { Button } from "./ui/button";
-import { CiFilter } from "react-icons/ci";
 import { Clock } from "lucide-react";
 import { FaList } from "react-icons/fa";
 import { FaLayerGroup } from "react-icons/fa";
@@ -10,6 +8,7 @@ import type { SessionViews } from "@/types";
 import Export from "./ui/export";
 import Import from "./ui/import";
 import Sort from "./ui/sort";
+import Filter from "./ui/filter";
 
 export default function Toolbar() {
   const [currentView, setCurrentView] = useAtom(currentViewAtom);
@@ -46,9 +45,7 @@ export default function Toolbar() {
       <div>
         <div className="flex items-center gap-2 ml-4">
           <Sort />
-          <Button className="px-3 py-1" variant={"secondary"} size={"sm"}>
-            <CiFilter className="mr" /> Filter
-          </Button>
+          <Filter />
         </div>
       </div>
     </div>
