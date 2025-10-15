@@ -18,21 +18,6 @@ export default function SessionsView({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
 
-  const sorted = useMemo(() => {
-    const effectiveSort = sortOption ?? "date-desc";
-    const getDate = (s: Session) => s.updatedAt ?? s.createdAt ?? 0;
-
-    return [...sessions].sort((a, b) => {
-      switch (effectiveSort) {
-        case "date-asc":
-          return getDate(a) - getDate(b);
-        case "date-desc":
-        default:
-          return getDate(b) - getDate(a);
-      }
-    });
-  }, [sessions, sortOption]);
-
   const variants = [
     "w-full sm:w-[14rem] lg:w-[18rem]",
     "w-full sm:w-[18rem] lg:w-[24rem]",
@@ -49,7 +34,7 @@ export default function SessionsView({
         className,
       )}
     >
-      {sorted.map((s, idx) => {
+      {sessions.map((s, idx) => {
         const pick = pickWidthVariant(s.id, idx, prevIdx, variants.length);
         const accent = tinyAccentForSeed(s.id);
         const isExpanded = !!expanded[s.id];

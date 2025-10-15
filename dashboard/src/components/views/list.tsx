@@ -60,10 +60,14 @@ export default function ListView({
                           </h4>
                         </div>
                         <p
-                          className="min-w-0 text-xs text-muted-foreground sm:line-clamp-2"
+                          className="min-w-0 text-xs text-muted-foreground"
                           title={s.summary}
                         >
-                          {s.summary}
+                          {expanded[s.id] ? s.summary : (
+                            s.summary && s.summary.length > 150
+                              ? s.summary.substring(0, 150) + "..."
+                              : s.summary || "No summary"
+                          )}
                         </p>
                         <div className="flex items-center justify-between sm:justify-end sm:whitespace-nowrap">
                           {typeof s.tabsCount === "number" && (
@@ -191,8 +195,8 @@ export default function ListView({
                                               {(title || "Untitled tab")
                                                 .length > 50
                                                 ? (
-                                                    title || "Untitled tab"
-                                                  ).substring(0, 50) + "..."
+                                                  title || "Untitled tab"
+                                                ).substring(0, 50) + "..."
                                                 : title || "Untitled tab"}
                                             </span>
                                           </div>
