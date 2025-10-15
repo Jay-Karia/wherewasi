@@ -1,7 +1,7 @@
 import type { Session, SortOption } from "@/types";
 import { cn } from "@/lib/utils";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type Props = {
   sessions: Session[];
@@ -30,16 +30,40 @@ export default function TimelineView({
 }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
-  const normalized = (sessions || [])
+
+  const sortedSessions = useMemo(() => {
+    const list = [...sessions];
+    switch (sortOption) {
+      case "date-asc":
+        return list.sort((a, b) => {
+          const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
+          const tb = (b.updatedAt ?? b.createdAt ?? 0) as number;
+          return ta - tb;
+        });
+      case "date-desc":
+      default:
+        return list.sort((a, b) => {
+          const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
+          const tb = (b.updatedAt ?? b.createdAt ?? 0) as number;
+          return tb - ta;
+        });
+    }
+  }, [sessions, sortOption]);
+
+  const normalized = (sortedSessions || [])
     .map((s) => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
     }))
-    .filter((s) => Number.isFinite(s._ts) && s._ts > 0)
-    .sort((a, b) => b._ts - a._ts);
+    .filter((s) => Number.isFinite(s._ts) && s._ts > 0);
 
   const groups = groupByDay(normalized);
-  const dayKeys = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
+  const dayKeys = Object.keys(groups).sort((a, b) => {
+    if (sortOption === "date-asc") {
+      return Number(a) - Number(b);
+    }
+    return Number(b) - Number(a);
+  });
 
   return (
     <div
