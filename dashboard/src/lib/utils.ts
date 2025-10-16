@@ -1,4 +1,4 @@
-import type { FilterDateRange, FilterOption, FilterTabCount, Session } from "@/types";
+import type { FilterOption, Session } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -60,7 +60,7 @@ export function normalizeImportedSessions(json: unknown): Session[] {
   return sessions;
 }
 
-// NOTE: Only temporily used in dev environment to write to ../dummy/data.json
+// NOTE: Only temporarily used in dev environment to write to ../dummy/data.json
 export function writeSessionsToDummyFile(sessions: Session[]) {
   // This function is only available in Node.js environment
   if (typeof window !== "undefined") {
