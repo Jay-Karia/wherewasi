@@ -30,12 +30,12 @@ export default function AppBar() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" disabled>
                 <IoSettingsOutline size={20} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Comming Soon!</p>
+              <p>Coming Soon!</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
