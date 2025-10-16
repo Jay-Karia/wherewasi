@@ -67,7 +67,7 @@ export default function SessionsView({
           <article
             key={s.id}
             className={cn(
-              "group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-4 px-8 shadow-sm transition hover:shadow-md",
+              "group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-3 px-7 shadow-sm transition hover:shadow-md",
               widthClass,
             )}
           >
