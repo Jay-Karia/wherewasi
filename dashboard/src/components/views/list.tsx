@@ -14,7 +14,7 @@ export default function ListView({
   sortOption: SortOption;
 }) {
   const filters = useAtomValue(filtersAtom);
-  
+
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
@@ -91,7 +91,9 @@ export default function ListView({
                           </h4>
                         </div>
                         <p
-                          className="min-w-0 text-xs text-muted-foreground"
+                          className={cn("min-w-0 text-xs text-muted-foreground", {
+                            "pb-4": expanded[s.id],
+                          })}
                           title={s.summary}
                         >
                           {expanded[s.id] ? s.summary : (
