@@ -51,7 +51,7 @@ export default function Sort({
         >
           <FaSort className="mr-1" aria-hidden />
           <span className="sr-only sm:not-sr-only">Sort:</span>
-          <span className="hidden sm:inline text-neutral-200">{label}</span>
+          <span className="hidden sm:inline">{label}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-52">
