@@ -41,17 +41,17 @@ export const AIService = {
     console.log('Existing sessions found, searching for a suitable one.');
     const foundSession = null;
 
-    // const response = await ai.models.generateContent({
-    //   model: 'gemini-2.5-flash',
-    //   contents: [
-    //     {
-    //       type: 'text',
-    //       text: `Find a suitable session to add the following closed tab:\nTitle: ${tab.title}\nURL: ${tab.url}\nDescription: ${tab.description || 'N/A'}`,
-    //     },
-    //   ]
-    // })
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        {
+          type: 'text',
+          text: `Find a suitable session to add the following closed tab:\nTitle: ${tab.title}\nURL: ${tab.url}\nDescription: ${tab.description || 'N/A'}`,
+        },
+      ]
+    })
 
-    // console.log(response.text);
+    console.log(response.text);
 
     // If not appropriate session found, create a new one
     if (!foundSession) {
