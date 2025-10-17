@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 export interface InputProps extends React.ComponentProps<'input'> {
   icon?: React.ReactNode;
   shortcut?: string;
-  showClear: boolean;
-  setQuery: (query: string) => void;
+  showClear?: boolean;
+  setQuery?: (query: string) => void;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -29,9 +29,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
           {shortcut}
         </div>
-        {showClear && (
+        {showClear && setQuery && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-            {<RxCross2 className="hover:pointer" onClick={() => {
+            {<RxCross2 className="hover:pointer" size={19} onClick={() => {
               setQuery('');
             }}/>}
           </div>

@@ -355,7 +355,7 @@ function formatDay(ts: number) {
   });
 }
 
-function formatTime(ts: number) {
+export function formatTime(ts: number) {
   const d = new Date(ts);
   return d.toLocaleTimeString(undefined, {
     hour: "2-digit",
@@ -363,7 +363,7 @@ function formatTime(ts: number) {
   });
 }
 
-function formatRelative(ts: number) {
+export function formatRelative(ts: number) {
   const d = new Date(ts);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
