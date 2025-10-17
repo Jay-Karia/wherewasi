@@ -37,7 +37,6 @@ export const AIService = {
       return session;
     }
 
-    // TODO: Search for a session to add the closed tab
     console.log('Existing sessions found, searching for a suitable one.');
     const foundSession = null;
 

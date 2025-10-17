@@ -5,6 +5,9 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import replace from '@rollup/plugin-replace';
 import inject from '@rollup/plugin-inject';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 export default {
   input: 'background/worker.js',
   output: {
@@ -15,9 +18,7 @@ export default {
   plugins: [
     replace({
       preventAssignment: true,
-      'process.env.GOOGLE_GENAI_API_KEY': JSON.stringify(
-        process.env.GOOGLE_GENAI_API_KEY || ''
-      ),
+      'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || '')
     }),
 
     inject({ process: 'process/browser' }),
