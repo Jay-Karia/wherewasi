@@ -14,3 +14,4 @@ export const filtersAtom = atomWithStorage<FilterOption>("filters", {
   dateRange: "all",
   tabCount: "all",
 });
+export const queryAtom = atomWithStorage<string>("query", "");

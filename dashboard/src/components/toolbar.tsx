@@ -1,6 +1,6 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAtom } from "jotai";
-import { currentViewAtom } from "../../atoms";
+import { useAtom, useAtomValue } from "jotai";
+import { currentViewAtom, queryAtom } from "../../atoms";
 import { Clock } from "lucide-react";
 import { FaList } from "react-icons/fa";
 import { FaLayerGroup } from "react-icons/fa";
@@ -12,6 +12,10 @@ import Filter from "./ui/filter";
 
 export default function Toolbar() {
   const [currentView, setCurrentView] = useAtom(currentViewAtom);
+  const query = useAtomValue(queryAtom);
+
+  if (query)
+    return null;
 
   return (
     <div className="flex items-center justify-center">
