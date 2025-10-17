@@ -377,7 +377,7 @@ export function formatRelative(ts: number) {
   return d.toLocaleDateString();
 }
 
-function toISO(ts: number) {
+export function toISO(ts: number) {
   try {
     return new Date(ts).toISOString();
   } catch {
