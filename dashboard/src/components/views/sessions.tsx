@@ -115,9 +115,6 @@ export default function SessionsView({
               <time dateTime={toDateTimeAttr(s.updatedAt ?? s.createdAt)}>
                 {formatRelativeDate(s.updatedAt ?? s.createdAt)}
               </time>
-              <div className="opacity-70">
-                {Array.isArray(s.tabs) ? `${s.tabs.length} items` : null}
-              </div>
             </footer>
 
             {/* Expanded details */}
