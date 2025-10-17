@@ -101,9 +101,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 
     // Group the closed tab into a session
     try {
-      const session = await AIService.groupClosedTab(tabRecord);
-      if (session)
-        console.log('AI grouped closed tabs into session:', session.id);
+      await AIService.groupClosedTab(tabRecord);
     } catch (aiErr) {
       console.error('AI grouping error:', aiErr);
     }

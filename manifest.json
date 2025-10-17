@@ -16,13 +16,13 @@
     {
       "resources": [
         "dashboard/dist/assets/*",
-        "dasboard/dist/*",
+        "dashboard/dist/*",
         "dashboard/index.html"
       ],
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["tabs", "storage", "windows"],
+  "permissions": ["tabs", "storage", "windows", "notifications"],
   "host_permissions": ["<all_urls>"],
   "commands": {
     "open-dashboard": {

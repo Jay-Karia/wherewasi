@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/Jay-Karia/wherewasi/issues"
   },
-  "homepage": "https://github.com/Jay-Karia/wherewasi#readme"
+  "homepage": "https://github.com/Jay-Karia/wherewasi#readme",
+  "dependencies": {
+    "@google/genai": "^1.25.0"
+  }
 }
