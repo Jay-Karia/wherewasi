@@ -13,7 +13,7 @@ import { Label } from "./label";
 import { useRef, useState } from "react";
 import {
   normalizeImportedSessions,
-  writeSessionsToDummyFile,
+  writeSessionsToStorage,
 } from "@/lib/utils";
 
 export default function Import() {
@@ -48,7 +48,7 @@ export default function Import() {
         throw new Error("File is not valid JSON");
       }
       const sessions = normalizeImportedSessions(json);
-      writeSessionsToDummyFile(sessions);
+      await writeSessionsToStorage(sessions);
       setStatus({ state: "success", count: sessions.length });
     } catch (e) {
       setStatus({ state: "error", message: (e as Error).message });
