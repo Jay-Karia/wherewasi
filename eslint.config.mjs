@@ -11,6 +11,7 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
     rules: {
       'no-undef': 'off',
+      "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     },
   },
 ]);

@@ -5,14 +5,21 @@
   "main": "index.js",
   "devDependencies": {
     "@eslint/js": "^9.37.0",
+    "@rollup/plugin-commonjs": "^28.0.8",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
-    "prettier": "3.6.2"
+    "prettier": "3.6.2",
+    "rollup-plugin-node-polyfills": "^0.2.1"
   },
   "scripts": {
     "lint": "eslint . --ext .js --fix",
     "lint:fix": "eslint . --ext .js --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build:worker": "rollup --config",
+    "build": "bash scripts/build.sh",
+    "build:win": "powershell -File scripts/build.ps1"
   },
   "repository": {
     "type": "git",

@@ -45,9 +45,13 @@ copy_dir() { # $1 = dir name
     fi
 }
 
-for d in assets background popup utils types; do
+for d in assets popup utils types; do
     copy_dir "$d"
 done
+
+# Bundle the background service worker using Rollup
+echo "-- Bundling background worker --"
+npm run build:worker >/dev/null
 
 if [[ ! -d dashboard/dist ]]; then
     echo "dashboard/dist missing after build" >&2; exit 1; fi
