@@ -90,16 +90,14 @@ export const StorageService = {
       const sessions = await this.getAllSessions();
       const session = sessions.find(s => s.id === sessionId);
 
-      if (!session) {
+      if (!session)
         throw new Error('Session not found');
-      }
 
       return session;
     } catch (error) {
       console.error('Error retrieving session:', error);
-      throw error;
     }
-  }
+  },
 
   /*
     Deletes a session by its ID from Chrome's local storage.
