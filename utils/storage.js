@@ -83,6 +83,25 @@ export const StorageService = {
   },
 
   /*
+    Retrieves a specific session from the given session id
+  */
+  async getSession(sessionId) {
+    try {
+      const sessions = await this.getAllSessions();
+      const session = sessions.find(s => s.id === sessionId);
+
+      if (!session) {
+        throw new Error('Session not found');
+      }
+
+      return session;
+    } catch (error) {
+      console.error('Error retrieving session:', error);
+      throw error;
+    }
+  }
+
+  /*
     Deletes a session by its ID from Chrome's local storage.
     @param {string} sessionId - The ID of the session to delete.
     @returns {Promise<boolean>} - Resolves to true if deletion was successful.

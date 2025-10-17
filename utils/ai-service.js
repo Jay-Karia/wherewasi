@@ -2,10 +2,9 @@
   Chrome's built-in AI services
 */
 
-import ai from '../ai/gemini.js';
-
 //======================IMPORTS================================//
 
+import { searchSessions } from '../helpers/grouping.js';
 import { StorageService } from './storage.js';
 
 //=============================================================//
@@ -37,20 +36,17 @@ export const AIService = {
       return session;
     }
 
-    console.log('Existing sessions found, searching for a suitable one.');
-    const foundSession = null;
+    console.log('Existing sessions found, searching for a suitable one...');
+    let foundSession = null;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        {
-          type: 'text',
-          text: `Find a suitable session to add the following closed tab:\nTitle: ${tab.title}\nURL: ${tab.url}\nDescription: ${tab.description || 'N/A'}`,
-        },
-      ]
-    })
-
-    console.log(response.text);
+    try {
+      foundSession = await searchSessions(tab);
+    } catch (error) {
+      console.error(
+        'Unexpected error occurred while searching for a suitable session.',
+        error
+      );
+    }
 
     // If not appropriate session found, create a new one
     if (!foundSession) {
