@@ -2,6 +2,8 @@
   Storage service class to manage saving and retrieving sessions and closed tabs.
 */
 
+import { generateTitle } from '../helpers/title.js';
+
 //======================CONSTANTS==============================//
 
 const MAX_SESSIONS = 200;
@@ -63,6 +65,29 @@ export const StorageService = {
   },
 
   /*
+    Creates and returns an empty session object.
+    @returns {Promise<import('../types/index.js').Session>} - Resolves to a new empty session object.
+  */
+  async createEmptySession(tab) {
+    try {
+      const emptySessionTitle = await generateTitle(tab);
+      const session = await StorageService.saveSession({
+        id: new Date().toISOString(),
+        tabsCount: 1,
+        title: emptySessionTitle,
+        summary: '', // generate from AI
+        tabs: [tab],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      return session;
+    } catch (error) {
+      console.error('Error creating empty session:', error);
+      throw error;
+    }
+  },
+
+  /*
     Retrieves all saved sessions from Chrome's local storage.
     @returns {Promise<Array>} - Resolves to an array of session objects.
   */
@@ -90,8 +115,7 @@ export const StorageService = {
       const sessions = await this.getAllSessions();
       const session = sessions.find(s => s.id === sessionId);
 
-      if (!session)
-        throw new Error('Session not found');
+      if (!session) throw new Error('Session not found');
 
       return session;
     } catch (error) {

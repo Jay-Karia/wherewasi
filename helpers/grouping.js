@@ -1,5 +1,6 @@
 import ai from '../ai/gemini.js';
 import { prompts } from '../ai/prompts.js';
+import {GEMINI_AI_MODEL} from '../constants.js';
 import { StorageService } from '../utils/storage.js';
 
 export async function searchSessions(tab) {
@@ -14,7 +15,7 @@ export async function searchSessions(tab) {
   const prompt = `${prompts.searchSessions} ${promptValues}`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: GEMINI_AI_MODEL,
     contents: [
       {
         type: 'text',

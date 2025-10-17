@@ -21,16 +21,7 @@ export const AIService = {
 
     // Create a new empty session if none exist
     if (sessionsCount === 0) {
-      const session = await StorageService.saveSession({
-        id: new Date().toISOString(),
-        tabsCount: 1,
-        title: '', // generate from AI
-        summary: '', // generate from AI
-        tabs: [tab],
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
-
+      const session = await StorageService.createEmptySession(tab);
       console.log('No existing sessions found, created a new empty session.');
 
       return session;
@@ -50,16 +41,7 @@ export const AIService = {
 
     // If not appropriate session found, create a new one
     if (!foundSession) {
-      const session = await StorageService.saveSession({
-        id: new Date().toISOString(),
-        tabsCount: 1,
-        title: '', // generate from AI
-        summary: '', // generate from AI
-        tabs: [tab],
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
-
+      const session = await StorageService.createEmptySession(tab);
       console.log('No suitable session found, created a new one.');
 
       return session;
