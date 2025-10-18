@@ -16,7 +16,7 @@ function highlightText(text: string, query: string) {
   const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return parts.map((part, i) =>
     part.toLowerCase() === query.toLowerCase() ? (
-      <mark key={i} className="bg-yellow-200 dark:bg-yellow-900/50">
+      <mark key={i} className="bg-yellow-200 dark:bg-yellow-500">
         {part}
       </mark>
     ) : (
