@@ -1,10 +1,11 @@
 import { CiSearch } from 'react-icons/ci';
 import { Input } from './input';
-import { useAtom } from 'jotai';
-import { queryAtom } from '../../../atoms';
+import { useAtom, useSetAtom } from 'jotai';
+import { queryAtom, searchFocusAtom } from '../../../atoms';
 
 export default function Search() {
   const [query, setQuery] = useAtom(queryAtom);
+  const setSearchFocus = useSetAtom(searchFocusAtom);
 
   const searchInput = document.getElementById('search-input');
   document.onkeydown = e => {
@@ -16,7 +17,7 @@ export default function Search() {
   const shortcut = query ? '' : 'Shift+Alt+K';
 
   return (
-    <div className="flex-1 flex justify-center w-150">
+    <div className="flex-1 flex justify-center w-full">
       <div className="w-full max-w-3xl">
         <Input
           type="text"
@@ -28,6 +29,8 @@ export default function Search() {
           id="search-input"
           showClear={!!query}
           setQuery={setQuery}
+          onFocus={() => setSearchFocus(true)}
+          onBlur={() => setSearchFocus(false)}
         />
       </div>
     </div>

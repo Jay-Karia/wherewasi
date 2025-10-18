@@ -15,3 +15,4 @@ export const filtersAtom = atomWithStorage<FilterOption>("filters", {
   tabCount: "all",
 });
 export const queryAtom = atomWithStorage<string>("query", "");
+export const searchFocusAtom = atomWithStorage<boolean>("searchFocus", false);

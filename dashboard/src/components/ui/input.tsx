@@ -26,12 +26,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
           {icon}
         </div>
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
+        <div className="hidden md:block absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
           {shortcut}
         </div>
         {showClear && setQuery && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-            {<RxCross2 className="hover:pointer" size={19} onClick={() => {
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground cursor-pointer">
+            {<RxCross2 className="hover:opacity-70" size={19} onClick={() => {
               setQuery('');
             }}/>}
           </div>
