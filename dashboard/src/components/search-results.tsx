@@ -44,9 +44,9 @@ function DaySeparator({ ts, count }: { ts: number; count: number }) {
         <div className="w-full border-t border-border/90" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-700 shadow-sm">
+        <span className="bg-background px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-medium text-foreground rounded-full border border-gray-700 shadow-sm">
           {label}
-          <span className="ml-2 text-muted-foreground">
+          <span className="ml-1 sm:ml-2 text-muted-foreground">
             • {count} {count === 1 ? 'result' : 'results'}
           </span>
         </span>
@@ -80,7 +80,7 @@ export default function SearchResults() {
   const q = trimmedQuery.toLowerCase();
 
   const sessions = useAtomValue(sessionsAtom) as Session[];
-  const results = sessions.filter(session => {
+  let results = sessions.filter(session => {
     const titleMatch = session.title.toLowerCase().includes(q);
     const summaryMatch = session.summary.toLowerCase().includes(q);
     const tabsMatch = session.tabs.some(tab => {
@@ -115,12 +115,16 @@ export default function SearchResults() {
   }, [groups]);
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-8 lg:px-12 py-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground">
-          Search Results for &quot;{trimmedQuery}&quot;
+    <div className="mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6">
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+          Search Results for &quot;
+          <span className="text-muted-foreground/70 break-all">
+            {trimmedQuery}
+          </span>
+          &quot;
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
           {results.length} {results.length === 1 ? 'result' : 'results'} found
         </p>
       </div>
@@ -138,9 +142,9 @@ export default function SearchResults() {
             const ts = Number(k);
             const items = groups[k];
             return (
-              <section key={k} className={cn(idx > 0 && 'mt-8')}>
+              <section key={k} className={cn(idx > 0 && 'mt-6 sm:mt-8')}>
                 <DaySeparator ts={ts} count={items.length} />
-                <div className="mt-4 space-y-4 mb-12">
+                <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4 mb-8 sm:mb-12">
                   {items.map((session: Session & { _ts: number }) => {
                     const accent = tinyAccentForSeed(session.id);
                     const isExpanded = expanded[session.id];
@@ -150,50 +154,52 @@ export default function SearchResults() {
                         key={session.id}
                         className="group relative overflow-hidden rounded-lg border bg-card/60 shadow-sm transition hover:shadow-md"
                       >
-                        <div className="pl-4 pr-4 py-4">
-                          <header className="flex items-center justify-between gap-2">
-                            <div className="flex min-w-0 items-center gap-2">
+                        <div className="px-3 sm:px-4 py-3 sm:py-4">
+                          <header className="flex items-start sm:items-center justify-between gap-2">
+                            <div className="flex min-w-0 items-start sm:items-center gap-2 flex-1">
                               <span
-                                className="h-2 w-2 shrink-0 rounded-full"
+                                className="h-2 w-2 shrink-0 rounded-full mt-1 sm:mt-0"
                                 style={{ backgroundColor: accent }}
                               />
-                              <h4 className="line-clamp-1 text-base font-semibold text-foreground">
+                              <h4 className="line-clamp-2 sm:line-clamp-1 text-sm sm:text-base font-semibold text-foreground break-words">
                                 {highlightText(
                                   session.title || 'Untitled session',
                                   q
                                 )}
                               </h4>
                             </div>
-                            {typeof session.tabsCount === 'number' && (
-                              <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                                {session.tabsCount} tabs
-                              </span>
-                            )}
-                            <button
-                              onClick={() => toggle(session.id)}
-                              aria-expanded={isExpanded}
-                              className="ml-auto flex items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground"
-                              title={isExpanded ? 'Collapse' : 'Expand'}
-                            >
-                              <MdOutlineKeyboardArrowDown
-                                className={cn(
-                                  'h-5 w-5 transition-transform',
-                                  isExpanded && 'rotate-180'
-                                )}
-                              />
-                            </button>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {typeof session.tabsCount === 'number' && (
+                                <span className="rounded-full bg-muted/60 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-muted-foreground whitespace-nowrap">
+                                  {session.tabsCount} tabs
+                                </span>
+                              )}
+                              <button
+                                onClick={() => toggle(session.id)}
+                                aria-expanded={isExpanded}
+                                className="flex items-center justify-center rounded-full p-1 transition-colors hover:bg-accent/50 hover:text-accent-foreground"
+                                title={isExpanded ? 'Collapse' : 'Expand'}
+                              >
+                                <MdOutlineKeyboardArrowDown
+                                  className={cn(
+                                    'h-5 w-5 transition-transform',
+                                    isExpanded && 'rotate-180'
+                                  )}
+                                />
+                              </button>
+                            </div>
                           </header>
 
                           <p
                             className={cn(
-                              'mt-2 text-sm text-muted-foreground',
+                              'mt-2 text-xs sm:text-sm text-muted-foreground',
                               !isExpanded && 'line-clamp-2'
                             )}
                           >
                             {highlightText(session.summary || 'No summary', q)}
                           </p>
 
-                          <footer className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+                          <footer className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 text-[10px] sm:text-[11px] text-muted-foreground">
                             <time dateTime={toISO(session.createdAt as number)}>
                               {formatTime(session.createdAt as number)}
                             </time>
@@ -204,159 +210,223 @@ export default function SearchResults() {
                         </div>
 
                         {isExpanded && (
-                          <div className="border-t bg-background/40 px-4 pb-4 pt-3">
-                            <div className="rounded-md border bg-background/60 p-3">
-                              <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
-                                <div>
-                                  <span className="opacity-70">
-                                    Session ID:
-                                  </span>{' '}
-                                  <span className="break-all text-foreground/90">
-                                    {session.id}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="opacity-70">Created:</span>{' '}
-                                  <span>
-                                    {formatTime(session.createdAt as number)} •{' '}
-                                    {formatRelative(
-                                      session.createdAt as number
-                                    )}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="opacity-70">Updated:</span>{' '}
-                                  <span>
-                                    {formatTime(session.updatedAt as number)} •{' '}
-                                    {formatRelative(
-                                      session.updatedAt as number
-                                    )}
-                                  </span>
+                          <div className="border-t bg-background/40 px-3 sm:px-4 pb-3 sm:pb-4 pt-2 sm:pt-3">
+                            <div className="rounded-md border bg-background/60 p-2 sm:p-3">
+                              <div className="flex flex-col gap-2 text-[10px] sm:text-[11px] text-muted-foreground">
+                                <div className="flex flex-col sm:grid sm:grid-cols-3 gap-2">
+                                  <div className="break-all">
+                                    <span className="opacity-70">
+                                      Session ID:
+                                    </span>{' '}
+                                    <span className="text-foreground/90">
+                                      {session.id}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="opacity-70">Created:</span>{' '}
+                                    <span className="break-words">
+                                      {formatTime(session.createdAt as number)}{' '}
+                                      •{' '}
+                                      {formatRelative(
+                                        session.createdAt as number
+                                      )}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="opacity-70">Updated:</span>{' '}
+                                    <span className="break-words">
+                                      {formatTime(session.updatedAt as number)}{' '}
+                                      •{' '}
+                                      {formatRelative(
+                                        session.updatedAt as number
+                                      )}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
 
-                              <div className="mt-3 overflow-x-auto">
-                                <table className="min-w-full text-left">
-                                  <thead className="text-[11px] text-muted-foreground">
-                                    <tr className="border-b">
-                                      <th className="py-1 pr-3 font-medium">
-                                        Tab
-                                      </th>
-                                      <th className="py-1 pr-3 font-medium">
-                                        URL
-                                      </th>
-                                      <th className="py-1 pr-3 font-medium">
-                                        Closed
-                                      </th>
-                                      <th className="py-1 pr-3 font-medium">
-                                        Tab ID
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="text-xs">
-                                    {(Array.isArray(session.tabs)
-                                      ? (session.tabs as any[])
-                                      : []
-                                    ).map((t, idx) => {
-                                      const fav = (t as any)?.favIconUrl as
-                                        | string
-                                        | undefined;
-                                      const title = (t as any)?.title as
-                                        | string
-                                        | undefined;
-                                      const url = (t as any)?.url as
-                                        | string
-                                        | undefined;
-                                      const tabId = (t as any)?.id as
-                                        | number
-                                        | string
-                                        | undefined;
-                                      const closedAt = (t as any)?.closedAt as
-                                        | string
-                                        | number
-                                        | undefined;
-                                      const closedMs =
-                                        typeof closedAt === 'string'
-                                          ? Date.parse(closedAt)
-                                          : typeof closedAt === 'number'
-                                            ? closedAt
-                                            : undefined;
-                                      return (
-                                        <tr
-                                          key={idx}
-                                          className="border-b last:border-b-0 align-top"
-                                        >
-                                          <td className="py-2 pr-3">
-                                            <div className="flex min-w-0 items-center gap-2">
-                                              {fav ? (
-                                                <img
-                                                  src={fav}
-                                                  alt=""
-                                                  className="h-4 w-4 rounded-sm"
-                                                />
-                                              ) : (
-                                                <span className="inline-block h-4 w-4 rounded-sm bg-muted/60" />
-                                              )}
-                                              <span
-                                                className="truncate text-foreground"
-                                                title={title || 'Untitled tab'}
-                                              >
-                                                {highlightText(
-                                                  title
-                                                    ? title.length > 50
-                                                      ? `${title.slice(0, 50)}...`
-                                                      : title
-                                                    : 'Untitled tab',
-                                                  q
+                              <div className="mt-3 overflow-x-auto -mx-2 sm:mx-0">
+                                <div className="inline-block min-w-full align-middle px-2 sm:px-0">
+                                  <table className="min-w-full text-left">
+                                    <thead className="text-[10px] sm:text-[11px] text-muted-foreground">
+                                      <tr className="border-b">
+                                        <th className="py-1 pr-2 sm:pr-3 font-medium min-w-[120px] sm:min-w-0">
+                                          Tab
+                                        </th>
+                                        <th className="py-1 pr-2 sm:pr-3 font-medium hidden sm:table-cell">
+                                          URL
+                                        </th>
+                                        <th className="py-1 pr-2 sm:pr-3 font-medium hidden md:table-cell">
+                                          Closed
+                                        </th>
+                                        <th className="py-1 pr-2 sm:pr-3 font-medium hidden lg:table-cell">
+                                          Tab ID
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="text-[11px] sm:text-xs">
+                                      {(Array.isArray(session.tabs)
+                                        ? (session.tabs as any[])
+                                        : []
+                                      ).map((t, idx) => {
+                                        const fav = (t as any)?.favIconUrl as
+                                          | string
+                                          | undefined;
+                                        const title = (t as any)?.title as
+                                          | string
+                                          | undefined;
+                                        const url = (t as any)?.url as
+                                          | string
+                                          | undefined;
+                                        const tabId = (t as any)?.id as
+                                          | number
+                                          | string
+                                          | undefined;
+                                        const closedAt = (t as any)
+                                          ?.closedAt as
+                                          | string
+                                          | number
+                                          | undefined;
+                                        const closedMs =
+                                          typeof closedAt === 'string'
+                                            ? Date.parse(closedAt)
+                                            : typeof closedAt === 'number'
+                                              ? closedAt
+                                              : undefined;
+                                        return (
+                                          <tr
+                                            key={idx}
+                                            className="border-b last:border-b-0 align-top"
+                                          >
+                                            <td className="py-2 pr-2 sm:pr-3">
+                                              <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+                                                {fav ? (
+                                                  <img
+                                                    src={fav}
+                                                    alt=""
+                                                    className="h-3 w-3 sm:h-4 sm:w-4 rounded-sm shrink-0"
+                                                  />
+                                                ) : (
+                                                  <span className="inline-block h-3 w-3 sm:h-4 sm:w-4 rounded-sm bg-muted/60 shrink-0" />
                                                 )}
-                                              </span>
-                                            </div>
-                                          </td>
-                                          <td className="max-w-[28rem] py-2 pr-3">
-                                            {url ? (
-                                              <a
-                                                href={url}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="truncate text-blue-600 hover:underline dark:text-blue-400"
-                                                title={url}
-                                              >
-                                                <span className="truncate block">
-                                                  {highlightText(
-                                                    url.length > 50
-                                                      ? `${url.slice(0, 50)}...`
-                                                      : url,
-                                                    q
-                                                  )}
+                                                <div className="min-w-0 flex-1">
+                                                  <span
+                                                    className="block truncate text-foreground"
+                                                    title={
+                                                      title || 'Untitled tab'
+                                                    }
+                                                  >
+                                                    {highlightText(
+                                                      title
+                                                        ? title.length > 40
+                                                          ? `${title.slice(0, 40)}...`
+                                                          : title
+                                                        : 'Untitled tab',
+                                                      q
+                                                    )}
+                                                  </span>
+                                                  {/* Mobile: Show URL below title */}
+                                                  <div className="sm:hidden mt-0.5">
+                                                    {url ? (
+                                                      <a
+                                                        href={url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="text-blue-600 hover:underline dark:text-blue-400 text-[10px] truncate block"
+                                                        title={url}
+                                                      >
+                                                        {highlightText(
+                                                          url.length > 35
+                                                            ? `${url.slice(0, 35)}...`
+                                                            : url,
+                                                          q
+                                                        )}
+                                                      </a>
+                                                    ) : (
+                                                      <span className="opacity-60 text-[10px]">
+                                                        —
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  {/* Mobile: Show additional info */}
+                                                  <div className="md:hidden mt-1 text-[10px] text-muted-foreground space-y-0.5">
+                                                    {closedMs && (
+                                                      <div>
+                                                        <span className="opacity-70">
+                                                          Closed:
+                                                        </span>{' '}
+                                                        {formatTime(closedMs)} •{' '}
+                                                        {formatRelative(
+                                                          closedMs
+                                                        )}
+                                                      </div>
+                                                    )}
+                                                    {tabId && (
+                                                      <div className="lg:hidden">
+                                                        <span className="opacity-70">
+                                                          ID:
+                                                        </span>{' '}
+                                                        {tabId}
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                            <td className="max-w-[200px] lg:max-w-[28rem] py-2 pr-2 sm:pr-3 hidden sm:table-cell">
+                                              {url ? (
+                                                <a
+                                                  href={url}
+                                                  target="_blank"
+                                                  rel="noreferrer"
+                                                  className="text-blue-600 hover:underline dark:text-blue-400"
+                                                  title={url}
+                                                >
+                                                  <span className="truncate block">
+                                                    {highlightText(
+                                                      url.length > 50
+                                                        ? `${url.slice(0, 50)}...`
+                                                        : url,
+                                                      q
+                                                    )}
+                                                  </span>
+                                                </a>
+                                              ) : (
+                                                <span className="opacity-60">
+                                                  —
                                                 </span>
-                                              </a>
-                                            ) : (
-                                              <span className="opacity-60">
-                                                —
-                                              </span>
-                                            )}
-                                          </td>
-                                          <td className="whitespace-nowrap py-2 pr-3 text-muted-foreground">
-                                            {closedMs ? (
-                                              `${formatTime(closedMs)} • ${formatRelative(closedMs)}`
-                                            ) : (
-                                              <span className="opacity-60">
-                                                —
-                                              </span>
-                                            )}
-                                          </td>
-                                          <td className="py-2 pr-3 text-muted-foreground">
-                                            {tabId ?? (
-                                              <span className="opacity-60">
-                                                —
-                                              </span>
-                                            )}
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                  </tbody>
-                                </table>
+                                              )}
+                                            </td>
+                                            <td className="whitespace-nowrap py-2 pr-2 sm:pr-3 text-muted-foreground hidden md:table-cell">
+                                              {closedMs ? (
+                                                <span className="block">
+                                                  <span className="hidden lg:inline">
+                                                    {formatTime(closedMs)} •{' '}
+                                                    {formatRelative(closedMs)}
+                                                  </span>
+                                                  <span className="lg:hidden">
+                                                    {formatRelative(closedMs)}
+                                                  </span>
+                                                </span>
+                                              ) : (
+                                                <span className="opacity-60">
+                                                  —
+                                                </span>
+                                              )}
+                                            </td>
+                                            <td className="py-2 pr-2 sm:pr-3 text-muted-foreground hidden lg:table-cell">
+                                              {tabId ?? (
+                                                <span className="opacity-60">
+                                                  —
+                                                </span>
+                                              )}
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
                             </div>
                           </div>
