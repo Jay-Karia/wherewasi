@@ -388,8 +388,8 @@ export function toISO(ts: number) {
 // Expanded details component replicating structure from other views
 function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
   return (
-    <div className="mt-3 rounded-md border bg-background/60 p-3">
-      <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
+    <div className="mt-3 rounded-md border bg-background/60 p-2 sm:p-3">
+      <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <span className="opacity-70">Session ID:</span>{" "}
           <span className="break-all text-foreground/90">{session.id}</span>
@@ -409,14 +409,14 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
           </span>
         </div>
       </div>
-      <div className="mt-3 overflow-x-auto">
+      <div className="mt-3 overflow-x-auto -mx-2 sm:mx-0">
         <table className="min-w-full text-left">
           <thead className="text-[11px] text-muted-foreground">
             <tr className="border-b">
-              <th className="py-1 pr-3 font-medium">Tab</th>
-              <th className="py-1 pr-3 font-medium">URL</th>
-              <th className="py-1 pr-3 font-medium">Closed</th>
-              <th className="py-1 pr-3 font-medium">Tab ID</th>
+              <th className="py-1 pl-2 pr-3 sm:pl-0 font-medium">Tab</th>
+              <th className="py-1 pr-3 font-medium hidden sm:table-cell">URL</th>
+              <th className="py-1 pr-3 font-medium hidden md:table-cell">Closed</th>
+              <th className="py-1 pr-3 font-medium hidden lg:table-cell">Tab ID</th>
             </tr>
           </thead>
           <tbody className="text-xs">
@@ -440,37 +440,59 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                     : undefined;
               return (
                 <tr key={i} className="border-b last:border-b-0 align-top">
-                  <td className="py-2 pr-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                      {fav ? (
-                        <img src={fav} alt="" className="h-4 w-4 rounded-sm" />
-                      ) : (
-                        <span className="inline-block h-4 w-4 rounded-sm bg-muted/60" />
+                  <td className="py-2 pl-2 pr-3 sm:pl-0">
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {fav ? (
+                          <img src={fav} alt="" className="h-4 w-4 rounded-sm shrink-0" />
+                        ) : (
+                          <span className="inline-block h-4 w-4 rounded-sm bg-muted/60 shrink-0" />
+                        )}
+                        <span
+                          className="break-words text-foreground"
+                          title={title || "Untitled tab"}
+                        >
+                          {title || "Untitled tab"}
+                        </span>
+                      </div>
+                      {/* Show URL on mobile under title */}
+                      {url && (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="sm:hidden text-blue-600 hover:underline dark:text-blue-400 break-all text-[10px] pl-6"
+                          title={url}
+                        >
+                          {url}
+                        </a>
                       )}
-                      <span
-                        className="truncate text-foreground"
-                        title={title || "Untitled tab"}
-                      >
-                        {(title || "Untitled tab").slice(0, 50)}
-                      </span>
+                      {/* Show closed time on mobile */}
+                      {closedMs && (
+                        <span className="md:hidden text-muted-foreground text-[10px] pl-6">
+                          Closed: {formatTime(closedMs)} • {formatRelative(closedMs)}
+                        </span>
+                      )}
                     </div>
                   </td>
-                  <td className="max-w-[20rem] py-2 pr-3">
+                  <td className="max-w-[20rem] py-2 pr-3 hidden sm:table-cell">
                     {url ? (
                       <a
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        className="truncate text-blue-600 hover:underline dark:text-blue-400"
+                        className="text-blue-600 hover:underline dark:text-blue-400"
                         title={url}
                       >
-                        {url.slice(0, 45)}
+                        <span className="truncate block" title={url}>
+                          {url}
+                        </span>
                       </a>
                     ) : (
                       <span className="opacity-60">—</span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap py-2 pr-3 text-muted-foreground">
+                  <td className="whitespace-nowrap py-2 pr-3 text-muted-foreground hidden md:table-cell">
                     {closedMs ? (
                       <>
                         {formatTime(closedMs)} • {formatRelative(closedMs)}
@@ -479,7 +501,7 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                       <span className="opacity-60">—</span>
                     )}
                   </td>
-                  <td className="py-2 pr-3 text-muted-foreground">
+                  <td className="py-2 pr-3 text-muted-foreground hidden lg:table-cell">
                     {tabId ?? <span className="opacity-60">—</span>}
                   </td>
                 </tr>

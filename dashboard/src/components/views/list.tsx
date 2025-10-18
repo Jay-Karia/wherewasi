@@ -5,7 +5,6 @@ import { IoMdExpand } from 'react-icons/io';
 import { useState, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
-import dummySessions from '../../../../dummy/data.json';
 
 export default function ListView({
   sessions,
@@ -15,7 +14,6 @@ export default function ListView({
   sortOption: SortOption;
 }) {
   const filters = useAtomValue(filtersAtom);
-  sessions = dummySessions;
 
   const sortedSessions = useMemo(() => {
     const list = [...sessions];

@@ -6,7 +6,6 @@ import ListView from './views/list';
 import { useStorage } from '@/hooks/useStorage';
 import SearchResults from './search-results';
 
-// TODO: responsive expanded timeline view
 // TODO: responsive expanded sessions view
 
 export default function Main() {
