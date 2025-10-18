@@ -1,10 +1,11 @@
-import type { Session, SortOption } from "@/types";
-import { cn, filterSessions } from "@/lib/utils";
-import { tinyAccentForSeed } from "./timeline";
-import { IoMdExpand } from "react-icons/io";
-import { useState, useMemo } from "react";
-import { useAtomValue } from "jotai";
-import { filtersAtom } from "../../../atoms";
+import type { Session, SortOption } from '@/types';
+import { cn, filterSessions } from '@/lib/utils';
+import { tinyAccentForSeed } from './timeline';
+import { IoMdExpand } from 'react-icons/io';
+import { useState, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { filtersAtom } from '../../../atoms';
+import dummySessions from '../../../../dummy/data.json';
 
 export default function ListView({
   sessions,
@@ -14,17 +15,18 @@ export default function ListView({
   sortOption: SortOption;
 }) {
   const filters = useAtomValue(filtersAtom);
+  sessions = dummySessions;
 
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
-      case "date-asc":
+      case 'date-asc':
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
           const tb = (b.updatedAt ?? b.createdAt ?? 0) as number;
           return ta - tb;
         });
-      case "date-desc":
+      case 'date-desc':
       default:
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
@@ -39,22 +41,22 @@ export default function ListView({
   }, [sortedSessions, filters]);
 
   const normalized = (filteredSessions || [])
-    .map((s) => ({
+    .map(s => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
     }))
-    .filter((s) => Number.isFinite(s._ts) && s._ts > 0);
+    .filter(s => Number.isFinite(s._ts) && s._ts > 0);
 
   const groups = groupByDay(normalized);
   const dayKeys = Object.keys(groups).sort((a, b) => {
-    if (sortOption === "date-asc") {
+    if (sortOption === 'date-asc') {
       return Number(a) - Number(b);
     }
     return Number(b) - Number(a);
   });
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
+  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
 
   return (
     <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
@@ -62,10 +64,11 @@ export default function ListView({
         const ts = Number(k);
         const items = groups[k];
         return (
-          <section key={k} className={cn(idx > 0 && "mt-8")}>
+          <section key={k} className={cn(idx > 0 && 'mt-8')}>
             <DaySeparator ts={ts} count={items.length} />
             <div className="mt-3 overflow-hidden rounded-lg border bg-card/60 mb-12">
-              <div className="hidden items-center gap-3 border-b px-3 py-2 text-xs text-muted-foreground sm:grid sm:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px] sm:px-4">
+              {/* Desktop table header - only visible on larger screens */}
+              <div className="hidden lg:grid items-center gap-3 border-b px-4 py-2 text-xs text-muted-foreground lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
                 <div>Title</div>
                 <div>Summary</div>
                 <div className="text-right">Tabs</div>
@@ -73,11 +76,62 @@ export default function ListView({
                 <div className="text-right">Details</div>
               </div>
               <ul className="divide-y divide-border/60">
-                {items.map((s) => {
+                {items.map(s => {
                   const accent = tinyAccentForSeed(s.id);
                   return (
                     <li key={s.id} className="group">
-                      <article className="grid grid-cols-1 items-center gap-2 px-3 py-3 sm:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px] sm:gap-3 sm:px-4">
+                      {/* Mobile/Tablet card layout */}
+                      <article className="grid grid-cols-1 gap-2 px-3 py-3 sm:px-4 lg:hidden">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex items-center gap-2 flex-1">
+                            <span
+                              className="h-2 w-2 shrink-0 rounded-full mt-1"
+                              style={{ backgroundColor: accent }}
+                            />
+                            <h4
+                              className="min-w-0 text-sm font-medium text-foreground break-words"
+                              title={s.title}
+                            >
+                              {s.title || 'Untitled session'}
+                            </h4>
+                          </div>
+                          <button
+                            aria-expanded={!!expanded[s.id]}
+                            onClick={() => toggle(s.id)}
+                            className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60 shrink-0"
+                            title={expanded[s.id] ? 'Collapse' : 'Expand'}
+                          >
+                            <IoMdExpand
+                              className={cn(
+                                'h-4 w-4 text-muted-foreground transition-transform',
+                                expanded[s.id] && 'rotate-180'
+                              )}
+                            />
+                          </button>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground pl-4">
+                          {expanded[s.id]
+                            ? s.summary
+                            : s.summary && s.summary.length > 100
+                              ? s.summary.substring(0, 100) + '...'
+                              : s.summary || 'No summary'}
+                        </p>
+
+                        <div className="flex items-center gap-3 pl-4 text-[11px] text-muted-foreground flex-wrap">
+                          {typeof s.tabsCount === 'number' && (
+                            <span className="rounded-full bg-muted/60 px-2 py-0.5 font-medium">
+                              {s.tabsCount} tabs
+                            </span>
+                          )}
+                          <span>
+                            {formatTime(s._ts)} • {formatRelative(s._ts)}
+                          </span>
+                        </div>
+                      </article>
+
+                      {/* Desktop grid layout */}
+                      <article className="hidden lg:grid items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
                         <div className="min-w-0 flex items-center gap-2">
                           <span
                             className="h-2 w-2 shrink-0 rounded-full"
@@ -87,73 +141,73 @@ export default function ListView({
                             className="min-w-0 truncate text-sm font-medium text-foreground"
                             title={s.title}
                           >
-                            {s.title || "Untitled session"}
+                            {s.title || 'Untitled session'}
                           </h4>
                         </div>
                         <p
-                          className={cn("min-w-0 text-xs text-muted-foreground", {
-                            "pb-4": expanded[s.id],
-                          })}
+                          className={cn(
+                            'min-w-0 text-xs text-muted-foreground',
+                            {
+                              'pb-4': expanded[s.id],
+                            }
+                          )}
                           title={s.summary}
                         >
-                          {expanded[s.id] ? s.summary : (
-                            s.summary && s.summary.length > 150
-                              ? s.summary.substring(0, 150) + "..."
-                              : s.summary || "No summary"
-                          )}
+                          {expanded[s.id]
+                            ? s.summary
+                            : s.summary && s.summary.length > 150
+                              ? s.summary.substring(0, 150) + '...'
+                              : s.summary || 'No summary'}
                         </p>
-                        <div className="flex items-center justify-between sm:justify-end sm:whitespace-nowrap">
-                          {typeof s.tabsCount === "number" && (
+                        <div className="flex items-center justify-end whitespace-nowrap">
+                          {typeof s.tabsCount === 'number' && (
                             <span className="rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                               {s.tabsCount} tabs
                             </span>
                           )}
                         </div>
-                        <div className="text-[11px] text-muted-foreground sm:text-right sm:whitespace-nowrap">
-                          <span className="sm:hidden">
-                            {formatTime(s._ts)} • {formatRelative(s._ts)}
-                          </span>
-                          <span className="hidden sm:inline">
-                            {formatTime(s._ts)} • {formatRelative(s._ts)}
-                          </span>
+                        <div className="text-[11px] text-muted-foreground text-right whitespace-nowrap">
+                          {formatTime(s._ts)} • {formatRelative(s._ts)}
                         </div>
-                        <div className="flex justify-end sm:justify-end">
+                        <div className="flex justify-end">
                           <button
                             aria-expanded={!!expanded[s.id]}
                             onClick={() => toggle(s.id)}
                             className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60"
-                            title={expanded[s.id] ? "Collapse" : "Expand"}
+                            title={expanded[s.id] ? 'Collapse' : 'Expand'}
                           >
                             <IoMdExpand
                               className={cn(
-                                "h-4 w-4 text-muted-foreground transition-transform",
-                                expanded[s.id] && "rotate-180",
+                                'h-4 w-4 text-muted-foreground transition-transform',
+                                expanded[s.id] && 'rotate-180'
                               )}
                             />
                           </button>
                         </div>
                       </article>
+
+                      {/* Expanded details - shared between mobile and desktop */}
                       {expanded[s.id] && (
                         <div className="px-3 sm:px-4 pb-4 -mt-2">
                           <div className="rounded-md border bg-background/60 p-3">
-                            <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
                               <div>
-                                <span className="opacity-70">Session ID:</span>{" "}
+                                <span className="opacity-70">Session ID:</span>{' '}
                                 <span className="break-all text-foreground/90">
                                   {s.id}
                                 </span>
                               </div>
                               <div>
-                                <span className="opacity-70">Created:</span>{" "}
+                                <span className="opacity-70">Created:</span>{' '}
                                 <span>
-                                  {formatTime(s.createdAt)} •{" "}
+                                  {formatTime(s.createdAt)} •{' '}
                                   {formatRelative(s.createdAt)}
                                 </span>
                               </div>
                               <div>
-                                <span className="opacity-70">Updated:</span>{" "}
+                                <span className="opacity-70">Updated:</span>{' '}
                                 <span>
-                                  {formatTime(s.updatedAt)} •{" "}
+                                  {formatTime(s.updatedAt)} •{' '}
                                   {formatRelative(s.updatedAt)}
                                 </span>
                               </div>
@@ -166,13 +220,13 @@ export default function ListView({
                                     <th className="py-1 pr-3 font-medium">
                                       Tab
                                     </th>
-                                    <th className="py-1 pr-3 font-medium">
+                                    <th className="py-1 pr-3 font-medium hidden sm:table-cell">
                                       URL
                                     </th>
-                                    <th className="py-1 pr-3 font-medium">
+                                    <th className="py-1 pr-3 font-medium hidden md:table-cell">
                                       Closed
                                     </th>
-                                    <th className="py-1 pr-3 font-medium">
+                                    <th className="py-1 pr-3 font-medium hidden lg:table-cell">
                                       Tab ID
                                     </th>
                                   </tr>
@@ -200,9 +254,9 @@ export default function ListView({
                                       | number
                                       | undefined;
                                     const closedMs =
-                                      typeof closedAt === "string"
+                                      typeof closedAt === 'string'
                                         ? Date.parse(closedAt)
-                                        : typeof closedAt === "number"
+                                        : typeof closedAt === 'number'
                                           ? closedAt
                                           : undefined;
                                     return (
@@ -211,30 +265,39 @@ export default function ListView({
                                         className="border-b last:border-b-0 align-top"
                                       >
                                         <td className="py-2 pr-3">
-                                          <div className="flex items-center gap-2 min-w-0">
-                                            {fav ? (
-                                              <img
-                                                src={fav}
-                                                alt=""
-                                                className="h-4 w-4 rounded-sm"
-                                              />
-                                            ) : (
-                                              <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block" />
+                                          <div className="flex flex-col gap-1 min-w-0">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                              {fav ? (
+                                                <img
+                                                  src={fav}
+                                                  alt=""
+                                                  className="h-4 w-4 rounded-sm shrink-0"
+                                                />
+                                              ) : (
+                                                <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0" />
+                                              )}
+                                              <span
+                                                className="text-foreground break-words"
+                                                title={title || 'Untitled tab'}
+                                              >
+                                                {title || 'Untitled tab'}
+                                              </span>
+                                            </div>
+                                            {/* Show URL on mobile under title */}
+                                            {url && (
+                                              <a
+                                                href={url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="sm:hidden text-blue-600 hover:underline dark:text-blue-400 break-all text-[10px] pl-6"
+                                                title={url}
+                                              >
+                                                {url}
+                                              </a>
                                             )}
-                                            <span
-                                              className="truncate text-foreground block"
-                                              title={title || "Untitled tab"}
-                                            >
-                                              {(title || "Untitled tab")
-                                                .length > 50
-                                                ? (
-                                                  title || "Untitled tab"
-                                                ).substring(0, 50) + "..."
-                                                : title || "Untitled tab"}
-                                            </span>
                                           </div>
                                         </td>
-                                        <td className="py-2 pr-3 max-w-[28rem]">
+                                        <td className="py-2 pr-3 max-w-[28rem] hidden sm:table-cell">
                                           {url ? (
                                             <a
                                               href={url}
@@ -256,7 +319,7 @@ export default function ListView({
                                             </span>
                                           )}
                                         </td>
-                                        <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                                        <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground hidden md:table-cell">
                                           {closedMs ? (
                                             `${formatTime(closedMs)} • ${formatRelative(closedMs)}`
                                           ) : (
@@ -265,7 +328,7 @@ export default function ListView({
                                             </span>
                                           )}
                                         </td>
-                                        <td className="py-2 pr-3 text-muted-foreground">
+                                        <td className="py-2 pr-3 text-muted-foreground hidden lg:table-cell">
                                           {tabId ?? (
                                             <span className="opacity-60">
                                               —
@@ -315,7 +378,7 @@ function DaySeparator({ ts, count }: { ts: number; count: number }) {
         <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-700 shadow-sm">
           {label}
           <span className="ml-2 text-muted-foreground">
-            • {count} {count === 1 ? "entry" : "entries"}
+            • {count} {count === 1 ? 'entry' : 'entries'}
           </span>
         </span>
       </div>
@@ -330,21 +393,21 @@ function formatDay(ts: number) {
   const startOf = (T: Date) =>
     new Date(T.getFullYear(), T.getMonth(), T.getDate()).getTime();
   const diffDays = Math.floor((startOf(now) - startOf(d)) / dayMs);
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
   return d.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
 function formatTime(ts: number) {
   const d = new Date(ts);
   return d.toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -353,7 +416,7 @@ function formatRelative(ts: number) {
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const min = Math.floor(diffMs / 60000);
-  if (min < 1) return "just now";
+  if (min < 1) return 'just now';
   if (min < 60) return `${min}m ago`;
   const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}h ago`;
