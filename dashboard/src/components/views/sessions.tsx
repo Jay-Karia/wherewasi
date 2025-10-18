@@ -1,10 +1,10 @@
-import type { Session, SortOption } from "@/types";
-import { cn, filterSessions } from "@/lib/utils";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { useMemo, useState } from "react";
-import { tinyAccentForSeed } from "./timeline";
-import { useAtomValue } from "jotai";
-import { filtersAtom } from "../../../atoms";
+import type { Session, SortOption } from '@/types';
+import { cn, filterSessions } from '@/lib/utils';
+import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { useMemo, useState } from 'react';
+import { tinyAccentForSeed } from './timeline';
+import { useAtomValue } from 'jotai';
+import { filtersAtom } from '../../../atoms';
 
 type Props = {
   sessions: Session[];
@@ -18,26 +18,26 @@ export default function SessionsView({
   className,
 }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
+  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
 
   const variants = [
-    "w-full sm:w-[14rem] lg:w-[18rem]",
-    "w-full sm:w-[18rem] lg:w-[24rem]",
-    "w-full sm:w-[22rem] lg:w-[30rem]",
-    "w-full sm:w-[26rem] lg:w-[36rem]",
-    "w-full sm:w-[30rem] lg:w-[42rem]",
+    'w-full sm:w-[14rem] lg:w-[18rem]',
+    'w-full sm:w-[18rem] lg:w-[24rem]',
+    'w-full sm:w-[22rem] lg:w-[30rem]',
+    'w-full sm:w-[26rem] lg:w-[36rem]',
+    'w-full sm:w-[30rem] lg:w-[42rem]',
   ] as const;
 
   const sortedSessions = useMemo(() => {
-    if (!sortOption || sortOption === "date-desc") {
+    if (!sortOption || sortOption === 'date-desc') {
       return [...sessions].sort(
-        (a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt),
+        (a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt)
       );
     }
-    if (sortOption === "date-asc") {
+    if (sortOption === 'date-asc') {
       return [...sessions].sort(
-        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? b.createdAt),
+        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? b.createdAt)
       );
     }
     return sessions;
@@ -51,8 +51,8 @@ export default function SessionsView({
   return (
     <div
       className={cn(
-        "mx-auto max-w-7xl flex flex-row justify-center items-center gap-6 mt-8 flex-wrap",
-        className,
+        'mx-auto max-w-7xl flex flex-row justify-center items-center gap-6 mt-8 flex-wrap',
+        className
       )}
     >
       {filteredSessions.map((s, idx) => {
@@ -60,15 +60,15 @@ export default function SessionsView({
         const accent = tinyAccentForSeed(s.id);
         const isExpanded = !!expanded[s.id];
         const widthClass = isExpanded
-          ? "w-full sm:w-[42rem] lg:w-[64rem]"
+          ? 'w-full sm:w-[42rem] lg:w-[64rem]'
           : variants[pick];
         prevIdx = pick;
         return (
           <article
             key={s.id}
             className={cn(
-              "group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-3 px-7 shadow-sm transition hover:shadow-md",
-              widthClass,
+              'group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-3 px-7 shadow-sm transition hover:shadow-md',
+              widthClass
             )}
           >
             <header className="mb-2 flex items-center justify-between gap-3">
@@ -78,11 +78,11 @@ export default function SessionsView({
               />
               <h3
                 className="line-clamp-1 text-base font-semibold text-foreground"
-                title={s.title || "Untitled session"}
+                title={s.title || 'Untitled session'}
               >
-                {s.title || "Untitled session"}
+                {s.title || 'Untitled session'}
               </h3>
-              {typeof s.tabsCount === "number" && (
+              {typeof s.tabsCount === 'number' && (
                 <span className="shrink-0 rounded-full py-0.5 text-xs font-medium border border-black/5 opacity-70 bg-muted/60 px-2 text-[11px] text-muted-foreground">
                   {s.tabsCount} tabs
                 </span>
@@ -91,12 +91,12 @@ export default function SessionsView({
                 aria-expanded={!!expanded[s.id]}
                 onClick={() => toggle(s.id)}
                 className="ml-auto flex items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground"
-                title={expanded[s.id] ? "Collapse" : "Expand"}
+                title={expanded[s.id] ? 'Collapse' : 'Expand'}
               >
                 <MdOutlineKeyboardArrowDown
                   className={cn(
-                    "h-5 w-5 text-muted-foreground transition-transform",
-                    expanded[s.id] && "rotate-180",
+                    'h-5 w-5 text-muted-foreground transition-transform',
+                    expanded[s.id] && 'rotate-180'
                   )}
                 />
               </button>
@@ -119,30 +119,30 @@ export default function SessionsView({
 
             {/* Expanded details */}
             {expanded[s.id] && (
-              <div className="mt-3 rounded-lg border bg-background/60 p-3">
-                <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
-                  <div>
-                    <span className="opacity-70">Session ID:</span>{" "}
-                    <span className="break-all text-foreground/90">{s.id}</span>
+              <div className="mt-3 rounded-lg border bg-background/60 p-2 sm:p-3">
+                <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground md:grid-cols-3">
+                  <div className="break-all">
+                    <span className="opacity-70">Session ID:</span>{' '}
+                    <span className="text-foreground/90">{s.id}</span>
                   </div>
                   <div>
-                    <span className="opacity-70">Created:</span>{" "}
-                    <span>
-                      {formatTimeSafe(s.createdAt)} •{" "}
+                    <span className="opacity-70">Created:</span>{' '}
+                    <span className="block sm:inline">
+                      {formatTimeSafe(s.createdAt)} •{' '}
                       {formatRelativeDate(s.createdAt)}
                     </span>
                   </div>
                   <div>
-                    <span className="opacity-70">Updated:</span>{" "}
-                    <span>
-                      {formatTimeSafe(s.updatedAt)} •{" "}
+                    <span className="opacity-70">Updated:</span>{' '}
+                    <span className="block sm:inline">
+                      {formatTimeSafe(s.updatedAt)} •{' '}
                       {formatRelativeDate(s.updatedAt)}
                     </span>
                   </div>
                 </div>
 
-                {/* Tabs table */}
-                <div className="mt-3 overflow-x-auto">
+                {/* Tabs table - desktop view */}
+                <div className="mt-3 overflow-x-auto hidden md:block">
                   <table className="min-w-full text-left">
                     <thead className="text-[11px] text-muted-foreground">
                       <tr className="border-b">
@@ -169,9 +169,9 @@ export default function SessionsView({
                             | number
                             | undefined;
                           const closedMs =
-                            typeof closedAt === "string"
+                            typeof closedAt === 'string'
                               ? Date.parse(closedAt)
-                              : typeof closedAt === "number"
+                              : typeof closedAt === 'number'
                                 ? closedAt
                                 : undefined;
                           return (
@@ -185,30 +185,30 @@ export default function SessionsView({
                                     <img
                                       src={fav}
                                       alt=""
-                                      className="h-4 w-4 rounded-sm"
+                                      className="h-4 w-4 rounded-sm shrink-0"
                                     />
                                   ) : (
-                                    <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block" />
+                                    <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0" />
                                   )}
                                   <span
                                     className="truncate text-foreground"
-                                    title={title || "Untitled tab"}
+                                    title={title || 'Untitled tab'}
                                   >
                                     {title
                                       ? title.length > 50
                                         ? `${title.slice(0, 50)}...`
                                         : title
-                                      : "Untitled tab"}
+                                      : 'Untitled tab'}
                                   </span>
                                 </div>
                               </td>
-                              <td className="py-2 pr-3 max-w-[28rem]">
+                              <td className="py-2 pr-3 max-w-[20rem] lg:max-w-[28rem]">
                                 {url ? (
                                   <a
                                     href={url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="truncate text-blue-600 hover:underline dark:text-blue-400"
+                                    className="truncate text-blue-600 hover:underline dark:text-blue-400 block"
                                     title={url}
                                   >
                                     {url.length > 50
@@ -221,7 +221,10 @@ export default function SessionsView({
                               </td>
                               <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
                                 {closedMs ? (
-                                  `${formatTimeSafe(closedMs)} • ${formatRelativeDate(closedMs)}`
+                                  <span className="block lg:inline">
+                                    {formatTimeSafe(closedMs)} •{' '}
+                                    {formatRelativeDate(closedMs)}
+                                  </span>
                                 ) : (
                                   <span className="opacity-60">—</span>
                                 )}
@@ -231,10 +234,89 @@ export default function SessionsView({
                               </td>
                             </tr>
                           );
-                        },
+                        }
                       )}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Tabs cards - mobile/tablet view */}
+                <div className="mt-3 space-y-2 md:hidden">
+                  {(Array.isArray(s.tabs) ? (s.tabs as any[]) : []).map(
+                    (t, i) => {
+                      const fav = (t as any)?.favIconUrl as string | undefined;
+                      const title = (t as any)?.title as string | undefined;
+                      const url = (t as any)?.url as string | undefined;
+                      const tabId = (t as any)?.id as
+                        | number
+                        | string
+                        | undefined;
+                      const closedAt = (t as any)?.closedAt as
+                        | string
+                        | number
+                        | undefined;
+                      const closedMs =
+                        typeof closedAt === 'string'
+                          ? Date.parse(closedAt)
+                          : typeof closedAt === 'number'
+                            ? closedAt
+                            : undefined;
+                      return (
+                        <div
+                          key={i}
+                          className="rounded border bg-background/40 p-2 text-xs"
+                        >
+                          <div className="flex items-start gap-2 mb-2">
+                            {fav ? (
+                              <img
+                                src={fav}
+                                alt=""
+                                className="h-4 w-4 rounded-sm shrink-0 mt-0.5"
+                              />
+                            ) : (
+                              <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0 mt-0.5" />
+                            )}
+                            <span
+                              className="text-foreground font-medium leading-tight flex-1 break-words"
+                              title={title || 'Untitled tab'}
+                            >
+                              {title || 'Untitled tab'}
+                            </span>
+                          </div>
+                          {url && (
+                            <div className="mb-1">
+                              <span className="text-[10px] text-muted-foreground opacity-70">
+                                URL:
+                              </span>{' '}
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 hover:underline dark:text-blue-400 break-all"
+                                title={url}
+                              >
+                                {url}
+                              </a>
+                            </div>
+                          )}
+                          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground">
+                            {closedMs && (
+                              <div>
+                                <span className="opacity-70">Closed:</span>{' '}
+                                {formatTimeSafe(closedMs)} •{' '}
+                                {formatRelativeDate(closedMs)}
+                              </div>
+                            )}
+                            {tabId && (
+                              <div>
+                                <span className="opacity-70">ID:</span> {tabId}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+                  )}
                 </div>
               </div>
             )}
@@ -248,21 +330,21 @@ export default function SessionsView({
 }
 
 function toDateTimeAttr(ts?: number) {
-  if (!ts) return "";
+  if (!ts) return '';
   try {
     return new Date(ts).toISOString();
   } catch {
-    return "";
+    return '';
   }
 }
 
 function formatRelativeDate(ts?: number) {
-  if (!ts) return "";
+  if (!ts) return '';
   const d = new Date(ts);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
+  if (diffMin < 1) return 'just now';
   if (diffMin < 60) return `${diffMin}m ago`;
   const diffHr = Math.floor(diffMin / 60);
   if (diffHr < 24) return `${diffHr}h ago`;
@@ -272,14 +354,14 @@ function formatRelativeDate(ts?: number) {
 }
 
 function formatTimeSafe(ts?: number) {
-  if (!ts) return "";
+  if (!ts) return '';
   try {
     return new Date(ts).toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
     });
   } catch {
-    return "";
+    return '';
   }
 }
 
@@ -287,7 +369,7 @@ function pickWidthVariant(
   id: string,
   index: number,
   prevIdx: number,
-  len: number,
+  len: number
 ): number {
   const base = seededIndex(id, index, len);
   if (prevIdx < 0) return base;
