@@ -464,7 +464,7 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                         className="truncate text-blue-600 hover:underline dark:text-blue-400"
                         title={url}
                       >
-                        {url.slice(0, 50)}
+                        {url.slice(0, 45)}
                       </a>
                     ) : (
                       <span className="opacity-60">—</span>

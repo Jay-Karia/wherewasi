@@ -102,11 +102,11 @@ export default function SearchResults() {
   // Normalize and group by day
   const normalized = useMemo(() => {
     return results
-      .map((s) => ({
+      .map(s => ({
         ...s,
         _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
       }))
-      .filter((s) => Number.isFinite(s._ts) && s._ts > 0);
+      .filter(s => Number.isFinite(s._ts) && s._ts > 0);
   }, [results]);
 
   const groups = useMemo(() => groupByDay(normalized), [normalized]);
@@ -150,12 +150,6 @@ export default function SearchResults() {
                         key={session.id}
                         className="group relative overflow-hidden rounded-lg border bg-card/60 shadow-sm transition hover:shadow-md"
                       >
-                        {/* Vertical line indicator on the left */}
-                        <div
-                          className="absolute left-0 top-0 bottom-0 w-1"
-                          style={{ backgroundColor: accent }}
-                        />
-
                         <div className="pl-4 pr-4 py-4">
                           <header className="flex items-center justify-between gap-2">
                             <div className="flex min-w-0 items-center gap-2">
@@ -164,7 +158,10 @@ export default function SearchResults() {
                                 style={{ backgroundColor: accent }}
                               />
                               <h4 className="line-clamp-1 text-base font-semibold text-foreground">
-                                {highlightText(session.title || 'Untitled session', q)}
+                                {highlightText(
+                                  session.title || 'Untitled session',
+                                  q
+                                )}
                               </h4>
                             </div>
                             {typeof session.tabsCount === 'number' && (
@@ -175,7 +172,7 @@ export default function SearchResults() {
                             <button
                               onClick={() => toggle(session.id)}
                               aria-expanded={isExpanded}
-                              className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
+                              className="ml-auto flex items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground"
                               title={isExpanded ? 'Collapse' : 'Expand'}
                             >
                               <MdOutlineKeyboardArrowDown
@@ -212,7 +209,9 @@ export default function SearchResults() {
                             <div className="rounded-md border bg-background/60 p-3">
                               <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
                                 <div>
-                                  <span className="opacity-70">Session ID:</span>{' '}
+                                  <span className="opacity-70">
+                                    Session ID:
+                                  </span>{' '}
                                   <span className="break-all text-foreground/90">
                                     {session.id}
                                   </span>
@@ -221,14 +220,18 @@ export default function SearchResults() {
                                   <span className="opacity-70">Created:</span>{' '}
                                   <span>
                                     {formatTime(session.createdAt as number)} •{' '}
-                                    {formatRelative(session.createdAt as number)}
+                                    {formatRelative(
+                                      session.createdAt as number
+                                    )}
                                   </span>
                                 </div>
                                 <div>
                                   <span className="opacity-70">Updated:</span>{' '}
                                   <span>
                                     {formatTime(session.updatedAt as number)} •{' '}
-                                    {formatRelative(session.updatedAt as number)}
+                                    {formatRelative(
+                                      session.updatedAt as number
+                                    )}
                                   </span>
                                 </div>
                               </div>
@@ -238,10 +241,18 @@ export default function SearchResults() {
                                 <table className="min-w-full text-left">
                                   <thead className="text-[11px] text-muted-foreground">
                                     <tr className="border-b">
-                                      <th className="py-1 pr-3 font-medium">Tab</th>
-                                      <th className="py-1 pr-3 font-medium">URL</th>
-                                      <th className="py-1 pr-3 font-medium">Closed</th>
-                                      <th className="py-1 pr-3 font-medium">Tab ID</th>
+                                      <th className="py-1 pr-3 font-medium">
+                                        Tab
+                                      </th>
+                                      <th className="py-1 pr-3 font-medium">
+                                        URL
+                                      </th>
+                                      <th className="py-1 pr-3 font-medium">
+                                        Closed
+                                      </th>
+                                      <th className="py-1 pr-3 font-medium">
+                                        Tab ID
+                                      </th>
                                     </tr>
                                   </thead>
                                   <tbody className="text-xs">
@@ -255,7 +266,9 @@ export default function SearchResults() {
                                       const title = (t as any)?.title as
                                         | string
                                         | undefined;
-                                      const url = (t as any)?.url as string | undefined;
+                                      const url = (t as any)?.url as
+                                        | string
+                                        | undefined;
                                       const tabId = (t as any)?.id as
                                         | number
                                         | string
@@ -320,19 +333,25 @@ export default function SearchResults() {
                                                 </span>
                                               </a>
                                             ) : (
-                                              <span className="opacity-60">—</span>
+                                              <span className="opacity-60">
+                                                —
+                                              </span>
                                             )}
                                           </td>
                                           <td className="whitespace-nowrap py-2 pr-3 text-muted-foreground">
                                             {closedMs ? (
                                               `${formatTime(closedMs)} • ${formatRelative(closedMs)}`
                                             ) : (
-                                              <span className="opacity-60">—</span>
+                                              <span className="opacity-60">
+                                                —
+                                              </span>
                                             )}
                                           </td>
                                           <td className="py-2 pr-3 text-muted-foreground">
                                             {tabId ?? (
-                                              <span className="opacity-60">—</span>
+                                              <span className="opacity-60">
+                                                —
+                                              </span>
                                             )}
                                           </td>
                                         </tr>
