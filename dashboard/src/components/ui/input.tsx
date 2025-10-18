@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RxCross2 } from "react-icons/rx";
+import { RxCross2 } from 'react-icons/rx';
 
 import { cn } from '@/lib/utils';
 
@@ -30,10 +30,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {shortcut}
         </div>
         {showClear && setQuery && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground cursor-pointer">
-            {<RxCross2 className="hover:opacity-70" size={19} onClick={() => {
-              setQuery('');
-            }}/>}
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground cursor-pointer z-10">
+            {
+              <RxCross2
+                className="hover:opacity-70"
+                size={19}
+                onMouseDown={e => {
+                  e.preventDefault();
+                  setQuery('');
+                }}
+              />
+            }
           </div>
         )}
       </div>
