@@ -203,7 +203,6 @@ export default function SearchResults() {
                           </footer>
                         </div>
 
-                        {/* Expanded details */}
                         {isExpanded && (
                           <div className="border-t bg-background/40 px-4 pb-4 pt-3">
                             <div className="rounded-md border bg-background/60 p-3">
@@ -236,7 +235,6 @@ export default function SearchResults() {
                                 </div>
                               </div>
 
-                              {/* Tabs table */}
                               <div className="mt-3 overflow-x-auto">
                                 <table className="min-w-full text-left">
                                   <thead className="text-[11px] text-muted-foreground">

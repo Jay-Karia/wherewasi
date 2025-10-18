@@ -94,7 +94,6 @@ export default function TimelineView({
                 if (isExpanded) {
                   return (
                     <li key={s.id}>
-                      {/* Wide standalone layout when expanded */}
                       <div className="md:mx-auto md:max-w-6xl">
                         <article
                           className={cn(
@@ -385,7 +384,6 @@ export function toISO(ts: number) {
   }
 }
 
-// Expanded details component replicating structure from other views
 function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
   return (
     <div className="mt-3 rounded-md border bg-background/60 p-2 sm:p-3">
@@ -455,7 +453,6 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                           {title || "Untitled tab"}
                         </span>
                       </div>
-                      {/* Show URL on mobile under title */}
                       {url && (
                         <a
                           href={url}
@@ -467,7 +464,6 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                           {url}
                         </a>
                       )}
-                      {/* Show closed time on mobile */}
                       {closedMs && (
                         <span className="md:hidden text-muted-foreground text-[10px] pl-6">
                           Closed: {formatTime(closedMs)} • {formatRelative(closedMs)}

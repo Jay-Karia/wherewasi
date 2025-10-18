@@ -65,7 +65,6 @@ export default function ListView({
           <section key={k} className={cn(idx > 0 && 'mt-8')}>
             <DaySeparator ts={ts} count={items.length} />
             <div className="mt-3 overflow-hidden rounded-lg border bg-card/60 mb-12">
-              {/* Desktop table header - only visible on larger screens */}
               <div className="hidden lg:grid items-center gap-3 border-b px-4 py-2 text-xs text-muted-foreground lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
                 <div>Title</div>
                 <div>Summary</div>
@@ -78,7 +77,6 @@ export default function ListView({
                   const accent = tinyAccentForSeed(s.id);
                   return (
                     <li key={s.id} className="group">
-                      {/* Mobile/Tablet card layout */}
                       <article className="grid grid-cols-1 gap-2 px-3 py-3 sm:px-4 lg:hidden">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex items-center gap-2 flex-1">
@@ -128,7 +126,6 @@ export default function ListView({
                         </div>
                       </article>
 
-                      {/* Desktop grid layout */}
                       <article className="hidden lg:grid items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
                         <div className="min-w-0 flex items-center gap-2">
                           <span
@@ -184,7 +181,6 @@ export default function ListView({
                         </div>
                       </article>
 
-                      {/* Expanded details - shared between mobile and desktop */}
                       {expanded[s.id] && (
                         <div className="px-3 sm:px-4 pb-4 -mt-2">
                           <div className="rounded-md border bg-background/60 p-3">
@@ -281,7 +277,6 @@ export default function ListView({
                                                 {title || 'Untitled tab'}
                                               </span>
                                             </div>
-                                            {/* Show URL on mobile under title */}
                                             {url && (
                                               <a
                                                 href={url}

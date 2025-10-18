@@ -40,7 +40,6 @@ export default function Filter() {
                     Filter sessions
                 </DropdownMenuLabel>
 
-                {/* Date Range Filter */}
                 <div className="mb-4">
                     <div className="flex items-center gap-2 text-sm font-medium mb-2">
                         <IoCalendarOutline className="text-muted-foreground" />
@@ -88,7 +87,6 @@ export default function Filter() {
 
                 <DropdownMenuSeparator />
 
-                {/* Tab Count Filter */}
                 <div className="my-4">
                     <div className="flex items-center gap-2 text-sm font-medium mb-2">
                         <TiTabsOutline className="text-muted-foreground" />
@@ -136,7 +134,6 @@ export default function Filter() {
 
                 <DropdownMenuSeparator className="my-3" />
 
-                {/* Clear Filters Button */}
                 {hasActiveFilters && (
                     <button
                         onClick={() => {

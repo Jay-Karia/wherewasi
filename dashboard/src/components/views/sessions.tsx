@@ -117,7 +117,6 @@ export default function SessionsView({
               </time>
             </footer>
 
-            {/* Expanded details */}
             {expanded[s.id] && (
               <div className="mt-3 rounded-lg border bg-background/60 p-2 sm:p-3">
                 <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground md:grid-cols-3">
@@ -141,7 +140,6 @@ export default function SessionsView({
                   </div>
                 </div>
 
-                {/* Tabs table - desktop view */}
                 <div className="mt-3 overflow-x-auto hidden md:block">
                   <table className="min-w-full text-left">
                     <thead className="text-[11px] text-muted-foreground">
@@ -240,7 +238,6 @@ export default function SessionsView({
                   </table>
                 </div>
 
-                {/* Tabs cards - mobile/tablet view */}
                 <div className="mt-3 space-y-2 md:hidden">
                   {(Array.isArray(s.tabs) ? (s.tabs as any[]) : []).map(
                     (t, i) => {
