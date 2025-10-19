@@ -1,6 +1,13 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions, updateSessionTitle, deleteSession } from '@/lib/utils';
+import {
+  cn,
+  filterSessions,
+  updateSessionTitle,
+  deleteSession,
+  removeTabsFromSession,
+} from '@/lib/utils';
 import { MdDelete, MdEdit, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { FiMinus } from 'react-icons/fi';
 import { useMemo, useState } from 'react';
 import { tinyAccentForSeed } from './timeline';
 import { useAtomValue } from 'jotai';
@@ -13,6 +20,7 @@ import {
 } from '@/components/ui/context-menu';
 import { EditSessionTitle } from '@/components/ui/edit-session-title';
 import { useStorage } from '@/hooks/useStorage';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type Props = {
   sessions: Session[];
@@ -28,6 +36,10 @@ export default function SessionsView({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>(
+    {}
+  );
+  const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
   const [, setStoredSessions] = useStorage<Session[]>({
@@ -58,6 +70,69 @@ export default function SessionsView({
       console.error('Failed to delete session:', error);
       throw error;
     }
+  };
+
+  const toggleTabSelection = (sessionId: string, tabIndex: number) => {
+    setSelectedTabs(prev => {
+      const sessionTabs = new Set(prev[sessionId] || []);
+      if (sessionTabs.has(tabIndex)) {
+        sessionTabs.delete(tabIndex);
+      } else {
+        sessionTabs.add(tabIndex);
+      }
+      return { ...prev, [sessionId]: sessionTabs };
+    });
+  };
+
+  const selectAllTabs = (sessionId: string, tabCount: number) => {
+    setSelectedTabs(prev => ({
+      ...prev,
+      [sessionId]: new Set(Array.from({ length: tabCount }, (_, i) => i)),
+    }));
+  };
+
+  const deselectAllTabs = (sessionId: string) => {
+    setSelectedTabs(prev => {
+      const updated = { ...prev };
+      delete updated[sessionId];
+      return updated;
+    });
+  };
+
+  const enterRemovalMode = (sessionId: string) => {
+    setRemovalMode(prev => ({ ...prev, [sessionId]: true }));
+    setExpanded(prev => ({ ...prev, [sessionId]: true }));
+    deselectAllTabs(sessionId);
+  };
+
+  const cancelRemovalMode = (sessionId: string) => {
+    setRemovalMode(prev => {
+      const updated = { ...prev };
+      delete updated[sessionId];
+      return updated;
+    });
+    deselectAllTabs(sessionId);
+  };
+
+  const handleRemoveSelectedTabs = async (sessionId: string) => {
+    const tabsToRemove = Array.from(selectedTabs[sessionId] || []);
+    if (tabsToRemove.length === 0) return;
+
+    try {
+      const updatedSessions = await removeTabsFromSession(
+        sessionId,
+        tabsToRemove
+      );
+      await setStoredSessions(updatedSessions);
+      cancelRemovalMode(sessionId);
+    } catch (error) {
+      console.error('Failed to remove tabs:', error);
+      throw error;
+    }
+  };
+
+  const getSelectedCount = (sessionId: string) => {
+    return selectedTabs[sessionId]?.size || 0;
   };
 
   const variants = [
@@ -185,6 +260,23 @@ export default function SessionsView({
                       <table className="min-w-full text-left">
                         <thead className="text-[11px] text-muted-foreground">
                           <tr className="border-b">
+                            {removalMode[s.id] && (
+                              <th className="py-1 pr-3 font-medium w-8">
+                                <Checkbox
+                                  className="cursor-pointer"
+                                  onCheckedChange={checked =>
+                                    checked
+                                      ? selectAllTabs(s.id, s.tabs.length)
+                                      : deselectAllTabs(s.id)
+                                  }
+                                  checked={
+                                    getSelectedCount(s.id) === s.tabs.length &&
+                                    s.tabs.length > 0
+                                  }
+                                  title="Select all tabs"
+                                />
+                              </th>
+                            )}
                             <th className="py-1 pr-3 font-medium">Tab</th>
                             <th className="py-1 pr-3 font-medium">URL</th>
                             <th className="py-1 pr-3 font-medium">Closed</th>
@@ -218,8 +310,26 @@ export default function SessionsView({
                               return (
                                 <tr
                                   key={i}
-                                  className="border-b last:border-b-0 align-top"
+                                  className={cn(
+                                    'border-b last:border-b-0 align-top',
+                                    removalMode[s.id] &&
+                                      selectedTabs[s.id]?.has(i) &&
+                                      'bg-destructive/10'
+                                  )}
                                 >
+                                  {removalMode[s.id] && (
+                                    <td className="py-2 pr-3">
+                                      <Checkbox
+                                        className="cursor-pointer"
+                                        onCheckedChange={() =>
+                                          toggleTabSelection(s.id, i)
+                                        }
+                                        checked={
+                                          selectedTabs[s.id]?.has(i) || false
+                                        }
+                                      />
+                                    </td>
+                                  )}
                                   <td className="py-2 pr-3">
                                     <div className="flex items-center gap-2 min-w-0">
                                       {fav ? (
@@ -308,9 +418,25 @@ export default function SessionsView({
                           return (
                             <div
                               key={i}
-                              className="rounded border bg-background/40 p-2 text-xs"
+                              className={cn(
+                                'rounded border bg-background/40 p-2 text-xs',
+                                removalMode[s.id] &&
+                                  selectedTabs[s.id]?.has(i) &&
+                                  'bg-destructive/10 border-destructive/30'
+                              )}
                             >
                               <div className="flex items-start gap-2 mb-2">
+                                {removalMode[s.id] && (
+                                  <Checkbox
+                                    className="cursor-pointer mt-0.5 shrink-0"
+                                    onCheckedChange={() =>
+                                      toggleTabSelection(s.id, i)
+                                    }
+                                    checked={
+                                      selectedTabs[s.id]?.has(i) || false
+                                    }
+                                  />
+                                )}
                                 {fav ? (
                                   <img
                                     src={fav}
@@ -363,6 +489,25 @@ export default function SessionsView({
                         }
                       )}
                     </div>
+                    {removalMode[s.id] && (
+                      <div className="mt-3 flex items-center justify-between gap-3 p-2">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => cancelRemovalMode(s.id)}
+                            className="px-3 py-1.5 text-sm rounded border border-border bg-background hover:bg-accent transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleRemoveSelectedTabs(s.id)}
+                            disabled={getSelectedCount(s.id) === 0}
+                            className="px-3 py-1.5 bg-muted/30 text-sm rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            Remove Tabs
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -373,6 +518,10 @@ export default function SessionsView({
               <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                 <MdEdit className="mr-2 h-4 w-4" />
                 Edit Title
+              </ContextMenuItem>
+              <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                <FiMinus className="mr-2 h-4 w-4" />
+                Remove Tabs
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => handleDeleteSession(s.id)}

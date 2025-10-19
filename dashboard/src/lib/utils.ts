@@ -180,3 +180,47 @@ export async function deleteSession(sessionId: string): Promise<Session[]> {
     throw new Error('Chrome storage API not available');
   }
 }
+
+/**
+ * Removes specific tabs from a session in Chrome storage and returns the updated sessions array
+ */
+export async function removeTabsFromSession(
+  sessionId: string,
+  tabIndicesToRemove: number[]
+): Promise<Session[]> {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    const data = await new Promise<{ sessions: Session[] }>(resolve => {
+      chrome.storage.local.get(['sessions'], res => {
+        resolve(res as { sessions: Session[] });
+      });
+    });
+
+    const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+    const updatedSessions = sessions.map(s => {
+      if (s.id === sessionId) {
+        const newTabs = s.tabs.filter((_, idx) => !tabIndicesToRemove.includes(idx));
+        return {
+          ...s,
+          tabs: newTabs,
+          tabsCount: newTabs.length,
+          updatedAt: Date.now(),
+        };
+      }
+      return s;
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ sessions: updatedSessions }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    return updatedSessions;
+  } else {
+    throw new Error('Chrome storage API not available');
+  }
+}

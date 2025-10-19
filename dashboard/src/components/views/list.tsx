@@ -1,5 +1,5 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions, updateSessionTitle, deleteSession } from '@/lib/utils';
+import { cn, filterSessions, updateSessionTitle, deleteSession, removeTabsFromSession } from '@/lib/utils';
 import { tinyAccentForSeed } from './timeline';
 import { IoMdExpand } from 'react-icons/io';
 import { useState, useMemo } from 'react';
@@ -12,8 +12,10 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { MdDelete, MdEdit } from 'react-icons/md';
+import { FiMinus } from 'react-icons/fi';
 import { EditSessionTitle } from '@/components/ui/edit-session-title';
 import { useStorage } from '@/hooks/useStorage';
+import { Checkbox } from "@/components/ui/checkbox"
 
 export default function ListView({
   sessions,
@@ -26,8 +28,10 @@ export default function ListView({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>({});
+  const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
-  const [storedSessions, setStoredSessions] = useStorage<Session[]>({
+  const [, setStoredSessions] = useStorage<Session[]>({
     key: 'sessions',
     initialValue: [],
   });
@@ -55,6 +59,69 @@ export default function ListView({
       console.error('Failed to delete session:', error);
       throw error;
     }
+  };
+
+  const toggleTabSelection = (sessionId: string, tabIndex: number) => {
+    setSelectedTabs(prev => {
+      const sessionTabs = new Set(prev[sessionId] || []);
+      if (sessionTabs.has(tabIndex)) {
+        sessionTabs.delete(tabIndex);
+      } else {
+        sessionTabs.add(tabIndex);
+      }
+      return { ...prev, [sessionId]: sessionTabs };
+    });
+  };
+
+  const selectAllTabs = (sessionId: string, tabCount: number) => {
+    setSelectedTabs(prev => ({
+      ...prev,
+      [sessionId]: new Set(Array.from({ length: tabCount }, (_, i) => i)),
+    }));
+  };
+
+  const deselectAllTabs = (sessionId: string) => {
+    setSelectedTabs(prev => {
+      const updated = { ...prev };
+      delete updated[sessionId];
+      return updated;
+    });
+  };
+
+  const enterRemovalMode = (sessionId: string) => {
+    setRemovalMode(prev => ({ ...prev, [sessionId]: true }));
+    setExpanded(prev => ({ ...prev, [sessionId]: true }));
+    deselectAllTabs(sessionId);
+  };
+
+  const cancelRemovalMode = (sessionId: string) => {
+    setRemovalMode(prev => {
+      const updated = { ...prev };
+      delete updated[sessionId];
+      return updated;
+    });
+    deselectAllTabs(sessionId);
+  };
+
+  const handleRemoveSelectedTabs = async (sessionId: string) => {
+    const tabsToRemove = Array.from(selectedTabs[sessionId] || []);
+    if (tabsToRemove.length === 0) return;
+
+    try {
+      const updatedSessions = await removeTabsFromSession(
+        sessionId,
+        tabsToRemove
+      );
+      await setStoredSessions(updatedSessions);
+      cancelRemovalMode(sessionId);
+    } catch (error) {
+      console.error('Failed to remove tabs:', error);
+      throw error;
+    }
+  };
+
+  const getSelectedCount = (sessionId: string) => {
+    return selectedTabs[sessionId]?.size || 0;
   };
 
   const sortedSessions = useMemo(() => {
@@ -114,6 +181,7 @@ export default function ListView({
               <ul className="divide-y divide-border/60">
                 {items.map(s => {
                   const accent = tinyAccentForSeed(s.id);
+                  const isRemovalMode = removalMode[s.id];
                   return (
                     <li key={s.id} className="group">
                       <ContextMenu>
@@ -229,6 +297,10 @@ export default function ListView({
                             <MdEdit className="mr-2 h-4 w-4" />
                             Edit Title
                           </ContextMenuItem>
+                          <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                            <FiMinus className="mr-2 h-4 w-4" />
+                            Remove Tabs
+                          </ContextMenuItem>
                           <ContextMenuItem className="text-destructive" onSelect={() => handleDeleteSession(s.id)}>
                             <MdDelete className="mr-2 h-4 w-4" />
                             Delete Session
@@ -266,6 +338,24 @@ export default function ListView({
                               <table className="min-w-full text-left">
                                 <thead className="text-[11px] text-muted-foreground">
                                   <tr className="border-b">
+                                    {isRemovalMode && (
+                                      <th className="py-1 pr-3 font-medium">
+                                        <Checkbox
+                                          checked={
+                                            getSelectedCount(s.id) ===
+                                            (s.tabs?.length || 0)
+                                          }
+                                          onCheckedChange={checked =>
+                                            checked
+                                              ? selectAllTabs(
+                                                  s.id,
+                                                  s.tabs?.length || 0
+                                                )
+                                              : deselectAllTabs(s.id)
+                                          }
+                                        />
+                                      </th>
+                                    )}
                                     <th className="py-1 pr-3 font-medium">
                                       Tab
                                     </th>
@@ -313,6 +403,18 @@ export default function ListView({
                                         key={idx}
                                         className="border-b last:border-b-0 align-top"
                                       >
+                                        {isRemovalMode && (
+                                          <td className="py-2 pr-3">
+                                            <Checkbox
+                                              checked={selectedTabs[s.id]?.has(
+                                                idx
+                                              )}
+                                              onCheckedChange={() =>
+                                                toggleTabSelection(s.id, idx)
+                                              }
+                                            />
+                                          </td>
+                                        )}
                                         <td className="py-2 pr-3">
                                           <div className="flex flex-col gap-1 min-w-0">
                                             <div className="flex items-center gap-2 min-w-0">
@@ -389,6 +491,22 @@ export default function ListView({
                                 </tbody>
                               </table>
                             </div>
+                            {isRemovalMode && (
+                              <div className="mt-3 flex justify-end gap-2">
+                                <button
+                                  onClick={() => cancelRemovalMode(s.id)}
+                                  className="text-sm text-muted-foreground hover:underline"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveSelectedTabs(s.id)}
+                                  className="text-sm text-destructive hover:underline"
+                                >
+                                  Remove Selected Tabs
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}

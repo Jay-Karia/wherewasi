@@ -1,10 +1,11 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions, updateSessionTitle, deleteSession } from '@/lib/utils';
+import { cn, filterSessions, updateSessionTitle, deleteSession, removeTabsFromSession } from '@/lib/utils';
 import {
   MdDelete,
   MdEdit,
   MdOutlineKeyboardArrowDown,
 } from 'react-icons/md';
+import { FiMinus } from 'react-icons/fi';
 import { useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/context-menu';
 import { EditSessionTitle } from '@/components/ui/edit-session-title';
 import { useStorage } from '@/hooks/useStorage';
+import { Checkbox } from "@/components/ui/checkbox"
 
 type Props = {
   sessions: Session[];
@@ -45,6 +47,8 @@ export default function TimelineView({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>({});
+  const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
   const [, setStoredSessions] = useStorage<Session[]>({
@@ -75,6 +79,69 @@ export default function TimelineView({
       console.error('Failed to delete session:', error);
       throw error;
     }
+  };
+
+  const toggleTabSelection = (sessionId: string, tabIndex: number) => {
+    setSelectedTabs(prev => {
+      const sessionTabs = new Set(prev[sessionId] || []);
+      if (sessionTabs.has(tabIndex)) {
+        sessionTabs.delete(tabIndex);
+      } else {
+        sessionTabs.add(tabIndex);
+      }
+      return { ...prev, [sessionId]: sessionTabs };
+    });
+  };
+
+  const selectAllTabs = (sessionId: string, tabCount: number) => {
+    setSelectedTabs(prev => ({
+      ...prev,
+      [sessionId]: new Set(Array.from({ length: tabCount }, (_, i) => i)),
+    }));
+  };
+
+  const deselectAllTabs = (sessionId: string) => {
+    setSelectedTabs(prev => {
+      const updated = { ...prev };
+      delete updated[sessionId];
+      return updated;
+    });
+  };
+
+  const enterRemovalMode = (sessionId: string) => {
+    setRemovalMode(prev => ({ ...prev, [sessionId]: true }));
+    setExpanded(prev => ({ ...prev, [sessionId]: true }));
+    deselectAllTabs(sessionId);
+  };
+
+  const cancelRemovalMode = (sessionId: string) => {
+    setRemovalMode(prev => {
+      const updated = { ...prev };
+      delete updated[sessionId];
+      return updated;
+    });
+    deselectAllTabs(sessionId);
+  };
+
+  const handleRemoveSelectedTabs = async (sessionId: string) => {
+    const tabsToRemove = Array.from(selectedTabs[sessionId] || []);
+    if (tabsToRemove.length === 0) return;
+
+    try {
+      const updatedSessions = await removeTabsFromSession(
+        sessionId,
+        tabsToRemove
+      );
+      await setStoredSessions(updatedSessions);
+      cancelRemovalMode(sessionId);
+    } catch (error) {
+      console.error('Failed to remove tabs:', error);
+      throw error;
+    }
+  };
+
+  const getSelectedCount = (sessionId: string) => {
+    return selectedTabs[sessionId]?.size || 0;
   };
 
   const sortedSessions = useMemo(() => {
@@ -185,13 +252,27 @@ export default function TimelineView({
                                   {formatRelative(s._ts)}
                                 </span>
                               </footer>
-                              <ExpandedDetails session={s} />
+                              <ExpandedDetails
+                                session={s}
+                                removalMode={removalMode[s.id]}
+                                selectedTabs={selectedTabs[s.id]}
+                                onToggleTab={toggleTabSelection}
+                                onSelectAll={selectAllTabs}
+                                onDeselectAll={deselectAllTabs}
+                                onRemove={handleRemoveSelectedTabs}
+                                onCancel={cancelRemovalMode}
+                                getSelectedCount={getSelectedCount}
+                              />
                             </article>
                           </ContextMenuTrigger>
                           <ContextMenuContent>
                             <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                               <MdEdit className="mr-2 h-4 w-4" />
                               Edit Title
+                            </ContextMenuItem>
+                            <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                              <FiMinus className="mr-2 h-4 w-4" />
+                              Remove Tabs
                             </ContextMenuItem>
                             <ContextMenuItem
                               className="text-destructive"
@@ -281,6 +362,10 @@ export default function TimelineView({
                                 <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                                   <MdEdit className="mr-2 h-4 w-4" />
                                   Edit Title
+                                </ContextMenuItem>
+                                <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                                  <FiMinus className="mr-2 h-4 w-4" />
+                                  Remove Tabs
                                 </ContextMenuItem>
                                 <ContextMenuItem
                                   className="text-destructive"
@@ -380,6 +465,10 @@ export default function TimelineView({
                                 <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                                   <MdEdit className="mr-2 h-4 w-4" />
                                   Edit Title
+                                </ContextMenuItem>
+                                <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                                  <FiMinus className="mr-2 h-4 w-4" />
+                                  Remove Tabs
                                 </ContextMenuItem>
                                 <ContextMenuItem
                                   className="text-destructive"
@@ -490,7 +579,31 @@ export function toISO(ts: number) {
   }
 }
 
-function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
+interface ExpandedDetailsProps {
+  session: Session & { _ts?: number };
+  removalMode?: boolean;
+  selectedTabs?: Set<number>;
+  onToggleTab?: (sessionId: string, tabIndex: number) => void;
+  onSelectAll?: (sessionId: string, tabCount: number) => void;
+  onDeselectAll?: (sessionId: string) => void;
+  onRemove?: (sessionId: string) => void;
+  onCancel?: (sessionId: string) => void;
+  getSelectedCount?: (sessionId: string) => number;
+}
+
+function ExpandedDetails({
+  session,
+  removalMode,
+  selectedTabs,
+  onToggleTab,
+  onSelectAll,
+  onDeselectAll,
+  onRemove,
+  onCancel,
+  getSelectedCount
+}: ExpandedDetailsProps) {
+  const tabs = Array.isArray((session as any).tabs) ? ((session as any).tabs as any[]) : [];
+
   return (
     <div className="mt-3 rounded-md border bg-background/60 p-2 sm:p-3">
       <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
@@ -517,6 +630,23 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
         <table className="min-w-full text-left">
           <thead className="text-[11px] text-muted-foreground">
             <tr className="border-b">
+              {removalMode && (
+                <th className="py-1 pr-3 font-medium w-8">
+                  <Checkbox
+                    className="cursor-pointer"
+                    onCheckedChange={(checked) =>
+                      checked
+                        ? onSelectAll?.(session.id, tabs.length)
+                        : onDeselectAll?.(session.id)
+                    }
+                    checked={
+                      getSelectedCount?.(session.id) === tabs.length &&
+                      tabs.length > 0
+                    }
+                    title="Select all tabs"
+                  />
+                </th>
+              )}
               <th className="py-1 pl-2 pr-3 sm:pl-0 font-medium">Tab</th>
               <th className="py-1 pr-3 font-medium hidden sm:table-cell">
                 URL
@@ -530,10 +660,7 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
             </tr>
           </thead>
           <tbody className="text-xs">
-            {(Array.isArray((session as any).tabs)
-              ? ((session as any).tabs as any[])
-              : []
-            ).map((t, i) => {
+            {tabs.map((t, i) => {
               const fav = (t as any)?.favIconUrl as string | undefined;
               const title = (t as any)?.title as string | undefined;
               const url = (t as any)?.url as string | undefined;
@@ -549,7 +676,22 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                     ? closedAt
                     : undefined;
               return (
-                <tr key={i} className="border-b last:border-b-0 align-top">
+                <tr
+                  key={i}
+                  className={cn(
+                    'border-b last:border-b-0 align-top',
+                    removalMode && selectedTabs?.has(i) && 'bg-destructive/10'
+                  )}
+                >
+                  {removalMode && (
+                    <td className="py-2 pr-3">
+                      <Checkbox
+                        className="cursor-pointer"
+                        onCheckedChange={() => onToggleTab?.(session.id, i)}
+                        checked={selectedTabs?.has(i) || false}
+                      />
+                    </td>
+                  )}
                   <td className="py-2 pl-2 pr-3 sm:pl-0">
                     <div className="flex flex-col gap-1 min-w-0">
                       <div className="flex items-center gap-2 min-w-0">
@@ -623,6 +765,25 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
           </tbody>
         </table>
       </div>
+      {removalMode && (
+        <div className="mt-3 flex items-center justify-between gap-3 p-2">
+          <div className="flex gap-2">
+            <button
+              onClick={() => onCancel?.(session.id)}
+              className="px-3 py-1.5 text-sm rounded border border-border bg-background hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => onRemove?.(session.id)}
+              disabled={!getSelectedCount?.(session.id)}
+              className="px-3 py-1.5 bg-destructive/20 text-destructive text-sm rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-destructive/30"
+            >
+              Remove Selected ({getSelectedCount?.(session.id) || 0})
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
