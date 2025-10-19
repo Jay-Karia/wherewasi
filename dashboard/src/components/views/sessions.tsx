@@ -5,10 +5,11 @@ import {
   updateSessionTitle,
   deleteSession,
   removeTabsFromSession,
+  moveTabBetweenSessions,
 } from '@/lib/utils';
 import { MdDelete, MdEdit, MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { tinyAccentForSeed } from './timeline';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
@@ -40,12 +41,44 @@ export default function SessionsView({
     {}
   );
   const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
+  const [isAltPressed, setIsAltPressed] = useState(false);
+  const [draggedTab, setDraggedTab] = useState<{
+    sessionId: string;
+    tabIndex: number;
+  } | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
   const [, setStoredSessions] = useStorage<Session[]>({
     key: 'sessions',
     initialValue: [],
   });
+
+  // Track Alt key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltPressed(false);
+        setDraggedTab(null);
+        setDropTarget(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   const handleEditTitle = (session: Session) => {
     setEditingSession(session);
@@ -131,6 +164,60 @@ export default function SessionsView({
     }
   };
 
+  const handleMoveTab = async (
+    sourceSessionId: string,
+    targetSessionId: string,
+    tabIndex: number
+  ) => {
+    if (sourceSessionId === targetSessionId) return;
+
+    try {
+      const updatedSessions = await moveTabBetweenSessions(
+        sourceSessionId,
+        targetSessionId,
+        tabIndex
+      );
+      await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to move tab:', error);
+      throw error;
+    }
+  };
+
+  const handleTabDragStart = (sessionId: string, tabIndex: number) => {
+    if (!isAltPressed) return;
+    setDraggedTab({ sessionId, tabIndex });
+  };
+
+  const handleSessionDragOver = (e: React.DragEvent, sessionId: string) => {
+    if (!draggedTab || draggedTab.sessionId === sessionId) return;
+    e.preventDefault();
+    setDropTarget(sessionId);
+  };
+
+  const handleSessionDragLeave = () => {
+    setDropTarget(null);
+  };
+
+  const handleSessionDrop = async (
+    e: React.DragEvent,
+    targetSessionId: string
+  ) => {
+    e.preventDefault();
+    if (!draggedTab || draggedTab.sessionId === targetSessionId) {
+      setDropTarget(null);
+      return;
+    }
+
+    await handleMoveTab(
+      draggedTab.sessionId,
+      targetSessionId,
+      draggedTab.tabIndex
+    );
+    setDraggedTab(null);
+    setDropTarget(null);
+  };
+
   const getSelectedCount = (sessionId: string) => {
     return selectedTabs[sessionId]?.size || 0;
   };
@@ -184,8 +271,14 @@ export default function SessionsView({
                 key={s.id}
                 className={cn(
                   'group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-3 px-7 shadow-sm transition hover:shadow-md',
-                  widthClass
+                  widthClass,
+                  dropTarget === s.id &&
+                    'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
                 )}
+                draggable={isAltPressed}
+                onDragOver={e => handleSessionDragOver(e, s.id)}
+                onDragLeave={handleSessionDragLeave}
+                onDrop={e => handleSessionDrop(e, s.id)}
               >
                 <header className="mb-2 flex items-center justify-between gap-3">
                   <span
@@ -311,25 +404,18 @@ export default function SessionsView({
                                 <tr
                                   key={i}
                                   className={cn(
-                                    'border-b last:border-b-0 align-top',
+                                    'border-b last:border-b-0 align-top transition-all',
                                     removalMode[s.id] &&
                                       selectedTabs[s.id]?.has(i) &&
-                                      'bg-destructive/10'
+                                      'bg-destructive/10',
+                                    isAltPressed &&
+                                      'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
                                   )}
+                                  draggable={isAltPressed}
+                                  onDragStart={() =>
+                                    handleTabDragStart(s.id, i)
+                                  }
                                 >
-                                  {removalMode[s.id] && (
-                                    <td className="py-2 pr-3">
-                                      <Checkbox
-                                        className="cursor-pointer"
-                                        onCheckedChange={() =>
-                                          toggleTabSelection(s.id, i)
-                                        }
-                                        checked={
-                                          selectedTabs[s.id]?.has(i) || false
-                                        }
-                                      />
-                                    </td>
-                                  )}
                                   <td className="py-2 pr-3">
                                     <div className="flex items-center gap-2 min-w-0">
                                       {fav ? (
@@ -419,11 +505,15 @@ export default function SessionsView({
                             <div
                               key={i}
                               className={cn(
-                                'rounded border bg-background/40 p-2 text-xs',
+                                'rounded border bg-background/40 p-2 text-xs transition-all',
                                 removalMode[s.id] &&
                                   selectedTabs[s.id]?.has(i) &&
-                                  'bg-destructive/10 border-destructive/30'
+                                  'bg-destructive/10 border-destructive/30',
+                                isAltPressed &&
+                                  'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-4 hover:border-l-blue-500'
                               )}
+                              draggable={isAltPressed}
+                              onDragStart={() => handleTabDragStart(s.id, i)}
                             >
                               <div className="flex items-start gap-2 mb-2">
                                 {removalMode[s.id] && (

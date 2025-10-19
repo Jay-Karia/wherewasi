@@ -198,7 +198,79 @@ export async function removeTabsFromSession(
     const sessions = Array.isArray(data.sessions) ? data.sessions : [];
     const updatedSessions = sessions.map(s => {
       if (s.id === sessionId) {
-        const newTabs = s.tabs.filter((_, idx) => !tabIndicesToRemove.includes(idx));
+        const newTabs = s.tabs.filter(
+          (_, idx) => !tabIndicesToRemove.includes(idx)
+        );
+        return {
+          ...s,
+          tabs: newTabs,
+          tabsCount: newTabs.length,
+          updatedAt: Date.now(),
+        };
+      }
+      return s;
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ sessions: updatedSessions }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    return updatedSessions;
+  } else {
+    throw new Error('Chrome storage API not available');
+  }
+}
+
+/**
+ * Moves a tab from one session to another in Chrome storage and returns the updated sessions array
+ */
+export async function moveTabBetweenSessions(
+  sourceSessionId: string,
+  targetSessionId: string,
+  tabIndex: number
+): Promise<Session[]> {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    const data = await new Promise<{ sessions: Session[] }>(resolve => {
+      chrome.storage.local.get(['sessions'], res => {
+        resolve(res as { sessions: Session[] });
+      });
+    });
+
+    const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+    const sourceSession = sessions.find(s => s.id === sourceSessionId);
+    const targetSession = sessions.find(s => s.id === targetSessionId);
+
+    if (!sourceSession || !targetSession) {
+      throw new Error('Source or target session not found');
+    }
+
+    if (tabIndex < 0 || tabIndex >= sourceSession.tabs.length) {
+      throw new Error('Invalid tab index');
+    }
+
+    // Get the tab to move
+    const tabToMove = sourceSession.tabs[tabIndex];
+
+    // Update sessions
+    const updatedSessions = sessions.map(s => {
+      if (s.id === sourceSessionId) {
+        // Remove tab from source
+        const newTabs = s.tabs.filter((_, idx) => idx !== tabIndex);
+        return {
+          ...s,
+          tabs: newTabs,
+          tabsCount: newTabs.length,
+          updatedAt: Date.now(),
+        };
+      } else if (s.id === targetSessionId) {
+        // Add tab to target
+        const newTabs = [...s.tabs, tabToMove];
         return {
           ...s,
           tabs: newTabs,
