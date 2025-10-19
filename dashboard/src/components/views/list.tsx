@@ -1,5 +1,5 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions } from '@/lib/utils';
+import { cn, filterSessions, updateSessionTitle, deleteSession } from '@/lib/utils';
 import { tinyAccentForSeed } from './timeline';
 import { IoMdExpand } from 'react-icons/io';
 import { useState, useMemo } from 'react';
@@ -11,7 +11,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { MdDelete, MdDownload, MdEdit } from 'react-icons/md';
+import { MdDelete, MdEdit } from 'react-icons/md';
 import { EditSessionTitle } from '@/components/ui/edit-session-title';
 import { useStorage } from '@/hooks/useStorage';
 
@@ -38,42 +38,22 @@ export default function ListView({
   };
 
   const handleSaveTitle = async (sessionId: string, newTitle: string) => {
-    // Update in Chrome storage using the storage service
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      try {
-        const data = await new Promise<{ sessions: Session[] }>((resolve) => {
-          chrome.storage.local.get(['sessions'], (res) => {
-            resolve(res as { sessions: Session[] });
-          });
-        });
-
-        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
-        const updatedSessions = sessions.map(s =>
-          s.id === sessionId ? { ...s, title: newTitle, updatedAt: Date.now() } : s
-        );
-
-        await new Promise<void>((resolve, reject) => {
-          chrome.storage.local.set({ sessions: updatedSessions }, () => {
-            if (chrome.runtime?.lastError) {
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve();
-            }
-          });
-        });
-
-        // Also update local state
-        await setStoredSessions(updatedSessions);
-      } catch (error) {
-        console.error('Failed to update session title in Chrome storage:', error);
-        throw error;
-      }
-    } else {
-      // Fallback for non-extension environment
-      const updatedSessions = storedSessions.map(s =>
-        s.id === sessionId ? { ...s, title: newTitle, updatedAt: Date.now() } : s
-      );
+    try {
+      const updatedSessions = await updateSessionTitle(sessionId, newTitle);
       await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to update session title:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      const updatedSessions = await deleteSession(sessionId);
+      await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to delete session:', error);
+      throw error;
     }
   };
 
@@ -249,11 +229,7 @@ export default function ListView({
                             <MdEdit className="mr-2 h-4 w-4" />
                             Edit Title
                           </ContextMenuItem>
-                          <ContextMenuItem>
-                            <MdDownload className="mr-2 h-4 w-4" />
-                            Export Session
-                          </ContextMenuItem>
-                          <ContextMenuItem className="text-destructive">
+                          <ContextMenuItem className="text-destructive" onSelect={() => handleDeleteSession(s.id)}>
                             <MdDelete className="mr-2 h-4 w-4" />
                             Delete Session
                           </ContextMenuItem>

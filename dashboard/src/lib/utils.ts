@@ -115,3 +115,68 @@ export function filterSessions(
     return dateMatch && tabCountMatch;
   });
 }
+
+/**
+ * Updates a session title in Chrome storage and returns the updated sessions array
+ */
+export async function updateSessionTitle(
+  sessionId: string,
+  newTitle: string
+): Promise<Session[]> {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    const data = await new Promise<{ sessions: Session[] }>(resolve => {
+      chrome.storage.local.get(['sessions'], res => {
+        resolve(res as { sessions: Session[] });
+      });
+    });
+
+    const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+    const updatedSessions = sessions.map(s =>
+      s.id === sessionId ? { ...s, title: newTitle, updatedAt: Date.now() } : s
+    );
+
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ sessions: updatedSessions }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    return updatedSessions;
+  } else {
+    throw new Error('Chrome storage API not available');
+  }
+}
+
+/**
+ * Deletes a session from Chrome storage and returns the updated sessions array
+ */
+export async function deleteSession(sessionId: string): Promise<Session[]> {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    const data = await new Promise<{ sessions: Session[] }>(resolve => {
+      chrome.storage.local.get(['sessions'], res => {
+        resolve(res as { sessions: Session[] });
+      });
+    });
+
+    const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+    const updatedSessions = sessions.filter(s => s.id !== sessionId);
+
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ sessions: updatedSessions }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    return updatedSessions;
+  } else {
+    throw new Error('Chrome storage API not available');
+  }
+}

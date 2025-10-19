@@ -1,11 +1,6 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions } from '@/lib/utils';
-import {
-  MdDelete,
-  MdDownload,
-  MdEdit,
-  MdOutlineKeyboardArrowDown,
-} from 'react-icons/md';
+import { cn, filterSessions, updateSessionTitle, deleteSession } from '@/lib/utils';
+import { MdDelete, MdEdit, MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { useMemo, useState } from 'react';
 import { tinyAccentForSeed } from './timeline';
 import { useAtomValue } from 'jotai';
@@ -35,7 +30,7 @@ export default function SessionsView({
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
-  const [storedSessions, setStoredSessions] = useStorage<Session[]>({
+  const [, setStoredSessions] = useStorage<Session[]>({
     key: 'sessions',
     initialValue: [],
   });
@@ -46,49 +41,22 @@ export default function SessionsView({
   };
 
   const handleSaveTitle = async (sessionId: string, newTitle: string) => {
-    // Update in Chrome storage using the storage service
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      try {
-        const data = await new Promise<{ sessions: Session[] }>(resolve => {
-          chrome.storage.local.get(['sessions'], res => {
-            resolve(res as { sessions: Session[] });
-          });
-        });
-
-        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
-        const updatedSessions = sessions.map(s =>
-          s.id === sessionId
-            ? { ...s, title: newTitle, updatedAt: Date.now() }
-            : s
-        );
-
-        await new Promise<void>((resolve, reject) => {
-          chrome.storage.local.set({ sessions: updatedSessions }, () => {
-            if (chrome.runtime?.lastError) {
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve();
-            }
-          });
-        });
-
-        // Also update local state
-        await setStoredSessions(updatedSessions);
-      } catch (error) {
-        console.error(
-          'Failed to update session title in Chrome storage:',
-          error
-        );
-        throw error;
-      }
-    } else {
-      // Fallback for non-extension environment
-      const updatedSessions = storedSessions.map(s =>
-        s.id === sessionId
-          ? { ...s, title: newTitle, updatedAt: Date.now() }
-          : s
-      );
+    try {
+      const updatedSessions = await updateSessionTitle(sessionId, newTitle);
       await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to update session title:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      const updatedSessions = await deleteSession(sessionId);
+      await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to delete session:', error);
+      throw error;
     }
   };
 
@@ -108,7 +76,7 @@ export default function SessionsView({
     }
     if (sortOption === 'date-asc') {
       return [...sessions].sort(
-        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? b.createdAt)
+        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? a.createdAt)
       );
     }
     return sessions;
@@ -406,11 +374,10 @@ export default function SessionsView({
                 <MdEdit className="mr-2 h-4 w-4" />
                 Edit Title
               </ContextMenuItem>
-              <ContextMenuItem>
-                <MdDownload className="mr-2 h-4 w-4" />
-                Export Session
-              </ContextMenuItem>
-              <ContextMenuItem className="text-destructive">
+              <ContextMenuItem
+                onSelect={() => handleDeleteSession(s.id)}
+                className="text-destructive"
+              >
                 <MdDelete className="mr-2 h-4 w-4" />
                 Delete Session
               </ContextMenuItem>
