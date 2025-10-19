@@ -22,7 +22,7 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["tabs", "storage", "windows", "notifications"],
+  "permissions": ["tabs", "storage", "scripting", "sessions", "alarms"],
   "host_permissions": ["<all_urls>"],
   "commands": {
     "open-dashboard": {

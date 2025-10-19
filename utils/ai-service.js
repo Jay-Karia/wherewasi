@@ -5,7 +5,6 @@
 //======================IMPORTS================================//
 
 import { searchSessions } from '../helpers/grouping.js';
-import { generateSummary } from '../helpers/summary.js';
 import { StorageService } from './storage.js';
 
 //=============================================================//
@@ -27,7 +26,8 @@ export const AIService = {
 
       // Generate summary for the new session
       try {
-        const summary = await generateSummary(session);
+        // const summary = await generateSummary(session);
+        const summary = "";
         await StorageService.updateSession(session.id, { summary });
       } catch (error) {
         console.error('Error generating summary for new session:', error);
@@ -55,7 +55,8 @@ export const AIService = {
 
       // Generate summary for the new session
       try {
-        const summary = await generateSummary(session);
+        // const summary = await generateSummary(session);
+        const summary = "";
         await StorageService.updateSession(session.id, { summary });
       } catch (error) {
         console.error('Error generating summary for new session:', error);

@@ -4,81 +4,57 @@
 
 //======================IMPORTS================================//
 
+import { scrapTabContent } from '../helpers/scraper.js';
 import { AIService } from '../utils/ai-service.js';
 
 //=============================================================//
 
 console.log('WhereWasI: Service worker loaded');
-let windowTabs = {};
+const contentCache = new Map();
 
-//=======================CURRENT TABS==========================//
-
-chrome.tabs.query({}, tabs => {
-  tabs.forEach(tab => {
-    if (!windowTabs[tab.windowId]) {
-      windowTabs[tab.windowId] = [];
-    }
-    windowTabs[tab.windowId].push({
-      id: tab.id,
-      url: tab.url,
-      title: tab.title,
-      favIconUrl: tab.favIconUrl,
-    });
-  });
-});
-
-//=======================NEW TABS=============================//
-
-chrome.tabs.onCreated.addListener(tab => {
-  if (!windowTabs[tab.windowId]) {
-    windowTabs[tab.windowId] = [];
-  }
-  windowTabs[tab.windowId].push({
-    id: tab.id,
-    url: tab.url,
-    title: tab.title,
-    favIconUrl: tab.favIconUrl,
-  });
-});
-
-///======================TAB UPDATES=========================//
+//======================TAB UPDATES=========================//
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.url || changeInfo.title) {
-    const windowId = tab.windowId;
-    const tabIndex = windowTabs[windowId]
-      ? windowTabs[windowId].findIndex(t => t.id === tabId)
-      : -1;
+  // Inject script when the page is loaded
+  if (
+    changeInfo.status === 'complete' &&
+    tab.url &&
+    tab.url.startsWith('http')
+  ) {
+    chrome.scripting
+      .executeScript({
+        target: { tabId: tabId },
+        func: scrapTabContent,
+      })
+      .catch(err => console.log('Failed to inject script:', err))
+      .then(() => {
+        console.log('Scrapping script injected into tabId:', tabId);
+      });
+  }
+});
 
-    if (tabIndex !== -1) {
-      windowTabs[windowId][tabIndex] = {
-        id: tab.id,
-        url: tab.url,
-        title: tab.title,
-        favIconUrl: tab.favIconUrl,
-      };
-    }
+//===================MESSAGE LISTENER=======================//
+
+chrome.runtime.onMessage.addListener((message, sender) => {
+  // Update the cache with scraped tab content
+  if (message.action === 'cacheTabContent' && sender.tab) {
+    contentCache.set(sender.tab.id, message.data);
+    console.log(`Cached content for tabId: ${sender.tab.id}`);
+    console.log(contentCache);
   }
 });
 
 //======================TAB REMOVALS========================//
 
-chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+chrome.tabs.onRemoved.addListener(async (tabId) => {
   try {
-    const windowId = removeInfo.windowId;
-    const tabs = windowTabs[windowId] || [];
-
-    const tabIndex = tabs.findIndex(t => t.id === tabId);
-    if (tabIndex === -1) {
-      console.log('Closed tab not found in tracking map:', tabId);
+    const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 1 });
+    if (!sessions || sessions.length === 0 || !sessions[0].tab) {
+      console.log('Could not retrieve recently closed tab info.');
       return;
     }
 
-    const tab = tabs[tabIndex];
-
-    // Remove from tracking
-    tabs.splice(tabIndex, 1);
-    if (tabs.length === 0) delete windowTabs[windowId];
+    const tab = sessions[0].tab;
 
     // Filter out chrome:// and extension pages
     if (
@@ -90,6 +66,8 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
       return;
     }
 
+    const scrappedContent = contentCache.get(tab.id) || null;
+
     // Prepare a compact record
     const tabRecord = {
       id: tab.id,
@@ -97,7 +75,11 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
       title: tab.title,
       favIconUrl: tab.favIconUrl,
       closedAt: new Date().toISOString(),
+      content: scrappedContent,
     };
+
+    // Clear the tab cache
+    contentCache.delete(tabId);
 
     // Group the closed tab into a session
     try {
@@ -108,13 +90,6 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   } catch (err) {
     console.error('Error handling tab removal:', err);
   }
-});
-
-//=====================WINDOW REMOVALS========================//
-
-chrome.windows.onRemoved.addListener(windowId => {
-  console.log('Window removed, cleaning tracking for:', windowId);
-  delete windowTabs[windowId];
 });
 
 //==================DASHBOARD SHORTCUT========================//

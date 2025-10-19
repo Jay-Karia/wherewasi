@@ -19,9 +19,7 @@
     "lint": "eslint . --ext .js --fix",
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write .",
-    "build:worker": "rollup --config",
-    "build": "bash scripts/build.sh",
-    "build:win": "powershell -File scripts/build.ps1",
+    "build": "rollup --config",
     "watch": "rollup --config --watch"
   },
   "repository": {
