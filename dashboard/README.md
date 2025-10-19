@@ -1,9 +1,9 @@
 # WhereWasI Dashboard
 
-The Dashboard is the UI for exploring your captured sessions.
-You can also access the dashboard from the extension popup by clicking the extension icon from the toolbar.
+The Dashboard provides a user interface to browse and manage your saved browsing sessions.
+Access the dashboard from the extension popup by clicking the extension icon from the toolbar.
 
-Open from any time with the keyboard shortcut:
+**Keyboard Shortcut:**
 
 - Windows/Linux: `Ctrl+Shift+Y`
 - macOS: `Cmd+Shift+Y`
