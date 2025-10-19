@@ -5,6 +5,7 @@
 //======================IMPORTS================================//
 
 import { searchSessions } from '../helpers/grouping.js';
+import { generateSummary } from '../helpers/summary.js';
 import { StorageService } from './storage.js';
 
 //=============================================================//
@@ -23,6 +24,14 @@ export const AIService = {
     if (sessionsCount === 0) {
       const session = await StorageService.createEmptySession(tab);
       console.log('No existing sessions found, created a new empty session.');
+
+      // Generate summary for the new session
+      try {
+        const summary = await generateSummary(session);
+        await StorageService.updateSession(session.id, { summary });
+      } catch (error) {
+        console.error('Error generating summary for new session:', error);
+      }
 
       return session;
     }
@@ -44,6 +53,14 @@ export const AIService = {
       const session = await StorageService.createEmptySession(tab);
       console.log('No suitable session found, created a new one.');
 
+      // Generate summary for the new session
+      try {
+        const summary = await generateSummary(session);
+        await StorageService.updateSession(session.id, { summary });
+      } catch (error) {
+        console.error('Error generating summary for new session:', error);
+      }
+
       return session;
     }
 
@@ -54,19 +71,17 @@ export const AIService = {
     foundSession.tabsCount = foundSession.tabs.length;
     foundSession.updatedAt = Date.now();
 
+    // Update session with new summary
+    try {
+      const summary = await generateSummary(foundSession);
+      foundSession.summary = summary;
+    } catch (error) {
+      console.error('Error generating summary for updated session:', error);
+    }
+
     await StorageService.updateSession(foundSession.id, foundSession);
 
-    // TODO: Update the session if required with AI-generated title and summary
-
     return foundSession;
-  },
-
-  /*
-    Generate a summary for a session.
-    @returns {Promise<string>} - The generated summary.
-  */
-  async generateSummary() {
-    return 'Placeholder summary';
   },
 
   /*

@@ -11,5 +11,12 @@ export const prompts = {
   Try to make a general title as we have to add more tabs inside the session.
 
   Only give the session title.
+  `,
+  sessionSummary: `
+  Given a browsing session with multiple tabs, generate a concise summary that captures the main themes, topics, and purpose of the session.
+  Focus on identifying the key activities, websites visited, and overall context.
+  Keep the summary brief (2-3 sentences) but informative enough to help the user recall what they were working on.
+
+  Only provide the summary text, nothing else.
   `
 };
