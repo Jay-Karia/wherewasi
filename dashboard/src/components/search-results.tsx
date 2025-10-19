@@ -115,7 +115,7 @@ export default function SearchResults() {
   }, [groups]);
 
   return (
-    <div className="mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6">
+    <div className="mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6 -mt-10">
       <div className="mb-4 sm:mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">
           Search Results for &quot;
