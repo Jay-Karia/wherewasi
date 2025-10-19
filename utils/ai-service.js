@@ -75,12 +75,12 @@ export const AIService = {
     foundSession.updatedAt = Date.now();
 
     // Update session with new summary
-    try {
-      const summary = await generateSummary(foundSession);
-      foundSession.summary = summary;
-    } catch (error) {
-      console.error('Error generating summary for updated session:', error);
-    }
+    // try {
+    //   const summary = await generateSummary(foundSession);
+    //   foundSession.summary = summary;
+    // } catch (error) {
+    //   console.error('Error generating summary for updated session:', error);
+    // }
 
     await StorageService.updateSession(foundSession.id, foundSession);
 
