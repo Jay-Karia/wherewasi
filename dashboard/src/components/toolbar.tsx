@@ -17,7 +17,7 @@ export default function Toolbar() {
   if (query) return null;
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-0 w-full px-2 md:px-0 max-w-3xl">
+    <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-0 w-full px-2 md:px-0 max-w-4xl">
       <div className="w-full md:w-auto">
         <div className="flex items-center justify-center md:justify-start gap-2 md:mr-4">
           <Import />
@@ -25,8 +25,8 @@ export default function Toolbar() {
         </div>
       </div>
       <Tabs
-        defaultValue="account"
-        className="w-full flex-1"
+        defaultValue="sessions"
+        className="w-full flex-1 max-w-xl"
         value={currentView}
         onValueChange={value => setCurrentView(value as SessionViews)}
       >
