@@ -7,7 +7,7 @@ import { SUMMARIZER_OPTIONS } from '../constants';
 export async function generateSummary(session) {
   try {
     // Check if the Summarizer API is available
-    if (!('Summarizer' in self.ai)) {
+    if (!('Summarizer' in self)) {
       console.warn('Chrome Summarizer API not available');
       return null;
     }

@@ -45,7 +45,6 @@ All data is stored locally in your browser. No servers used.
 - Background service worker listens when a browser tab is closed.
 - The worker searches for a suitable sessions to add the closed tab to using **Gemini AI**.
 - If suitable session is found, the tab is added to it. Otherwise, a new session is created.
-- Once a session is updated with a new tab, the AI tries to update the "title" of the session.
 - Session summary is generated from **Summarizer API**.
 - All data is stored locally in the browser.
 - The Dashboard provides a user interface to browse, search, and manage your sessions.
@@ -71,5 +70,6 @@ All data is stored locally in your browser. No servers used.
 - [ ] Add summaries from Summarizer API
 - [ ] Error handling AI fails.
 - [ ] Browser processing queue.
+- [ ] Performance and optimizations
 
 **🚀 Coming Soon**
