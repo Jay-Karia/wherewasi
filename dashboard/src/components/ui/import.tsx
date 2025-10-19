@@ -11,10 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "./label";
 import { useRef, useState } from "react";
-import {
-  normalizeImportedSessions,
-  writeSessionsToStorage,
-} from "@/lib/utils";
+import { normalizeImportedSessions, writeSessionsToStorage } from "@/lib/utils";
 
 export default function Import() {
   const inputRef = useRef<HTMLInputElement | null>(null);

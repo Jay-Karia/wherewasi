@@ -1,16 +1,16 @@
-import Logo from './logo';
-import { Button } from './ui/button';
-import Search from './ui/search';
-import { ThemeToggle } from './ui/theme-toggle';
-import { IoSettingsOutline } from 'react-icons/io5';
+import Logo from "./logo";
+import { Button } from "./ui/button";
+import Search from "./ui/search";
+import { ThemeToggle } from "./ui/theme-toggle";
+import { IoSettingsOutline } from "react-icons/io5";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useAtomValue } from 'jotai';
-import { searchFocusAtom } from '../../atoms';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/tooltip";
+import { useAtomValue } from "jotai";
+import { searchFocusAtom } from "../../atoms";
+import { cn } from "@/lib/utils";
 
 export default function AppBar() {
   const searchFocus = useAtomValue(searchFocusAtom);
@@ -18,8 +18,8 @@ export default function AppBar() {
   return (
     <div className="h-16 bg-base-100 px-2 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 border-b border-gray-200 dark:border-gray-700">
       <div
-        className={cn('flex items-center gap-2 flex-shrink-0', {
-          'sm:flex hidden': searchFocus,
+        className={cn("flex items-center gap-2 flex-shrink-0", {
+          "sm:flex hidden": searchFocus,
         })}
       >
         <Logo />
@@ -30,9 +30,11 @@ export default function AppBar() {
       <div className="flex-1 max-w-3xl mx-2 sm:mx-4">
         <Search />
       </div>
-      <div className={cn("flex items-center gap-1 sm:gap-2 flex-shrink-0", {
-        "sm:flex hidden": searchFocus,
-      })}>
+      <div
+        className={cn("flex items-center gap-1 sm:gap-2 flex-shrink-0", {
+          "sm:flex hidden": searchFocus,
+        })}
+      >
         <ThemeToggle />
 
         <Tooltip>

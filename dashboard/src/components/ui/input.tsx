@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { RxCross2 } from 'react-icons/rx';
+import * as React from "react";
+import { RxCross2 } from "react-icons/rx";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-export interface InputProps extends React.ComponentProps<'input'> {
+export interface InputProps extends React.ComponentProps<"input"> {
   icon?: React.ReactNode;
   shortcut?: string;
   showClear?: boolean;
@@ -17,8 +17,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            'flex h-9 w-full rounded-md border border-input bg-transparent pl-10 pr-8 py-1 text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus:placeholder:opacity-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-            className
+            "flex h-9 w-full rounded-md border border-input bg-transparent pl-10 pr-8 py-1 text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus:placeholder:opacity-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+            className,
           )}
           ref={ref}
           {...props}
@@ -35,9 +35,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               <RxCross2
                 className="hover:opacity-70"
                 size={19}
-                onMouseDown={e => {
+                onMouseDown={(e) => {
                   e.preventDefault();
-                  setQuery('');
+                  setQuery("");
                 }}
               />
             }
@@ -45,8 +45,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 export { Input };

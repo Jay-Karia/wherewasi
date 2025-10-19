@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,11 +6,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import type { Session } from '@/types';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import type { Session } from "@/types";
 
 type EditSessionTitleProps = {
   session: Session;
@@ -25,12 +25,12 @@ export function EditSessionTitle({
   onOpenChange,
   onSave,
 }: EditSessionTitleProps) {
-  const [title, setTitle] = useState(session.title || '');
+  const [title, setTitle] = useState(session.title || "");
   const [saving, setSaving] = useState(false);
 
   // Update title when session changes
   useEffect(() => {
-    setTitle(session.title || '');
+    setTitle(session.title || "");
   }, [session]);
 
   const handleSave = async () => {
@@ -41,14 +41,14 @@ export function EditSessionTitle({
       await onSave(session.id, title.trim());
       onOpenChange(false);
     } catch (error) {
-      console.error('Failed to update session title:', error);
+      console.error("Failed to update session title:", error);
     } finally {
       setSaving(false);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSave();
     }
@@ -69,7 +69,7 @@ export function EditSessionTitle({
             <Input
               id="title"
               value={title}
-              onChange={e => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Enter session title"
               autoFocus
@@ -90,7 +90,7 @@ export function EditSessionTitle({
             onClick={handleSave}
             disabled={!title.trim() || saving}
           >
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? "Saving..." : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

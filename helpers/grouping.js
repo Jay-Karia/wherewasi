@@ -1,6 +1,6 @@
 import ai from '../ai/gemini.js';
 import { prompts } from '../ai/prompts.js';
-import {GEMINI_AI_MODEL} from '../constants.js';
+import { GEMINI_AI_MODEL } from '../constants.js';
 import { StorageService } from '../utils/storage.js';
 
 export async function searchSessions(tab) {

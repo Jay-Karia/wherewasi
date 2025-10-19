@@ -2,7 +2,7 @@
   Helper functions for generating session summaries using Chrome's built-in AI
 */
 
-import {SUMMARIZER_OPTIONS} from "../constants";
+import { SUMMARIZER_OPTIONS } from '../constants';
 
 export async function generateSummary(session) {
   try {

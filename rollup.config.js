@@ -18,7 +18,9 @@ export default {
   plugins: [
     replace({
       preventAssignment: true,
-      'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || '')
+      'process.env.GEMINI_API_KEY': JSON.stringify(
+        process.env.GEMINI_API_KEY || ''
+      ),
     }),
 
     inject({ process: 'process/browser' }),

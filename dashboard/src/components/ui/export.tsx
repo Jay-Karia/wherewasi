@@ -1,4 +1,4 @@
-import { Button } from './button';
+import { Button } from "./button";
 import {
   Dialog,
   DialogContent,
@@ -6,21 +6,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import {useStorage} from '@/hooks/useStorage';
-import { downloadDataJSON } from '@/lib/utils';
-import { CiExport } from 'react-icons/ci';
+} from "@/components/ui/select";
+import { useStorage } from "@/hooks/useStorage";
+import { downloadDataJSON } from "@/lib/utils";
+import { CiExport } from "react-icons/ci";
 
 export default function Export() {
   const [sessions, , loading, error] = useStorage({
-    key: 'sessions',
+    key: "sessions",
     initialValue: [],
   });
 
@@ -31,7 +31,7 @@ export default function Export() {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button className="px-3 py-1" variant={'secondary'} size={'sm'}>
+        <Button className="px-3 py-1" variant={"secondary"} size={"sm"}>
           <CiExport className="mr" /> Export
         </Button>
       </DialogTrigger>
@@ -68,7 +68,12 @@ export default function Export() {
             </Select>
           </div>
           <div className="flex justify-end gap-2 mt-6 rounded-4xl">
-            <Button onClick={() => downloadDataJSON(sessions)} disabled={loading}>Download</Button>
+            <Button
+              onClick={() => downloadDataJSON(sessions)}
+              disabled={loading}
+            >
+              Download
+            </Button>
           </div>
         </div>
       </DialogContent>

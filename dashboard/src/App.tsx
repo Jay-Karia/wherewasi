@@ -1,10 +1,10 @@
-import './App.css';
+import "./App.css";
 
-import AppBar from './components/app-bar';
-import Main from './components/main';
-import { ThemeProvider } from './components/providers/theme-provider';
-import Toolbar from './components/toolbar';
-import { TooltipProvider } from './components/ui/tooltip';
+import AppBar from "./components/app-bar";
+import Main from "./components/main";
+import { ThemeProvider } from "./components/providers/theme-provider";
+import Toolbar from "./components/toolbar";
+import { TooltipProvider } from "./components/ui/tooltip";
 
 function App() {
   return (

@@ -1,14 +1,14 @@
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAtom, useAtomValue } from 'jotai';
-import { currentViewAtom, queryAtom } from '../../atoms';
-import { Clock } from 'lucide-react';
-import { FaList } from 'react-icons/fa';
-import { FaLayerGroup } from 'react-icons/fa';
-import type { SessionViews } from '@/types';
-import Export from './ui/export';
-import Import from './ui/import';
-import Sort from './ui/sort';
-import Filter from './ui/filter';
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAtom, useAtomValue } from "jotai";
+import { currentViewAtom, queryAtom } from "../../atoms";
+import { Clock } from "lucide-react";
+import { FaList } from "react-icons/fa";
+import { FaLayerGroup } from "react-icons/fa";
+import type { SessionViews } from "@/types";
+import Export from "./ui/export";
+import Import from "./ui/import";
+import Sort from "./ui/sort";
+import Filter from "./ui/filter";
 
 export default function Toolbar() {
   const [currentView, setCurrentView] = useAtom(currentViewAtom);
@@ -28,7 +28,7 @@ export default function Toolbar() {
         defaultValue="sessions"
         className="w-full flex-1 max-w-xl"
         value={currentView}
-        onValueChange={value => setCurrentView(value as SessionViews)}
+        onValueChange={(value) => setCurrentView(value as SessionViews)}
       >
         <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="sessions">
