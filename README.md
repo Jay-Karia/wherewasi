@@ -55,12 +55,14 @@ All data is stored locally in your browser. No servers used.
 
 <!-- Installation -->
 
-<!-- Contributing and Project Structure -->
-
 <!-- Technical Details -->
+
+<!-- Contributing and Project Structure -->
 
 <!-- Motivation -->
 
 <!-- Image Gallery -->
+
+<!-- Roadmap -->
 
 ### 🚀 Coming Soon
