@@ -8,7 +8,7 @@ import SearchResults from './search-results';
 
 export default function Main() {
   const query = useAtomValue(queryAtom);
-  const [sessions, , loading, error] = useStorage({
+  let [sessions, , loading, error] = useStorage({
     key: 'sessions',
     initialValue: [],
   });

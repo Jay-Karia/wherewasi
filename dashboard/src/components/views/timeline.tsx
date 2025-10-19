@@ -1,9 +1,21 @@
-import type { Session, SortOption } from "@/types";
-import { cn, filterSessions } from "@/lib/utils";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { useMemo, useState } from "react";
-import { useAtomValue } from "jotai";
-import { filtersAtom } from "../../../atoms";
+import type { Session, SortOption } from '@/types';
+import { cn, filterSessions } from '@/lib/utils';
+import {
+  MdDelete,
+  MdDownload,
+  MdEdit,
+  MdOutlineKeyboardArrowDown,
+} from 'react-icons/md';
+import { useMemo, useState } from 'react';
+import { useAtomValue } from 'jotai';
+import { filtersAtom } from '../../../atoms';
+import dummySessions from '../../../../dummy/data.json';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 
 type Props = {
   sessions: Session[];
@@ -31,19 +43,21 @@ export default function TimelineView({
   className,
 }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
+  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
+
+  sessions = dummySessions;
 
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
-      case "date-asc":
+      case 'date-asc':
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
           const tb = (b.updatedAt ?? b.createdAt ?? 0) as number;
           return ta - tb;
         });
-      case "date-desc":
+      case 'date-desc':
       default:
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
@@ -58,15 +72,15 @@ export default function TimelineView({
   }, [sortedSessions, filters]);
 
   const normalized = (filteredSessions || [])
-    .map((s) => ({
+    .map(s => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
     }))
-    .filter((s) => Number.isFinite(s._ts) && s._ts > 0);
+    .filter(s => Number.isFinite(s._ts) && s._ts > 0);
 
   const groups = groupByDay(normalized);
   const dayKeys = Object.keys(groups).sort((a, b) => {
-    if (sortOption === "date-asc") {
+    if (sortOption === 'date-asc') {
       return Number(a) - Number(b);
     }
     return Number(b) - Number(a);
@@ -75,107 +89,44 @@ export default function TimelineView({
   return (
     <div
       className={cn(
-        "mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8 mb-12",
-        className,
+        'mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8 mb-12',
+        className
       )}
     >
       {dayKeys.map((dayKey, idx) => {
         const dayTs = Number(dayKey);
         const items = groups[dayKey];
         return (
-          <section key={dayKey} className={cn("relative", idx > 0 && "mt-10")}>
+          <section key={dayKey} className={cn('relative', idx > 0 && 'mt-10')}>
             <DayHeader ts={dayTs} count={items.length} />
             <div className="pointer-events-none absolute left-1/2 top-16 bottom-2 -translate-x-1/2 hidden w-px bg-border/60 md:block" />
             <ul className="mt-4 space-y-6">
               {items.map((s, i) => {
                 const accent = tinyAccentForSeed(s.id);
-                const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
+                const side: 'left' | 'right' = i % 2 === 0 ? 'left' : 'right';
                 const isExpanded = !!expanded[s.id];
                 if (isExpanded) {
                   return (
                     <li key={s.id}>
                       <div className="md:mx-auto md:max-w-6xl">
-                        <article
-                          className={cn(
-                            "relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60",
-                          )}
-                        >
-                          <header className="flex items-center justify-between gap-2">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <span
-                                className="h-2 w-2 shrink-0 rounded-full"
-                                style={{ backgroundColor: accent }}
-                              />
-                              <h4 className="line-clamp-1 text-[14px] font-semibold text-foreground">
-                                {s.title || "Untitled session"}
-                              </h4>
-                            </div>
-                            {typeof s.tabsCount === "number" && (
-                              <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                                {s.tabsCount} tabs
-                              </span>
-                            )}
-                            <button
-                              onClick={() => toggle(s.id)}
-                              aria-expanded={isExpanded}
-                              className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
-                              title="Collapse"
-                            >
-                              <MdOutlineKeyboardArrowDown className="h-4 w-4 rotate-180 transition-transform" />
-                            </button>
-                          </header>
-                          {s.summary && (
-                            <p
-                              className="mt-1 line-clamp-3 text-xs text-muted-foreground md:text-[13px]"
-                              title={s.summary}
-                            >
-                              {s.summary}
-                            </p>
-                          )}
-                          <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                            <time dateTime={toISO(s._ts)}>
-                              {formatTime(s._ts)}
-                            </time>
-                            <span className="opacity-80">
-                              {formatRelative(s._ts)}
-                            </span>
-                          </footer>
-                          <ExpandedDetails session={s} />
-                        </article>
-                      </div>
-                    </li>
-                  );
-                }
-                return (
-                  <li key={s.id}>
-                    <div className="md:grid md:grid-cols-[1fr_16px_1fr] md:items-start md:gap-0">
-                      {side === "left" ? (
-                        <>
-                          <div className="md:pr-6">
+                        <ContextMenu>
+                          <ContextMenuTrigger>
                             <article
                               className={cn(
-                                "relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md",
-                                isExpanded && "ring-1 ring-border/60",
+                                'relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60'
                               )}
                             >
-                              <div
-                                className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
-                                style={{ top: -14, bottom: -14 }}
-                              />
                               <header className="flex items-center justify-between gap-2">
                                 <div className="flex min-w-0 items-center gap-2">
                                   <span
                                     className="h-2 w-2 shrink-0 rounded-full"
                                     style={{ backgroundColor: accent }}
                                   />
-                                  <h4
-                                    className="line-clamp-1 text-[13px] font-semibold text-foreground"
-                                    title={s.title}
-                                  >
-                                    {s.title || "Untitled session"}
+                                  <h4 className="line-clamp-1 text-[14px] font-semibold text-foreground">
+                                    {s.title || 'Untitled session'}
                                   </h4>
                                 </div>
-                                {typeof s.tabsCount === "number" && (
+                                {typeof s.tabsCount === 'number' && (
                                   <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                                     {s.tabsCount} tabs
                                   </span>
@@ -184,19 +135,14 @@ export default function TimelineView({
                                   onClick={() => toggle(s.id)}
                                   aria-expanded={isExpanded}
                                   className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
-                                  title={isExpanded ? "Collapse" : "Expand"}
+                                  title="Collapse"
                                 >
-                                  <MdOutlineKeyboardArrowDown
-                                    className={cn(
-                                      "h-4 w-4 transition-transform",
-                                      isExpanded && "rotate-180",
-                                    )}
-                                  />
+                                  <MdOutlineKeyboardArrowDown className="h-4 w-4 rotate-180 transition-transform" />
                                 </button>
                               </header>
                               {s.summary && (
                                 <p
-                                  className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                  className="mt-1 line-clamp-3 text-xs text-muted-foreground md:text-[13px]"
                                   title={s.summary}
                                 >
                                   {s.summary}
@@ -210,8 +156,114 @@ export default function TimelineView({
                                   {formatRelative(s._ts)}
                                 </span>
                               </footer>
-                              {isExpanded && <ExpandedDetails session={s} />}
+                              <ExpandedDetails session={s} />
                             </article>
+                          </ContextMenuTrigger>
+                          <ContextMenuContent>
+                            <ContextMenuItem>
+                              <MdEdit className="mr-2 h-4 w-4" />
+                              Edit Title
+                            </ContextMenuItem>
+                            <ContextMenuItem>
+                              <MdDownload className="mr-2 h-4 w-4" />
+                              Export Session
+                            </ContextMenuItem>
+                            <ContextMenuItem className="text-destructive">
+                              <MdDelete className="mr-2 h-4 w-4" />
+                              Delete Session
+                            </ContextMenuItem>
+                          </ContextMenuContent>
+                        </ContextMenu>
+                      </div>
+                    </li>
+                  );
+                }
+                return (
+                  <li key={s.id}>
+                    <div className="md:grid md:grid-cols-[1fr_16px_1fr] md:items-start md:gap-0">
+                      {side === 'left' ? (
+                        <>
+                          <div className="md:pr-6">
+                            <ContextMenu>
+                              <ContextMenuTrigger>
+                                <article
+                                  className={cn(
+                                    'relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md',
+                                    isExpanded && 'ring-1 ring-border/60'
+                                  )}
+                                >
+                                  <div
+                                    className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
+                                    style={{ top: -14, bottom: -14 }}
+                                  />
+                                  <header className="flex items-center justify-between gap-2">
+                                    <div className="flex min-w-0 items-center gap-2">
+                                      <span
+                                        className="h-2 w-2 shrink-0 rounded-full"
+                                        style={{ backgroundColor: accent }}
+                                      />
+                                      <h4
+                                        className="line-clamp-1 text-[13px] font-semibold text-foreground"
+                                        title={s.title}
+                                      >
+                                        {s.title || 'Untitled session'}
+                                      </h4>
+                                    </div>
+                                    {typeof s.tabsCount === 'number' && (
+                                      <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                        {s.tabsCount} tabs
+                                      </span>
+                                    )}
+                                    <button
+                                      onClick={() => toggle(s.id)}
+                                      aria-expanded={isExpanded}
+                                      className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
+                                      title={isExpanded ? 'Collapse' : 'Expand'}
+                                    >
+                                      <MdOutlineKeyboardArrowDown
+                                        className={cn(
+                                          'h-4 w-4 transition-transform',
+                                          isExpanded && 'rotate-180'
+                                        )}
+                                      />
+                                    </button>
+                                  </header>
+                                  {s.summary && (
+                                    <p
+                                      className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                      title={s.summary}
+                                    >
+                                      {s.summary}
+                                    </p>
+                                  )}
+                                  <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                                    <time dateTime={toISO(s._ts)}>
+                                      {formatTime(s._ts)}
+                                    </time>
+                                    <span className="opacity-80">
+                                      {formatRelative(s._ts)}
+                                    </span>
+                                  </footer>
+                                  {isExpanded && (
+                                    <ExpandedDetails session={s} />
+                                  )}
+                                </article>
+                              </ContextMenuTrigger>
+                              <ContextMenuContent>
+                                <ContextMenuItem>
+                                  <MdEdit className="mr-2 h-4 w-4" />
+                                  Edit Title
+                                </ContextMenuItem>
+                                <ContextMenuItem>
+                                  <MdDownload className="mr-2 h-4 w-4" />
+                                  Export Session
+                                </ContextMenuItem>
+                                <ContextMenuItem className="text-destructive">
+                                  <MdDelete className="mr-2 h-4 w-4" />
+                                  Delete Session
+                                </ContextMenuItem>
+                              </ContextMenuContent>
+                            </ContextMenu>
                           </div>
                           <div className="relative hidden items-center justify-center md:flex">
                             <span className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-px bg-transparent" />
@@ -235,63 +287,83 @@ export default function TimelineView({
                             />
                           </div>
                           <div className="md:pl-6">
-                            <article
-                              className={cn(
-                                "relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md",
-                                isExpanded && "ring-1 ring-border/60",
-                              )}
-                            >
-                              <div
-                                className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
-                                style={{ top: -14, bottom: -14 }}
-                              />
-                              <header className="flex items-center justify-between gap-2">
-                                <div className="flex min-w-0 items-center gap-2">
-                                  <span
-                                    className="h-2 w-2 shrink-0 rounded-full"
-                                    style={{ backgroundColor: accent }}
-                                  />
-                                  <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">
-                                    {s.title || "Untitled session"}
-                                  </h4>
-                                </div>
-                                {typeof s.tabsCount === "number" && (
-                                  <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                                    {s.tabsCount} tabs
-                                  </span>
-                                )}
-                                <button
-                                  onClick={() => toggle(s.id)}
-                                  aria-expanded={isExpanded}
-                                  className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
-                                  title={isExpanded ? "Collapse" : "Expand"}
+                            <ContextMenu>
+                              <ContextMenuTrigger>
+                                <article
+                                  className={cn(
+                                    'relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md',
+                                    isExpanded && 'ring-1 ring-border/60'
+                                  )}
                                 >
-                                  <MdOutlineKeyboardArrowDown
-                                    className={cn(
-                                      "h-4 w-4 transition-transform",
-                                      isExpanded && "rotate-180",
+                                  <div
+                                    className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
+                                    style={{ top: -14, bottom: -14 }}
+                                  />
+                                  <header className="flex items-center justify-between gap-2">
+                                    <div className="flex min-w-0 items-center gap-2">
+                                      <span
+                                        className="h-2 w-2 shrink-0 rounded-full"
+                                        style={{ backgroundColor: accent }}
+                                      />
+                                      <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">
+                                        {s.title || 'Untitled session'}
+                                      </h4>
+                                    </div>
+                                    {typeof s.tabsCount === 'number' && (
+                                      <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                        {s.tabsCount} tabs
+                                      </span>
                                     )}
-                                  />
-                                </button>
-                              </header>
-                              {s.summary && (
-                                <p
-                                  className="mt-1 line-clamp-2 text-xs text-muted-foreground"
-                                  title={s.summary}
-                                >
-                                  {s.summary}
-                                </p>
-                              )}
-                              <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                                <time dateTime={toISO(s._ts)}>
-                                  {formatTime(s._ts)}
-                                </time>
-                                <span className="opacity-80">
-                                  {formatRelative(s._ts)}
-                                </span>
-                              </footer>
-                              {isExpanded && <ExpandedDetails session={s} />}
-                            </article>
+                                    <button
+                                      onClick={() => toggle(s.id)}
+                                      aria-expanded={isExpanded}
+                                      className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
+                                      title={isExpanded ? 'Collapse' : 'Expand'}
+                                    >
+                                      <MdOutlineKeyboardArrowDown
+                                        className={cn(
+                                          'h-4 w-4 transition-transform',
+                                          isExpanded && 'rotate-180'
+                                        )}
+                                      />
+                                    </button>
+                                  </header>
+                                  {s.summary && (
+                                    <p
+                                      className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                      title={s.summary}
+                                    >
+                                      {s.summary}
+                                    </p>
+                                  )}
+                                  <footer className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                                    <time dateTime={toISO(s._ts)}>
+                                      {formatTime(s._ts)}
+                                    </time>
+                                    <span className="opacity-80">
+                                      {formatRelative(s._ts)}
+                                    </span>
+                                  </footer>
+                                  {isExpanded && (
+                                    <ExpandedDetails session={s} />
+                                  )}
+                                </article>
+                              </ContextMenuTrigger>
+                              <ContextMenuContent>
+                                <ContextMenuItem>
+                                  <MdEdit className="mr-2 h-4 w-4" />
+                                  Edit Title
+                                </ContextMenuItem>
+                                <ContextMenuItem>
+                                  <MdDownload className="mr-2 h-4 w-4" />
+                                  Export Session
+                                </ContextMenuItem>
+                                <ContextMenuItem className="text-destructive">
+                                  <MdDelete className="mr-2 h-4 w-4" />
+                                  Delete Session
+                                </ContextMenuItem>
+                              </ContextMenuContent>
+                            </ContextMenu>
                           </div>
                         </>
                       )}
@@ -329,7 +401,7 @@ function DayHeader({ ts, count }: { ts: number; count: number }) {
         <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-500 shadow-sm">
           {label}
           <span className="ml-2 text-muted-foreground">
-            • {count} {count === 1 ? "entry" : "entries"}
+            • {count} {count === 1 ? 'entry' : 'entries'}
           </span>
         </span>
       </div>
@@ -344,21 +416,21 @@ function formatDay(ts: number) {
   const startOf = (T: Date) =>
     new Date(T.getFullYear(), T.getMonth(), T.getDate()).getTime();
   const diffDays = Math.floor((startOf(now) - startOf(d)) / dayMs);
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
   return d.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
 export function formatTime(ts: number) {
   const d = new Date(ts);
   return d.toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -367,7 +439,7 @@ export function formatRelative(ts: number) {
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const min = Math.floor(diffMs / 60000);
-  if (min < 1) return "just now";
+  if (min < 1) return 'just now';
   if (min < 60) return `${min}m ago`;
   const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}h ago`;
@@ -380,7 +452,7 @@ export function toISO(ts: number) {
   try {
     return new Date(ts).toISOString();
   } catch {
-    return "";
+    return '';
   }
 }
 
@@ -389,20 +461,20 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
     <div className="mt-3 rounded-md border bg-background/60 p-2 sm:p-3">
       <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <span className="opacity-70">Session ID:</span>{" "}
+          <span className="opacity-70">Session ID:</span>{' '}
           <span className="break-all text-foreground/90">{session.id}</span>
         </div>
         <div>
-          <span className="opacity-70">Created:</span>{" "}
+          <span className="opacity-70">Created:</span>{' '}
           <span>
-            {formatTime(session.createdAt as number)} •{" "}
+            {formatTime(session.createdAt as number)} •{' '}
             {formatRelative(session.createdAt as number)}
           </span>
         </div>
         <div>
-          <span className="opacity-70">Updated:</span>{" "}
+          <span className="opacity-70">Updated:</span>{' '}
           <span>
-            {formatTime(session.updatedAt as number)} •{" "}
+            {formatTime(session.updatedAt as number)} •{' '}
             {formatRelative(session.updatedAt as number)}
           </span>
         </div>
@@ -412,9 +484,15 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
           <thead className="text-[11px] text-muted-foreground">
             <tr className="border-b">
               <th className="py-1 pl-2 pr-3 sm:pl-0 font-medium">Tab</th>
-              <th className="py-1 pr-3 font-medium hidden sm:table-cell">URL</th>
-              <th className="py-1 pr-3 font-medium hidden md:table-cell">Closed</th>
-              <th className="py-1 pr-3 font-medium hidden lg:table-cell">Tab ID</th>
+              <th className="py-1 pr-3 font-medium hidden sm:table-cell">
+                URL
+              </th>
+              <th className="py-1 pr-3 font-medium hidden md:table-cell">
+                Closed
+              </th>
+              <th className="py-1 pr-3 font-medium hidden lg:table-cell">
+                Tab ID
+              </th>
             </tr>
           </thead>
           <tbody className="text-xs">
@@ -431,9 +509,9 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                 | number
                 | undefined;
               const closedMs =
-                typeof closedAt === "string"
+                typeof closedAt === 'string'
                   ? Date.parse(closedAt)
-                  : typeof closedAt === "number"
+                  : typeof closedAt === 'number'
                     ? closedAt
                     : undefined;
               return (
@@ -442,15 +520,19 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                     <div className="flex flex-col gap-1 min-w-0">
                       <div className="flex items-center gap-2 min-w-0">
                         {fav ? (
-                          <img src={fav} alt="" className="h-4 w-4 rounded-sm shrink-0" />
+                          <img
+                            src={fav}
+                            alt=""
+                            className="h-4 w-4 rounded-sm shrink-0"
+                          />
                         ) : (
                           <span className="inline-block h-4 w-4 rounded-sm bg-muted/60 shrink-0" />
                         )}
                         <span
                           className="break-words text-foreground"
-                          title={title || "Untitled tab"}
+                          title={title || 'Untitled tab'}
                         >
-                          {title || "Untitled tab"}
+                          {title || 'Untitled tab'}
                         </span>
                       </div>
                       {url && (
@@ -466,7 +548,8 @@ function ExpandedDetails({ session }: { session: Session & { _ts?: number } }) {
                       )}
                       {closedMs && (
                         <span className="md:hidden text-muted-foreground text-[10px] pl-6">
-                          Closed: {formatTime(closedMs)} • {formatRelative(closedMs)}
+                          Closed: {formatTime(closedMs)} •{' '}
+                          {formatRelative(closedMs)}
                         </span>
                       )}
                     </div>

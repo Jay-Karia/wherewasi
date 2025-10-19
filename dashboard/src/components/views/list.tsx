@@ -5,6 +5,14 @@ import { IoMdExpand } from 'react-icons/io';
 import { useState, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
+import dummySessions from '../../../../dummy/data.json';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { MdDelete, MdDownload, MdEdit } from 'react-icons/md';
 
 export default function ListView({
   sessions,
@@ -14,6 +22,7 @@ export default function ListView({
   sortOption: SortOption;
 }) {
   const filters = useAtomValue(filtersAtom);
+  sessions = dummySessions;
 
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
@@ -77,109 +86,129 @@ export default function ListView({
                   const accent = tinyAccentForSeed(s.id);
                   return (
                     <li key={s.id} className="group">
-                      <article className="grid grid-cols-1 gap-2 px-3 py-3 sm:px-4 lg:hidden">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex items-center gap-2 flex-1">
-                            <span
-                              className="h-2 w-2 shrink-0 rounded-full mt-1"
-                              style={{ backgroundColor: accent }}
-                            />
-                            <h4
-                              className="min-w-0 text-sm font-medium text-foreground break-words"
-                              title={s.title}
-                            >
-                              {s.title || 'Untitled session'}
-                            </h4>
+                      <ContextMenu>
+                        <ContextMenuTrigger>
+                          <div>
+                            <article className="grid grid-cols-1 gap-2 px-3 py-3 sm:px-4 lg:hidden">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0 flex items-center gap-2 flex-1">
+                                  <span
+                                    className="h-2 w-2 shrink-0 rounded-full mt-1"
+                                    style={{ backgroundColor: accent }}
+                                  />
+                                  <h4
+                                    className="min-w-0 text-sm font-medium text-foreground break-words"
+                                    title={s.title}
+                                  >
+                                    {s.title || 'Untitled session'}
+                                  </h4>
+                                </div>
+                                <button
+                                  aria-expanded={!!expanded[s.id]}
+                                  onClick={() => toggle(s.id)}
+                                  className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60 shrink-0"
+                                  title={expanded[s.id] ? 'Collapse' : 'Expand'}
+                                >
+                                  <IoMdExpand
+                                    className={cn(
+                                      'h-4 w-4 text-muted-foreground transition-transform',
+                                      expanded[s.id] && 'rotate-180'
+                                    )}
+                                  />
+                                </button>
+                              </div>
+
+                              <p className="text-xs text-muted-foreground pl-4">
+                                {expanded[s.id]
+                                  ? s.summary
+                                  : s.summary && s.summary.length > 100
+                                    ? s.summary.substring(0, 100) + '...'
+                                    : s.summary || 'No summary'}
+                              </p>
+
+                              <div className="flex items-center gap-3 pl-4 text-[11px] text-muted-foreground flex-wrap">
+                                {typeof s.tabsCount === 'number' && (
+                                  <span className="rounded-full bg-muted/60 px-2 py-0.5 font-medium">
+                                    {s.tabsCount} tabs
+                                  </span>
+                                )}
+                                <span>
+                                  {formatTime(s._ts)} • {formatRelative(s._ts)}
+                                </span>
+                              </div>
+                            </article>
+
+                            <article className="hidden lg:grid items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
+                              <div className="min-w-0 flex items-center gap-2">
+                                <span
+                                  className="h-2 w-2 shrink-0 rounded-full"
+                                  style={{ backgroundColor: accent }}
+                                />
+                                <h4
+                                  className="min-w-0 truncate text-sm font-medium text-foreground"
+                                  title={s.title}
+                                >
+                                  {s.title || 'Untitled session'}
+                                </h4>
+                              </div>
+                              <p
+                                className={cn(
+                                  'min-w-0 text-xs text-muted-foreground',
+                                  {
+                                    'pb-4': expanded[s.id],
+                                  }
+                                )}
+                                title={s.summary}
+                              >
+                                {expanded[s.id]
+                                  ? s.summary
+                                  : s.summary && s.summary.length > 150
+                                    ? s.summary.substring(0, 150) + '...'
+                                    : s.summary || 'No summary'}
+                              </p>
+                              <div className="flex items-center justify-end whitespace-nowrap">
+                                {typeof s.tabsCount === 'number' && (
+                                  <span className="rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                    {s.tabsCount} tabs
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-muted-foreground text-right whitespace-nowrap">
+                                {formatTime(s._ts)} • {formatRelative(s._ts)}
+                              </div>
+                              <div className="flex justify-end">
+                                <button
+                                  aria-expanded={!!expanded[s.id]}
+                                  onClick={() => toggle(s.id)}
+                                  className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60"
+                                  title={expanded[s.id] ? 'Collapse' : 'Expand'}
+                                >
+                                  <IoMdExpand
+                                    className={cn(
+                                      'h-4 w-4 text-muted-foreground transition-transform',
+                                      expanded[s.id] && 'rotate-180'
+                                    )}
+                                  />
+                                </button>
+                              </div>
+                            </article>
                           </div>
-                          <button
-                            aria-expanded={!!expanded[s.id]}
-                            onClick={() => toggle(s.id)}
-                            className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60 shrink-0"
-                            title={expanded[s.id] ? 'Collapse' : 'Expand'}
-                          >
-                            <IoMdExpand
-                              className={cn(
-                                'h-4 w-4 text-muted-foreground transition-transform',
-                                expanded[s.id] && 'rotate-180'
-                              )}
-                            />
-                          </button>
-                        </div>
-
-                        <p className="text-xs text-muted-foreground pl-4">
-                          {expanded[s.id]
-                            ? s.summary
-                            : s.summary && s.summary.length > 100
-                              ? s.summary.substring(0, 100) + '...'
-                              : s.summary || 'No summary'}
-                        </p>
-
-                        <div className="flex items-center gap-3 pl-4 text-[11px] text-muted-foreground flex-wrap">
-                          {typeof s.tabsCount === 'number' && (
-                            <span className="rounded-full bg-muted/60 px-2 py-0.5 font-medium">
-                              {s.tabsCount} tabs
-                            </span>
-                          )}
-                          <span>
-                            {formatTime(s._ts)} • {formatRelative(s._ts)}
-                          </span>
-                        </div>
-                      </article>
-
-                      <article className="hidden lg:grid items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
-                        <div className="min-w-0 flex items-center gap-2">
-                          <span
-                            className="h-2 w-2 shrink-0 rounded-full"
-                            style={{ backgroundColor: accent }}
-                          />
-                          <h4
-                            className="min-w-0 truncate text-sm font-medium text-foreground"
-                            title={s.title}
-                          >
-                            {s.title || 'Untitled session'}
-                          </h4>
-                        </div>
-                        <p
-                          className={cn(
-                            'min-w-0 text-xs text-muted-foreground',
-                            {
-                              'pb-4': expanded[s.id],
-                            }
-                          )}
-                          title={s.summary}
-                        >
-                          {expanded[s.id]
-                            ? s.summary
-                            : s.summary && s.summary.length > 150
-                              ? s.summary.substring(0, 150) + '...'
-                              : s.summary || 'No summary'}
-                        </p>
-                        <div className="flex items-center justify-end whitespace-nowrap">
-                          {typeof s.tabsCount === 'number' && (
-                            <span className="rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                              {s.tabsCount} tabs
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground text-right whitespace-nowrap">
-                          {formatTime(s._ts)} • {formatRelative(s._ts)}
-                        </div>
-                        <div className="flex justify-end">
-                          <button
-                            aria-expanded={!!expanded[s.id]}
-                            onClick={() => toggle(s.id)}
-                            className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60"
-                            title={expanded[s.id] ? 'Collapse' : 'Expand'}
-                          >
-                            <IoMdExpand
-                              className={cn(
-                                'h-4 w-4 text-muted-foreground transition-transform',
-                                expanded[s.id] && 'rotate-180'
-                              )}
-                            />
-                          </button>
-                        </div>
-                      </article>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent>
+                          <ContextMenuItem>
+                            <MdEdit className="mr-2 h-4 w-4" />
+                            Edit Title
+                          </ContextMenuItem>
+                          <ContextMenuItem>
+                            <MdDownload className="mr-2 h-4 w-4" />
+                            Export Session
+                          </ContextMenuItem>
+                          <ContextMenuItem className="text-destructive">
+                            <MdDelete className="mr-2 h-4 w-4" />
+                            Delete Session
+                          </ContextMenuItem>
+                        </ContextMenuContent>
+                      </ContextMenu>
 
                       {expanded[s.id] && (
                         <div className="px-3 sm:px-4 pb-4 -mt-2">
