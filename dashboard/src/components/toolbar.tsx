@@ -31,16 +31,16 @@ export default function Toolbar() {
         onValueChange={value => setCurrentView(value as SessionViews)}
       >
         <TabsList className="w-full grid grid-cols-3">
-          <TabsTrigger value="sessions" className="px-2 sm:px-6 md:px-12">
-            <FaLayerGroup className="mr-0 sm:mr-2" size={13} />
+          <TabsTrigger value="sessions">
+            <FaLayerGroup className="mr-2" size={13} />
             <span className="hidden sm:inline">Sessions</span>
           </TabsTrigger>
-          <TabsTrigger value="timeline" className="px-2 sm:px-6 md:px-12">
-            <Clock className="mr-0 sm:mr-2" size={15} />
+          <TabsTrigger value="timeline">
+            <Clock className="mr-2" size={15} />
             <span className="hidden sm:inline">Timeline</span>
           </TabsTrigger>
-          <TabsTrigger value="list" className="px-2 sm:px-6 md:px-12">
-            <FaList className="mr-0 sm:mr-2" size={14} />
+          <TabsTrigger value="list">
+            <FaList className="mr-2" size={14} />
             <span className="hidden sm:inline">List</span>
           </TabsTrigger>
         </TabsList>
