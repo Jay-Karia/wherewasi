@@ -6,6 +6,7 @@
 
 import { searchSessions } from '../helpers/grouping.js';
 import { generateSummary } from '../helpers/summary.js';
+import { updateSessionTitle } from '../helpers/title.js';
 import { StorageService } from './storage.js';
 
 //=============================================================//
@@ -83,7 +84,15 @@ export const AIService = {
 
     await StorageService.updateSession(foundSession.id, foundSession);
 
-    // TODO: update title and summary for updated session
+    try {
+      const updatedTitle = await updateSessionTitle(foundSession);
+      foundSession.title = updatedTitle;
+      await StorageService.updateSession(foundSession.id, {
+        title: updatedTitle,
+      });
+    } catch (error) {
+      console.error('Error updating session title:', error);
+    }
 
     return foundSession;
   },

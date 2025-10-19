@@ -13,8 +13,6 @@ export default function Main() {
     initialValue: [],
   });
 
-  // TODO: able to pin a view
-
   const currentView = useAtomValue(currentViewAtom);
   const sortOption = useAtomValue(sortOptionAtom);
 

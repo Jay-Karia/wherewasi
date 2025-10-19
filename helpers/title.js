@@ -15,7 +15,25 @@ export async function generateTitle(tab) {
     ],
   });
 
-  console.log(response.text);
+  return response.text
+}
+
+export async function updateSessionTitle(session) {
+  const prompt = `${prompts.updateTitle}\nCurrent session title: ${session.title}\nTabs inside the session titles: ${session.tabs.map(tab => tab.title).join(', ')}`
+
+  console.log(prompt);
+
+  const response = await ai.models.generateContent({
+    model: GEMINI_AI_MODEL,
+    contents: [
+      {
+        type: 'text',
+        text: prompt,
+      },
+    ],
+  });
+
+  console.log("Session title updated to: ", response.text);
 
   return response.text
 }

@@ -18,5 +18,10 @@ export const prompts = {
   Keep the summary brief (2-3 sentences) but informative enough to help the user recall what they were working on.
 
   Only provide the summary text, nothing else.
-  `
+  `,
+  updateTitle: `
+  Given the current session title and the tabs inside, we can update the session title to better reflect the overall theme. It is not required to update the title if the current title is already relevant.
+
+  Only provide the updated title text, nothing else.
+  `,
 };
