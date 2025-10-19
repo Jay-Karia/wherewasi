@@ -13,8 +13,8 @@
 - **Auto Grouping**: Groups related tabs into sessions.
 - **AI Summarization**: Generates searchable summaries of tabs and sessions.
 - **Smart Search**: Natural language search across sessions with fuzzy matching.
-- **Timeline View**: Visual timeline organized by sessions with filtering capabilities.
 - **Export/Import**: Share or backup sessions as JSON.
+- **Privacy Focused**: Data stored locally in browser, no external servers.
 
 ---
 
