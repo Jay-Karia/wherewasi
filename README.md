@@ -61,11 +61,13 @@ All data is stored locally in your browser. No servers used.
 
 <!-- Image Gallery -->
 
+<!-- Tips and Tricks -->
+
 ## Roadmap
 
 **v1.0.0**
 
-- [ ] Improve the content provided to AI while grouping sessions.
+- [x] Improve the content provided to AI while grouping sessions.
 - [ ] Improve dashboard search with fuzzy finding.
 - [ ] Add summaries from Summarizer API
 - [ ] Error handling AI fails.

@@ -66,7 +66,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
       return;
     }
 
-    const scrappedContent = contentCache.get(tab.id) || null;
+    const scrappedContent = contentCache.get(tabId) || null;
 
     // Prepare a compact record
     const tabRecord = {

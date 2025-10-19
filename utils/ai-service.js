@@ -84,14 +84,6 @@ export const AIService = {
 
     return foundSession;
   },
-
-  /*
-    Generate a title for a session.
-    @returns {Promise<string>} - The generated title.
-  */
-  async generateSessionTitle() {
-    return 'Session from closed tabs';
-  },
 };
 
 //***********************************************************//

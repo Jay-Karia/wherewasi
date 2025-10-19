@@ -11,7 +11,7 @@ export async function searchSessions(tab) {
   const sessionIds = sessions.map(session => session.id);
 
   // Prompt values
-  const promptValues = `\nThe tab: ${tab.title}\nSession Titles: ${sessionTitles}\nSession Ids: ${sessionIds}`;
+  const promptValues = `\nThe tab: ${tab.title}\nSession Titles: ${sessionTitles}\nSession Ids: ${sessionIds}\nHere's the scrapped content from the website: ${tab.content ? tab.content.summary : 'N/A'}`;
   const prompt = `${prompts.searchSessions} ${promptValues}`;
 
   const response = await ai.models.generateContent({
