@@ -1,17 +1,23 @@
 import type { Session, SortOption } from '@/types';
 import { cn, filterSessions } from '@/lib/utils';
-import { MdDelete, MdDownload, MdEdit, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import {
+  MdDelete,
+  MdDownload,
+  MdEdit,
+  MdOutlineKeyboardArrowDown,
+} from 'react-icons/md';
 import { useMemo, useState } from 'react';
 import { tinyAccentForSeed } from './timeline';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
-import dummySessions from '../../../../dummy/data.json';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import { EditSessionTitle } from '@/components/ui/edit-session-title';
+import { useStorage } from '@/hooks/useStorage';
 
 type Props = {
   sessions: Session[];
@@ -25,10 +31,66 @@ export default function SessionsView({
   className,
 }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
+  const [storedSessions, setStoredSessions] = useStorage<Session[]>({
+    key: 'sessions',
+    initialValue: [],
+  });
 
-  sessions = dummySessions;
+  const handleEditTitle = (session: Session) => {
+    setEditingSession(session);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveTitle = async (sessionId: string, newTitle: string) => {
+    // Update in Chrome storage using the storage service
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      try {
+        const data = await new Promise<{ sessions: Session[] }>(resolve => {
+          chrome.storage.local.get(['sessions'], res => {
+            resolve(res as { sessions: Session[] });
+          });
+        });
+
+        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+        const updatedSessions = sessions.map(s =>
+          s.id === sessionId
+            ? { ...s, title: newTitle, updatedAt: Date.now() }
+            : s
+        );
+
+        await new Promise<void>((resolve, reject) => {
+          chrome.storage.local.set({ sessions: updatedSessions }, () => {
+            if (chrome.runtime?.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve();
+            }
+          });
+        });
+
+        // Also update local state
+        await setStoredSessions(updatedSessions);
+      } catch (error) {
+        console.error(
+          'Failed to update session title in Chrome storage:',
+          error
+        );
+        throw error;
+      }
+    } else {
+      // Fallback for non-extension environment
+      const updatedSessions = storedSessions.map(s =>
+        s.id === sessionId
+          ? { ...s, title: newTitle, updatedAt: Date.now() }
+          : s
+      );
+      await setStoredSessions(updatedSessions);
+    }
+  };
 
   const variants = [
     'w-full sm:w-[14rem] lg:w-[18rem]',
@@ -340,7 +402,7 @@ export default function SessionsView({
               </article>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem>
+              <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                 <MdEdit className="mr-2 h-4 w-4" />
                 Edit Title
               </ContextMenuItem>
@@ -356,6 +418,14 @@ export default function SessionsView({
           </ContextMenu>
         );
       })}
+      {editingSession && (
+        <EditSessionTitle
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          session={editingSession}
+          onSave={handleSaveTitle}
+        />
+      )}
     </div>
   );
 }

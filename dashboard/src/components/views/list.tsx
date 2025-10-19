@@ -5,7 +5,6 @@ import { IoMdExpand } from 'react-icons/io';
 import { useState, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
-import dummySessions from '../../../../dummy/data.json';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,6 +12,8 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { MdDelete, MdDownload, MdEdit } from 'react-icons/md';
+import { EditSessionTitle } from '@/components/ui/edit-session-title';
+import { useStorage } from '@/hooks/useStorage';
 
 export default function ListView({
   sessions,
@@ -22,7 +23,59 @@ export default function ListView({
   sortOption: SortOption;
 }) {
   const filters = useAtomValue(filtersAtom);
-  sessions = dummySessions;
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
+  const [storedSessions, setStoredSessions] = useStorage<Session[]>({
+    key: 'sessions',
+    initialValue: [],
+  });
+
+  const handleEditTitle = (session: Session) => {
+    setEditingSession(session);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveTitle = async (sessionId: string, newTitle: string) => {
+    // Update in Chrome storage using the storage service
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      try {
+        const data = await new Promise<{ sessions: Session[] }>((resolve) => {
+          chrome.storage.local.get(['sessions'], (res) => {
+            resolve(res as { sessions: Session[] });
+          });
+        });
+
+        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+        const updatedSessions = sessions.map(s =>
+          s.id === sessionId ? { ...s, title: newTitle, updatedAt: Date.now() } : s
+        );
+
+        await new Promise<void>((resolve, reject) => {
+          chrome.storage.local.set({ sessions: updatedSessions }, () => {
+            if (chrome.runtime?.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve();
+            }
+          });
+        });
+
+        // Also update local state
+        await setStoredSessions(updatedSessions);
+      } catch (error) {
+        console.error('Failed to update session title in Chrome storage:', error);
+        throw error;
+      }
+    } else {
+      // Fallback for non-extension environment
+      const updatedSessions = storedSessions.map(s =>
+        s.id === sessionId ? { ...s, title: newTitle, updatedAt: Date.now() } : s
+      );
+      await setStoredSessions(updatedSessions);
+    }
+  };
 
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
@@ -61,9 +114,6 @@ export default function ListView({
     }
     return Number(b) - Number(a);
   });
-
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
 
   return (
     <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
@@ -195,7 +245,7 @@ export default function ListView({
                           </div>
                         </ContextMenuTrigger>
                         <ContextMenuContent>
-                          <ContextMenuItem>
+                          <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                             <MdEdit className="mr-2 h-4 w-4" />
                             Edit Title
                           </ContextMenuItem>
@@ -374,6 +424,14 @@ export default function ListView({
           </section>
         );
       })}
+      {editingSession && (
+        <EditSessionTitle
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          session={editingSession}
+          onSave={handleSaveTitle}
+        />
+      )}
     </div>
   );
 }
