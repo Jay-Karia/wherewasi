@@ -2,8 +2,7 @@
     <img src="./assets/logo.png" alt="Logo" width="80" />
     <h1 style="margin-top: 12px;">Where Was I</h1>
     <p>
-        A Chrome extension that remembers your sessions by capturing tabs when you close them,<br/>
-        grouping them into sessions, and building AI-powered summaries you can search later.
+        A Chrome extension that remembers your sessions by capturing tabs, grouping<br/> them into sessions, with AI-powered summaries.
     </p>
 </div>
 
