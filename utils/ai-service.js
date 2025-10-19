@@ -49,8 +49,6 @@ export const AIService = {
       );
     }
 
-    // TODO: add more content (from DOM) of a website to AI while grouping
-
     // If not appropriate session found, create a new one
     if (!foundSession) {
       const session = await StorageService.createEmptySession(tab);

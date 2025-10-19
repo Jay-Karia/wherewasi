@@ -6,8 +6,6 @@ import ListView from './views/list';
 import { useStorage } from '@/hooks/useStorage';
 import SearchResults from './search-results';
 
-// TODO: improve search with fuzzy finding
-
 export default function Main() {
   const query = useAtomValue(queryAtom);
   let [sessions, , loading, error] = useStorage({
