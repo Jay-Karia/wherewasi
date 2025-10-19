@@ -401,77 +401,105 @@ export default function SessionsView({
                                     ? closedAt
                                     : undefined;
                               return (
-                                <tr
-                                  key={i}
-                                  className={cn(
-                                    'border-b last:border-b-0 align-top transition-all',
-                                    removalMode[s.id] &&
-                                      selectedTabs[s.id]?.has(i) &&
-                                      'bg-destructive/10',
-                                    isAltPressed &&
-                                      'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
-                                  )}
-                                  draggable={isAltPressed}
-                                  onDragStart={() =>
-                                    handleTabDragStart(s.id, i)
-                                  }
-                                >
-                                  <td className="py-2 pr-3">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                      {fav ? (
-                                        <img
-                                          src={fav}
-                                          alt=""
-                                          className="h-4 w-4 rounded-sm shrink-0"
-                                        />
-                                      ) : (
-                                        <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0" />
+                                <ContextMenu key={i}>
+                                  <ContextMenuTrigger asChild>
+                                    <tr
+                                      className={cn(
+                                        'border-b last:border-b-0 align-top transition-all',
+                                        removalMode[s.id] &&
+                                          selectedTabs[s.id]?.has(i) &&
+                                          'bg-destructive/10',
+                                        isAltPressed &&
+                                          'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
                                       )}
-                                      <span
-                                        className="truncate text-foreground"
-                                        title={title || 'Untitled tab'}
-                                      >
-                                        {title
-                                          ? title.length > 50
-                                            ? `${title.slice(0, 50)}...`
-                                            : title
-                                          : 'Untitled tab'}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="py-2 pr-3 max-w-[20rem] lg:max-w-[28rem]">
-                                    {url ? (
-                                      <a
-                                        href={url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="truncate text-blue-600 hover:underline dark:text-blue-400 block"
-                                        title={url}
-                                      >
-                                        {url.length > 50
-                                          ? `${url.slice(0, 50)}...`
-                                          : url}
-                                      </a>
-                                    ) : (
-                                      <span className="opacity-60">—</span>
-                                    )}
-                                  </td>
-                                  <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
-                                    {closedMs ? (
-                                      <span className="block lg:inline">
-                                        {formatTimeSafe(closedMs)} •{' '}
-                                        {formatRelativeDate(closedMs)}
-                                      </span>
-                                    ) : (
-                                      <span className="opacity-60">—</span>
-                                    )}
-                                  </td>
-                                  <td className="py-2 pr-3 text-muted-foreground">
-                                    {tabId ?? (
-                                      <span className="opacity-60">—</span>
-                                    )}
-                                  </td>
-                                </tr>
+                                      draggable={isAltPressed}
+                                      onDragStart={() =>
+                                        handleTabDragStart(s.id, i)
+                                      }
+                                    >
+                                      {removalMode[s.id] && (
+                                        <td className="py-2 pr-3">
+                                          <Checkbox
+                                            className="cursor-pointer"
+                                            onCheckedChange={() =>
+                                              toggleTabSelection(s.id, i)
+                                            }
+                                            checked={
+                                              selectedTabs[s.id]?.has(i) ||
+                                              false
+                                            }
+                                          />
+                                        </td>
+                                      )}
+                                      <td className="py-2 pr-3">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                          {fav ? (
+                                            <img
+                                              src={fav}
+                                              alt=""
+                                              className="h-4 w-4 rounded-sm shrink-0"
+                                            />
+                                          ) : (
+                                            <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0" />
+                                          )}
+                                          <span
+                                            className="truncate text-foreground"
+                                            title={title || 'Untitled tab'}
+                                          >
+                                            {title
+                                              ? title.length > 50
+                                                ? `${title.slice(0, 50)}...`
+                                                : title
+                                              : 'Untitled tab'}
+                                          </span>
+                                        </div>
+                                      </td>
+                                      <td className="py-2 pr-3 max-w-[20rem] lg:max-w-[28rem]">
+                                        {url ? (
+                                          <a
+                                            href={url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="truncate text-blue-600 hover:underline dark:text-blue-400 block"
+                                            title={url}
+                                          >
+                                            {url.length > 50
+                                              ? `${url.slice(0, 50)}...`
+                                              : url}
+                                          </a>
+                                        ) : (
+                                          <span className="opacity-60">—</span>
+                                        )}
+                                      </td>
+                                      <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                                        {closedMs ? (
+                                          <span className="block lg:inline">
+                                            {formatTimeSafe(closedMs)} •{' '}
+                                            {formatRelativeDate(closedMs)}
+                                          </span>
+                                        ) : (
+                                          <span className="opacity-60">—</span>
+                                        )}
+                                      </td>
+                                      <td className="py-2 pr-3 text-muted-foreground">
+                                        {tabId ?? (
+                                          <span className="opacity-60">—</span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  </ContextMenuTrigger>
+                                  <ContextMenuContent>
+                                    <ContextMenuItem
+                                      onSelect={async () => {
+                                        await handleRemoveSelectedTabs(s.id);
+                                      }}
+                                      className="text-destructive"
+                                    >
+                                      <MdDelete className="mr-2 h-4 w-4" />
+                                      Remove Tab
+                                    </ContextMenuItem>
+                                  </ContextMenuContent>
+                                </ContextMenu>
                               );
                             }
                           )}
@@ -502,79 +530,100 @@ export default function SessionsView({
                                 ? closedAt
                                 : undefined;
                           return (
-                            <div
-                              key={i}
-                              className={cn(
-                                'rounded border bg-background/40 p-2 text-xs transition-all',
-                                removalMode[s.id] &&
-                                  selectedTabs[s.id]?.has(i) &&
-                                  'bg-destructive/10 border-destructive/30',
-                                isAltPressed &&
-                                  'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-4 hover:border-l-blue-500'
-                              )}
-                              draggable={isAltPressed}
-                              onDragStart={() => handleTabDragStart(s.id, i)}
-                            >
-                              <div className="flex items-start gap-2 mb-2">
-                                {removalMode[s.id] && (
-                                  <Checkbox
-                                    className="cursor-pointer mt-0.5 shrink-0"
-                                    onCheckedChange={() =>
-                                      toggleTabSelection(s.id, i)
-                                    }
-                                    checked={
-                                      selectedTabs[s.id]?.has(i) || false
-                                    }
-                                  />
-                                )}
-                                {fav ? (
-                                  <img
-                                    src={fav}
-                                    alt=""
-                                    className="h-4 w-4 rounded-sm shrink-0 mt-0.5"
-                                  />
-                                ) : (
-                                  <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0 mt-0.5" />
-                                )}
-                                <span
-                                  className="text-foreground font-medium leading-tight flex-1 break-words"
-                                  title={title || 'Untitled tab'}
+                            <ContextMenu key={i}>
+                              <ContextMenuTrigger asChild>
+                                <div
+                                  className={cn(
+                                    'rounded border bg-background/40 p-2 text-xs transition-all',
+                                    removalMode[s.id] &&
+                                      selectedTabs[s.id]?.has(i) &&
+                                      'bg-destructive/10 border-destructive/30',
+                                    isAltPressed &&
+                                      'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-4 hover:border-l-blue-500'
+                                  )}
+                                  draggable={isAltPressed}
+                                  onDragStart={() =>
+                                    handleTabDragStart(s.id, i)
+                                  }
                                 >
-                                  {title || 'Untitled tab'}
-                                </span>
-                              </div>
-                              {url && (
-                                <div className="mb-1">
-                                  <span className="text-[10px] text-muted-foreground opacity-70">
-                                    URL:
-                                  </span>{' '}
-                                  <a
-                                    href={url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-blue-600 hover:underline dark:text-blue-400 break-all"
-                                    title={url}
-                                  >
-                                    {url}
-                                  </a>
+                                  <div className="flex items-start gap-2 mb-2">
+                                    {removalMode[s.id] && (
+                                      <Checkbox
+                                        className="cursor-pointer mt-0.5 shrink-0"
+                                        onCheckedChange={() =>
+                                          toggleTabSelection(s.id, i)
+                                        }
+                                        checked={
+                                          selectedTabs[s.id]?.has(i) || false
+                                        }
+                                      />
+                                    )}
+                                    {fav ? (
+                                      <img
+                                        src={fav}
+                                        alt=""
+                                        className="h-4 w-4 rounded-sm shrink-0 mt-0.5"
+                                      />
+                                    ) : (
+                                      <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0 mt-0.5" />
+                                    )}
+                                    <span
+                                      className="text-foreground font-medium leading-tight flex-1 break-words"
+                                      title={title || 'Untitled tab'}
+                                    >
+                                      {title || 'Untitled tab'}
+                                    </span>
+                                  </div>
+                                  {url && (
+                                    <div className="mb-1">
+                                      <span className="text-[10px] text-muted-foreground opacity-70">
+                                        URL:
+                                      </span>{' '}
+                                      <a
+                                        href={url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-blue-600 hover:underline dark:text-blue-400 break-all"
+                                        title={url}
+                                      >
+                                        {url}
+                                      </a>
+                                    </div>
+                                  )}
+                                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground">
+                                    {closedMs && (
+                                      <div>
+                                        <span className="opacity-70">
+                                          Closed:
+                                        </span>{' '}
+                                        {formatTimeSafe(closedMs)} •{' '}
+                                        {formatRelativeDate(closedMs)}
+                                      </div>
+                                    )}
+                                    {tabId && (
+                                      <div>
+                                        <span className="opacity-70">ID:</span>{' '}
+                                        {tabId}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              )}
-                              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground">
-                                {closedMs && (
-                                  <div>
-                                    <span className="opacity-70">Closed:</span>{' '}
-                                    {formatTimeSafe(closedMs)} •{' '}
-                                    {formatRelativeDate(closedMs)}
-                                  </div>
-                                )}
-                                {tabId && (
-                                  <div>
-                                    <span className="opacity-70">ID:</span>{' '}
-                                    {tabId}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                              </ContextMenuTrigger>
+                              <ContextMenuContent>
+                                <ContextMenuItem
+                                  onSelect={async () => {
+                                    await removeTabsFromSession(s.id, [i]).then(
+                                      updatedSessions =>
+                                        setStoredSessions(updatedSessions)
+                                    );
+                                  }}
+                                  className="text-destructive"
+                                >
+                                  <MdDelete className="mr-2 h-4 w-4" />
+                                  Remove Tab
+                                </ContextMenuItem>
+                              </ContextMenuContent>
+                            </ContextMenu>
                           );
                         }
                       )}

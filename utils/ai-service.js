@@ -48,6 +48,8 @@ export const AIService = {
       );
     }
 
+    // TODO: add more content (from DOM) of a website to AI while grouping
+
     // If not appropriate session found, create a new one
     if (!foundSession) {
       const session = await StorageService.createEmptySession(tab);
@@ -80,6 +82,8 @@ export const AIService = {
     }
 
     await StorageService.updateSession(foundSession.id, foundSession);
+
+    // TODO: update title and summary for updated session
 
     return foundSession;
   },

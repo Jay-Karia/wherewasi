@@ -1,12 +1,12 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions, updateSessionTitle, deleteSession, removeTabsFromSession } from '@/lib/utils';
+import { cn, filterSessions, updateSessionTitle, deleteSession, removeTabsFromSession, moveTabBetweenSessions } from '@/lib/utils';
 import {
   MdDelete,
   MdEdit,
   MdOutlineKeyboardArrowDown,
 } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
 import {
@@ -49,12 +49,43 @@ export default function TimelineView({
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>({});
   const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
+  const [isAltPressed, setIsAltPressed] = useState(false);
+  const [draggedTab, setDraggedTab] = useState<{
+    sessionId: string;
+    tabIndex: number;
+  } | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
   const [, setStoredSessions] = useStorage<Session[]>({
     key: 'sessions',
     initialValue: [],
   });
+
+  // Track Alt key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltPressed(false);
+        setDraggedTab(null);
+        setDropTarget(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   const handleEditTitle = (session: Session) => {
     setEditingSession(session);
@@ -144,6 +175,60 @@ export default function TimelineView({
     return selectedTabs[sessionId]?.size || 0;
   };
 
+  const handleMoveTab = async (
+    sourceSessionId: string,
+    targetSessionId: string,
+    tabIndex: number
+  ) => {
+    if (sourceSessionId === targetSessionId) return;
+
+    try {
+      const updatedSessions = await moveTabBetweenSessions(
+        sourceSessionId,
+        targetSessionId,
+        tabIndex
+      );
+      await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to move tab:', error);
+      throw error;
+    }
+  };
+
+  const handleTabDragStart = (sessionId: string, tabIndex: number) => {
+    if (!isAltPressed) return;
+    setDraggedTab({ sessionId, tabIndex });
+  };
+
+  const handleSessionDragOver = (e: React.DragEvent, sessionId: string) => {
+    if (!draggedTab || draggedTab.sessionId === sessionId) return;
+    e.preventDefault();
+    setDropTarget(sessionId);
+  };
+
+  const handleSessionDragLeave = () => {
+    setDropTarget(null);
+  };
+
+  const handleSessionDrop = async (
+    e: React.DragEvent,
+    targetSessionId: string
+  ) => {
+    e.preventDefault();
+    if (!draggedTab || draggedTab.sessionId === targetSessionId) {
+      setDropTarget(null);
+      return;
+    }
+
+    await handleMoveTab(
+      draggedTab.sessionId,
+      targetSessionId,
+      draggedTab.tabIndex
+    );
+    setDraggedTab(null);
+    setDropTarget(null);
+  };
+
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
@@ -209,8 +294,14 @@ export default function TimelineView({
                           <ContextMenuTrigger>
                             <article
                               className={cn(
-                                'relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60'
+                                'relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60',
+                                dropTarget === s.id &&
+                                  'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
                               )}
+                              draggable={isAltPressed}
+                              onDragOver={e => handleSessionDragOver(e, s.id)}
+                              onDragLeave={handleSessionDragLeave}
+                              onDrop={e => handleSessionDrop(e, s.id)}
                             >
                               <header className="flex items-center justify-between gap-2">
                                 <div className="flex min-w-0 items-center gap-2">
@@ -262,6 +353,8 @@ export default function TimelineView({
                                 onRemove={handleRemoveSelectedTabs}
                                 onCancel={cancelRemovalMode}
                                 getSelectedCount={getSelectedCount}
+                                isAltPressed={isAltPressed}
+                                onTabDragStart={handleTabDragStart}
                               />
                             </article>
                           </ContextMenuTrigger>
@@ -298,8 +391,14 @@ export default function TimelineView({
                                 <article
                                   className={cn(
                                     'relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md',
-                                    isExpanded && 'ring-1 ring-border/60'
+                                    isExpanded && 'ring-1 ring-border/60',
+                                    dropTarget === s.id &&
+                                      'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
                                   )}
+                                  draggable={isAltPressed}
+                                  onDragOver={e => handleSessionDragOver(e, s.id)}
+                                  onDragLeave={handleSessionDragLeave}
+                                  onDrop={e => handleSessionDrop(e, s.id)}
                                 >
                                   <div
                                     className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
@@ -404,8 +503,14 @@ export default function TimelineView({
                                 <article
                                   className={cn(
                                     'relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md',
-                                    isExpanded && 'ring-1 ring-border/60'
+                                    isExpanded && 'ring-1 ring-border/60',
+                                    dropTarget === s.id &&
+                                      'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
                                   )}
+                                  draggable={isAltPressed}
+                                  onDragOver={e => handleSessionDragOver(e, s.id)}
+                                  onDragLeave={handleSessionDragLeave}
+                                  onDrop={e => handleSessionDrop(e, s.id)}
                                 >
                                   <div
                                     className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
@@ -589,6 +694,8 @@ interface ExpandedDetailsProps {
   onRemove?: (sessionId: string) => void;
   onCancel?: (sessionId: string) => void;
   getSelectedCount?: (sessionId: string) => number;
+  isAltPressed?: boolean;
+  onTabDragStart?: (sessionId: string, tabIndex: number) => void;
 }
 
 function ExpandedDetails({
@@ -600,7 +707,9 @@ function ExpandedDetails({
   onDeselectAll,
   onRemove,
   onCancel,
-  getSelectedCount
+  getSelectedCount,
+  isAltPressed,
+  onTabDragStart
 }: ExpandedDetailsProps) {
   const tabs = Array.isArray((session as any).tabs) ? ((session as any).tabs as any[]) : [];
 
@@ -679,9 +788,13 @@ function ExpandedDetails({
                 <tr
                   key={i}
                   className={cn(
-                    'border-b last:border-b-0 align-top',
-                    removalMode && selectedTabs?.has(i) && 'bg-destructive/10'
+                    'border-b last:border-b-0 align-top transition-all',
+                    removalMode && selectedTabs?.has(i) && 'bg-destructive/10',
+                    isAltPressed &&
+                      'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
                   )}
+                  draggable={isAltPressed}
+                  onDragStart={() => onTabDragStart?.(session.id, i)}
                 >
                   {removalMode && (
                     <td className="py-2 pr-3">

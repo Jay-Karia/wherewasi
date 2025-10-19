@@ -1,8 +1,15 @@
 import type { Session, SortOption } from '@/types';
-import { cn, filterSessions, updateSessionTitle, deleteSession, removeTabsFromSession } from '@/lib/utils';
+import {
+  cn,
+  filterSessions,
+  updateSessionTitle,
+  deleteSession,
+  removeTabsFromSession,
+  moveTabBetweenSessions,
+} from '@/lib/utils';
 import { tinyAccentForSeed } from './timeline';
 import { IoMdExpand } from 'react-icons/io';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { filtersAtom } from '../../../atoms';
 import {
@@ -15,7 +22,7 @@ import { MdDelete, MdEdit } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
 import { EditSessionTitle } from '@/components/ui/edit-session-title';
 import { useStorage } from '@/hooks/useStorage';
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function ListView({
   sessions,
@@ -28,13 +35,46 @@ export default function ListView({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
-  const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>({});
+  const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>(
+    {}
+  );
   const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
+  const [isAltPressed, setIsAltPressed] = useState(false);
+  const [draggedTab, setDraggedTab] = useState<{
+    sessionId: string;
+    tabIndex: number;
+  } | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
   const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const [, setStoredSessions] = useStorage<Session[]>({
     key: 'sessions',
     initialValue: [],
   });
+
+  // Track Alt key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltPressed(false);
+        setDraggedTab(null);
+        setDropTarget(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   const handleEditTitle = (session: Session) => {
     setEditingSession(session);
@@ -124,6 +164,60 @@ export default function ListView({
     return selectedTabs[sessionId]?.size || 0;
   };
 
+  const handleMoveTab = async (
+    sourceSessionId: string,
+    targetSessionId: string,
+    tabIndex: number
+  ) => {
+    if (sourceSessionId === targetSessionId) return;
+
+    try {
+      const updatedSessions = await moveTabBetweenSessions(
+        sourceSessionId,
+        targetSessionId,
+        tabIndex
+      );
+      await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('Failed to move tab:', error);
+      throw error;
+    }
+  };
+
+  const handleTabDragStart = (sessionId: string, tabIndex: number) => {
+    if (!isAltPressed) return;
+    setDraggedTab({ sessionId, tabIndex });
+  };
+
+  const handleSessionDragOver = (e: React.DragEvent, sessionId: string) => {
+    if (!draggedTab || draggedTab.sessionId === sessionId) return;
+    e.preventDefault();
+    setDropTarget(sessionId);
+  };
+
+  const handleSessionDragLeave = () => {
+    setDropTarget(null);
+  };
+
+  const handleSessionDrop = async (
+    e: React.DragEvent,
+    targetSessionId: string
+  ) => {
+    e.preventDefault();
+    if (!draggedTab || draggedTab.sessionId === targetSessionId) {
+      setDropTarget(null);
+      return;
+    }
+
+    await handleMoveTab(
+      draggedTab.sessionId,
+      targetSessionId,
+      draggedTab.tabIndex
+    );
+    setDraggedTab(null);
+    setDropTarget(null);
+  };
+
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
@@ -183,7 +277,18 @@ export default function ListView({
                   const accent = tinyAccentForSeed(s.id);
                   const isRemovalMode = removalMode[s.id];
                   return (
-                    <li key={s.id} className="group">
+                    <li
+                      key={s.id}
+                      className={cn(
+                        'group',
+                        dropTarget === s.id &&
+                          'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset rounded-lg'
+                      )}
+                      draggable={isAltPressed}
+                      onDragOver={e => handleSessionDragOver(e, s.id)}
+                      onDragLeave={handleSessionDragLeave}
+                      onDrop={e => handleSessionDrop(e, s.id)}
+                    >
                       <ContextMenu>
                         <ContextMenuTrigger>
                           <div>
@@ -297,11 +402,16 @@ export default function ListView({
                             <MdEdit className="mr-2 h-4 w-4" />
                             Edit Title
                           </ContextMenuItem>
-                          <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                          <ContextMenuItem
+                            onSelect={() => enterRemovalMode(s.id)}
+                          >
                             <FiMinus className="mr-2 h-4 w-4" />
                             Remove Tabs
                           </ContextMenuItem>
-                          <ContextMenuItem className="text-destructive" onSelect={() => handleDeleteSession(s.id)}>
+                          <ContextMenuItem
+                            className="text-destructive"
+                            onSelect={() => handleDeleteSession(s.id)}
+                          >
                             <MdDelete className="mr-2 h-4 w-4" />
                             Delete Session
                           </ContextMenuItem>
@@ -401,7 +511,18 @@ export default function ListView({
                                     return (
                                       <tr
                                         key={idx}
-                                        className="border-b last:border-b-0 align-top"
+                                        className={cn(
+                                          'border-b last:border-b-0 align-top transition-all',
+                                          isRemovalMode &&
+                                            selectedTabs[s.id]?.has(idx) &&
+                                            'bg-destructive/10',
+                                          isAltPressed &&
+                                            'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
+                                        )}
+                                        draggable={isAltPressed}
+                                        onDragStart={() =>
+                                          handleTabDragStart(s.id, idx)
+                                        }
                                       >
                                         {isRemovalMode && (
                                           <td className="py-2 pr-3">
