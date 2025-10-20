@@ -15,13 +15,13 @@
 Where Was I watches your browsing and, when a tab is closed, it saves the tab’s title, URL, favicon, and metadata. Tabs are auto-grouped into “sessions”. These sessions are summarized with AI so you can quickly recall what you were doing and jump back in.
 
 From the **Dashboard**, you can:
-
+**
 - Browse your sessions in Timeline, List, or Sessions views
-- Fuzzy find across titles, URLs, and summaries
+- Find across titles, URLs, and summaries
 - Edit session titles, remove tabs, and move tabs between sessions
 - Session sorting and filtering
 - Export/Import data as JSON for backup or sharing
-
+**
 **Privacy**
 
 All data is stored locally in your browser. No servers used.
@@ -57,7 +57,7 @@ All data is stored locally in your browser. No servers used.
 **v0.1.0**
 
 - [x] Improve the content provided to AI while grouping sessions.
-- [ ] Improve dashboard search with fuzzy finding.
+- [ ] Increase the accuracy of AI for grouping.
 - [ ] Add summaries from Summarizer API
 - [ ] Error handling AI fails.
 
@@ -67,6 +67,7 @@ All data is stored locally in your browser. No servers used.
 - [ ] Tabs caching
 - [ ] Ignore injecting scripts to same window when refreshed
 - [ ] Browser processing queue.
+- [ ] Improve dashboard search with fuzzy finding.
 
 <br>
 
