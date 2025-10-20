@@ -71,12 +71,20 @@ export default function SessionsView({
       }
     };
 
+    const handleBlur = () => {
+      setIsAltPressed(false);
+      setDraggedTab(null);
+      setDropTarget(null);
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
     };
   }, []);
 
