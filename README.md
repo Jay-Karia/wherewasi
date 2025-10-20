@@ -57,7 +57,6 @@ All data is stored locally in your browser. No servers used.
 **v0.1.0**
 
 - [x] Improve the content provided to AI while grouping sessions.
-- [ ] Increase the accuracy of AI for grouping.
 - [ ] Add summaries from Summarizer API
 - [ ] Error handling AI fails.
 
