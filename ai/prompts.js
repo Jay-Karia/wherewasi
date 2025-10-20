@@ -1,19 +1,12 @@
 export const prompts = {
   searchSessions: `
-    You are an intelligent session matching engine for a browser extension called "WhereWasI".
     Your goal is to determine if a newly closed tab BELONGS IN an existing session by understanding the user's task.
 
     **Guiding Principle:** Be liberal with matching. Different tools (e.g., Neovim, VS Code), products (e.g., Sony, Bose headphones), or topics (e.g., React Hooks, React State) often belong to the SAME research task. If the new tab is a clear continuation of or comparison related to an existing session's topic, it IS a match.
 
-    **Existing Sessions (ID and Title):**
-    ---
-    {SESSIONS_JSON}
-    ---
-
-    **Newly Closed Tab Data (Title, URL, and Scraped Content):**
-    ---
-    {TAB_JSON}
-    ---
+    Existing Sessions (ID and Title),
+    Newly Closed Tab Data (Title, URL, and Scraped Content),
+    Will be provided.
 
     **TASK:**
     1.  Infer the user's likely task from the "Newly Closed Tab Data".
@@ -27,7 +20,7 @@ export const prompts = {
 
     **Response:** Respond ONLY with the session "id" text or the word "null". Do not add any other text or explanations.
   `,
-  emptySessionTitle: `
+  newSessionTitle: `
     You are a session title generator. Given data from a single browser tab, create a concise and relevant session title.
 
     **Guiding Principle:** The title should describe the user's likely *task* or *research goal*, not just the specific topic of the page. For example, for a tab about "Neovim," a better title is "Code Editor Research" rather than just "Neovim."
