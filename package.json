@@ -1,6 +1,5 @@
 {
   "name": "wherewasi",
-  "version": "0.0.1",
   "description": "Chrome extension that remembers your search sessions and captures context. ",
   "main": "index.js",
   "devDependencies": {
