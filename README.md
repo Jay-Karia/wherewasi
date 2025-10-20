@@ -15,7 +15,7 @@
 Where Was I watches your browsing and, when a tab is closed, it saves the tab’s title, URL, favicon, and metadata. Tabs are auto-grouped into “sessions”. These sessions are summarized with AI so you can quickly recall what you were doing and jump back in.
 
 From the **Dashboard**, you can:
-**
+
 - Browse your sessions in Timeline, List, or Sessions views
 - Find across titles, URLs, and summaries
 - Edit session titles, remove tabs, and move tabs between sessions
