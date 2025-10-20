@@ -1,4 +1,4 @@
-import type { Session, SortOption } from "@/types";
+import type { Session, SortOption } from '@/types';
 import {
   cn,
   filterSessions,
@@ -6,22 +6,22 @@ import {
   deleteSession,
   removeTabsFromSession,
   moveTabBetweenSessions,
-} from "@/lib/utils";
-import { MdDelete, MdEdit, MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { FiMinus } from "react-icons/fi";
-import { useMemo, useState, useEffect } from "react";
-import { tinyAccentForSeed } from "./timeline";
-import { useAtomValue } from "jotai";
-import { filtersAtom } from "../../../atoms";
+} from '@/lib/utils';
+import { MdDelete, MdEdit, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { FiMinus } from 'react-icons/fi';
+import { useMemo, useState, useEffect } from 'react';
+import { tinyAccentForSeed } from './timeline';
+import { useAtomValue } from 'jotai';
+import { filtersAtom } from '../../../atoms';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { EditSessionTitle } from "@/components/ui/edit-session-title";
-import { useStorage } from "@/hooks/useStorage";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/context-menu';
+import { EditSessionTitle } from '@/components/ui/edit-session-title';
+import { useStorage } from '@/hooks/useStorage';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type Props = {
   sessions: Session[];
@@ -38,7 +38,7 @@ export default function SessionsView({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>(
-    {},
+    {}
   );
   const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
   const [isAltPressed, setIsAltPressed] = useState(false);
@@ -48,35 +48,35 @@ export default function SessionsView({
   } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
 
-  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
+  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
   const [, setStoredSessions] = useStorage<Session[]>({
-    key: "sessions",
+    key: 'sessions',
     initialValue: [],
   });
 
   // Track Alt key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Alt") {
+      if (e.key === 'Alt') {
         setIsAltPressed(true);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "Alt") {
+      if (e.key === 'Alt') {
         setIsAltPressed(false);
         setDraggedTab(null);
         setDropTarget(null);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
 
@@ -90,7 +90,7 @@ export default function SessionsView({
       const updatedSessions = await updateSessionTitle(sessionId, newTitle);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error("Failed to update session title:", error);
+      console.error('Failed to update session title:', error);
       throw error;
     }
   };
@@ -100,13 +100,13 @@ export default function SessionsView({
       const updatedSessions = await deleteSession(sessionId);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error("Failed to delete session:", error);
+      console.error('Failed to delete session:', error);
       throw error;
     }
   };
 
   const toggleTabSelection = (sessionId: string, tabIndex: number) => {
-    setSelectedTabs((prev) => {
+    setSelectedTabs(prev => {
       const sessionTabs = new Set(prev[sessionId] || []);
       if (sessionTabs.has(tabIndex)) {
         sessionTabs.delete(tabIndex);
@@ -118,14 +118,14 @@ export default function SessionsView({
   };
 
   const selectAllTabs = (sessionId: string, tabCount: number) => {
-    setSelectedTabs((prev) => ({
+    setSelectedTabs(prev => ({
       ...prev,
       [sessionId]: new Set(Array.from({ length: tabCount }, (_, i) => i)),
     }));
   };
 
   const deselectAllTabs = (sessionId: string) => {
-    setSelectedTabs((prev) => {
+    setSelectedTabs(prev => {
       const updated = { ...prev };
       delete updated[sessionId];
       return updated;
@@ -133,13 +133,13 @@ export default function SessionsView({
   };
 
   const enterRemovalMode = (sessionId: string) => {
-    setRemovalMode((prev) => ({ ...prev, [sessionId]: true }));
-    setExpanded((prev) => ({ ...prev, [sessionId]: true }));
+    setRemovalMode(prev => ({ ...prev, [sessionId]: true }));
+    setExpanded(prev => ({ ...prev, [sessionId]: true }));
     deselectAllTabs(sessionId);
   };
 
   const cancelRemovalMode = (sessionId: string) => {
-    setRemovalMode((prev) => {
+    setRemovalMode(prev => {
       const updated = { ...prev };
       delete updated[sessionId];
       return updated;
@@ -154,12 +154,12 @@ export default function SessionsView({
     try {
       const updatedSessions = await removeTabsFromSession(
         sessionId,
-        tabsToRemove,
+        tabsToRemove
       );
       await setStoredSessions(updatedSessions);
       cancelRemovalMode(sessionId);
     } catch (error) {
-      console.error("Failed to remove tabs:", error);
+      console.error('Failed to remove tabs:', error);
       throw error;
     }
   };
@@ -167,7 +167,7 @@ export default function SessionsView({
   const handleMoveTab = async (
     sourceSessionId: string,
     targetSessionId: string,
-    tabIndex: number,
+    tabIndex: number
   ) => {
     if (sourceSessionId === targetSessionId) return;
 
@@ -175,11 +175,11 @@ export default function SessionsView({
       const updatedSessions = await moveTabBetweenSessions(
         sourceSessionId,
         targetSessionId,
-        tabIndex,
+        tabIndex
       );
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error("Failed to move tab:", error);
+      console.error('Failed to move tab:', error);
       throw error;
     }
   };
@@ -201,7 +201,7 @@ export default function SessionsView({
 
   const handleSessionDrop = async (
     e: React.DragEvent,
-    targetSessionId: string,
+    targetSessionId: string
   ) => {
     e.preventDefault();
     if (!draggedTab || draggedTab.sessionId === targetSessionId) {
@@ -212,7 +212,7 @@ export default function SessionsView({
     await handleMoveTab(
       draggedTab.sessionId,
       targetSessionId,
-      draggedTab.tabIndex,
+      draggedTab.tabIndex
     );
     setDraggedTab(null);
     setDropTarget(null);
@@ -223,22 +223,22 @@ export default function SessionsView({
   };
 
   const variants = [
-    "w-full sm:w-[14rem] lg:w-[18rem]",
-    "w-full sm:w-[18rem] lg:w-[24rem]",
-    "w-full sm:w-[22rem] lg:w-[30rem]",
-    "w-full sm:w-[26rem] lg:w-[36rem]",
-    "w-full sm:w-[30rem] lg:w-[42rem]",
+    'w-full sm:w-[14rem] lg:w-[18rem]',
+    'w-full sm:w-[18rem] lg:w-[24rem]',
+    'w-full sm:w-[22rem] lg:w-[30rem]',
+    'w-full sm:w-[26rem] lg:w-[36rem]',
+    'w-full sm:w-[30rem] lg:w-[42rem]',
   ] as const;
 
   const sortedSessions = useMemo(() => {
-    if (!sortOption || sortOption === "date-desc") {
+    if (!sortOption || sortOption === 'date-desc') {
       return [...sessions].sort(
-        (a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt),
+        (a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt)
       );
     }
-    if (sortOption === "date-asc") {
+    if (sortOption === 'date-asc') {
       return [...sessions].sort(
-        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? a.createdAt),
+        (a, b) => (a.updatedAt ?? a.createdAt) - (b.updatedAt ?? a.createdAt)
       );
     }
     return sessions;
@@ -252,8 +252,8 @@ export default function SessionsView({
   return (
     <div
       className={cn(
-        "mx-auto max-w-7xl flex flex-row justify-center items-center gap-6 mt-8 flex-wrap",
-        className,
+        'mx-auto max-w-7xl flex flex-row justify-center items-center gap-6 mt-8 flex-wrap',
+        className
       )}
     >
       {filteredSessions.map((s, idx) => {
@@ -261,7 +261,7 @@ export default function SessionsView({
         const accent = tinyAccentForSeed(s.id);
         const isExpanded = !!expanded[s.id];
         const widthClass = isExpanded
-          ? "w-full sm:w-[42rem] lg:w-[64rem]"
+          ? 'w-full sm:w-[42rem] lg:w-[64rem]'
           : variants[pick];
         prevIdx = pick;
         return (
@@ -270,15 +270,15 @@ export default function SessionsView({
               <article
                 key={s.id}
                 className={cn(
-                  "group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-3 px-7 shadow-sm transition hover:shadow-md",
+                  'group relative shrink-0 overflow-hidden rounded-xl border bg-card/60 p-3 px-7 shadow-sm transition hover:shadow-md',
                   widthClass,
                   dropTarget === s.id &&
-                    "bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset",
+                    'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
                 )}
                 draggable={isAltPressed}
-                onDragOver={(e) => handleSessionDragOver(e, s.id)}
+                onDragOver={e => handleSessionDragOver(e, s.id)}
                 onDragLeave={handleSessionDragLeave}
-                onDrop={(e) => handleSessionDrop(e, s.id)}
+                onDrop={e => handleSessionDrop(e, s.id)}
               >
                 <header className="mb-2 flex items-center justify-between gap-3">
                   <span
@@ -287,11 +287,11 @@ export default function SessionsView({
                   />
                   <h3
                     className="line-clamp-1 text-base font-semibold text-foreground"
-                    title={s.title || "Untitled session"}
+                    title={s.title || 'Untitled session'}
                   >
-                    {s.title || "Untitled session"}
+                    {s.title || 'Untitled session'}
                   </h3>
-                  {typeof s.tabsCount === "number" && (
+                  {typeof s.tabsCount === 'number' && (
                     <span className="shrink-0 rounded-full py-0.5 text-xs font-medium border border-black/5 opacity-70 bg-muted/60 px-2 text-[11px] text-muted-foreground">
                       {s.tabsCount} tabs
                     </span>
@@ -300,12 +300,12 @@ export default function SessionsView({
                     aria-expanded={!!expanded[s.id]}
                     onClick={() => toggle(s.id)}
                     className="ml-auto flex items-center justify-center rounded-full transition-colors hover:bg-accent/50 hover:text-accent-foreground"
-                    title={expanded[s.id] ? "Collapse" : "Expand"}
+                    title={expanded[s.id] ? 'Collapse' : 'Expand'}
                   >
                     <MdOutlineKeyboardArrowDown
                       className={cn(
-                        "h-5 w-5 text-muted-foreground transition-transform",
-                        expanded[s.id] && "rotate-180",
+                        'h-5 w-5 text-muted-foreground transition-transform',
+                        expanded[s.id] && 'rotate-180'
                       )}
                     />
                   </button>
@@ -330,20 +330,20 @@ export default function SessionsView({
                   <div className="mt-3 rounded-lg border bg-background/60 p-2 sm:p-3">
                     <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground md:grid-cols-3">
                       <div className="break-all">
-                        <span className="opacity-70">Session ID:</span>{" "}
+                        <span className="opacity-70">Session ID:</span>{' '}
                         <span className="text-foreground/90">{s.id}</span>
                       </div>
                       <div>
-                        <span className="opacity-70">Created:</span>{" "}
+                        <span className="opacity-70">Created:</span>{' '}
                         <span className="block sm:inline">
-                          {formatTimeSafe(s.createdAt)} •{" "}
+                          {formatTimeSafe(s.createdAt)} •{' '}
                           {formatRelativeDate(s.createdAt)}
                         </span>
                       </div>
                       <div>
-                        <span className="opacity-70">Updated:</span>{" "}
+                        <span className="opacity-70">Updated:</span>{' '}
                         <span className="block sm:inline">
-                          {formatTimeSafe(s.updatedAt)} •{" "}
+                          {formatTimeSafe(s.updatedAt)} •{' '}
                           {formatRelativeDate(s.updatedAt)}
                         </span>
                       </div>
@@ -357,7 +357,7 @@ export default function SessionsView({
                               <th className="py-1 pr-3 font-medium w-8">
                                 <Checkbox
                                   className="cursor-pointer"
-                                  onCheckedChange={(checked) =>
+                                  onCheckedChange={checked =>
                                     checked
                                       ? selectAllTabs(s.id, s.tabs.length)
                                       : deselectAllTabs(s.id)
@@ -395,113 +395,97 @@ export default function SessionsView({
                                 | number
                                 | undefined;
                               const closedMs =
-                                typeof closedAt === "string"
+                                typeof closedAt === 'string'
                                   ? Date.parse(closedAt)
-                                  : typeof closedAt === "number"
+                                  : typeof closedAt === 'number'
                                     ? closedAt
                                     : undefined;
                               return (
-                                <ContextMenu key={i}>
-                                  <ContextMenuTrigger asChild>
-                                    <tr
-                                      className={cn(
-                                        "border-b last:border-b-0 align-top transition-all",
-                                        removalMode[s.id] &&
-                                          selectedTabs[s.id]?.has(i) &&
-                                          "bg-destructive/10",
-                                        isAltPressed &&
-                                          "cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500",
+                                <tr
+                                  className={cn(
+                                    'border-b last:border-b-0 align-top transition-all',
+                                    removalMode[s.id] &&
+                                      selectedTabs[s.id]?.has(i) &&
+                                      'bg-destructive/10',
+                                    isAltPressed &&
+                                      'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
+                                  )}
+                                  draggable={isAltPressed}
+                                  onDragStart={() =>
+                                    handleTabDragStart(s.id, i)
+                                  }
+                                >
+                                  {removalMode[s.id] && (
+                                    <td className="py-2 pr-3">
+                                      <Checkbox
+                                        className="cursor-pointer"
+                                        onCheckedChange={() =>
+                                          toggleTabSelection(s.id, i)
+                                        }
+                                        checked={
+                                          selectedTabs[s.id]?.has(i) || false
+                                        }
+                                      />
+                                    </td>
+                                  )}
+                                  <td className="py-2 pr-3">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      {fav ? (
+                                        <img
+                                          src={fav}
+                                          alt=""
+                                          className="h-4 w-4 rounded-sm shrink-0"
+                                        />
+                                      ) : (
+                                        <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0" />
                                       )}
-                                      draggable={isAltPressed}
-                                      onDragStart={() =>
-                                        handleTabDragStart(s.id, i)
-                                      }
-                                    >
-                                      {removalMode[s.id] && (
-                                        <td className="py-2 pr-3">
-                                          <Checkbox
-                                            className="cursor-pointer"
-                                            onCheckedChange={() =>
-                                              toggleTabSelection(s.id, i)
-                                            }
-                                            checked={
-                                              selectedTabs[s.id]?.has(i) ||
-                                              false
-                                            }
-                                          />
-                                        </td>
-                                      )}
-                                      <td className="py-2 pr-3">
-                                        <div className="flex items-center gap-2 min-w-0">
-                                          {fav ? (
-                                            <img
-                                              src={fav}
-                                              alt=""
-                                              className="h-4 w-4 rounded-sm shrink-0"
-                                            />
-                                          ) : (
-                                            <span className="h-4 w-4 rounded-sm bg-muted/60 inline-block shrink-0" />
-                                          )}
-                                          <span
-                                            className="truncate text-foreground"
-                                            title={title || "Untitled tab"}
-                                          >
-                                            {title
-                                              ? title.length > 50
-                                                ? `${title.slice(0, 50)}...`
-                                                : title
-                                              : "Untitled tab"}
-                                          </span>
-                                        </div>
-                                      </td>
-                                      <td className="py-2 pr-3 max-w-[20rem] lg:max-w-[28rem]">
-                                        {url ? (
-                                          <a
-                                            href={url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="truncate text-blue-600 hover:underline dark:text-blue-400 block"
-                                            title={url}
-                                          >
-                                            {url.length > 50
-                                              ? `${url.slice(0, 50)}...`
-                                              : url}
-                                          </a>
-                                        ) : (
-                                          <span className="opacity-60">—</span>
-                                        )}
-                                      </td>
-                                      <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
-                                        {closedMs ? (
-                                          <span className="block lg:inline">
-                                            {formatTimeSafe(closedMs)} •{" "}
-                                            {formatRelativeDate(closedMs)}
-                                          </span>
-                                        ) : (
-                                          <span className="opacity-60">—</span>
-                                        )}
-                                      </td>
-                                      <td className="py-2 pr-3 text-muted-foreground">
-                                        {tabId ?? (
-                                          <span className="opacity-60">—</span>
-                                        )}
-                                      </td>
-                                    </tr>
-                                  </ContextMenuTrigger>
-                                  <ContextMenuContent>
-                                    <ContextMenuItem
-                                      onSelect={async () => {
-                                        await handleRemoveSelectedTabs(s.id);
-                                      }}
-                                      className="text-destructive"
-                                    >
-                                      <MdDelete className="mr-2 h-4 w-4" />
-                                      Remove Tab
-                                    </ContextMenuItem>
-                                  </ContextMenuContent>
-                                </ContextMenu>
+                                      <span
+                                        className="truncate text-foreground"
+                                        title={title || 'Untitled tab'}
+                                      >
+                                        {title
+                                          ? title.length > 50
+                                            ? `${title.slice(0, 50)}...`
+                                            : title
+                                          : 'Untitled tab'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="py-2 pr-3 max-w-[20rem] lg:max-w-[28rem]">
+                                    {url ? (
+                                      <a
+                                        href={url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="truncate text-blue-600 hover:underline dark:text-blue-400 block"
+                                        title={url}
+                                      >
+                                        {url.length > 50
+                                          ? `${url.slice(0, 50)}...`
+                                          : url}
+                                      </a>
+                                    ) : (
+                                      <span className="opacity-60">—</span>
+                                    )}
+                                  </td>
+                                  <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                                    {closedMs ? (
+                                      <span className="block lg:inline">
+                                        {formatTimeSafe(closedMs)} •{' '}
+                                        {formatRelativeDate(closedMs)}
+                                      </span>
+                                    ) : (
+                                      <span className="opacity-60">—</span>
+                                    )}
+                                  </td>
+                                  <td className="py-2 pr-3 text-muted-foreground">
+                                    {tabId ?? (
+                                      <span className="opacity-60">—</span>
+                                    )}
+                                  </td>
+                                </tr>
                               );
-                            },
+                            }
                           )}
                         </tbody>
                       </table>
@@ -524,9 +508,9 @@ export default function SessionsView({
                             | number
                             | undefined;
                           const closedMs =
-                            typeof closedAt === "string"
+                            typeof closedAt === 'string'
                               ? Date.parse(closedAt)
-                              : typeof closedAt === "number"
+                              : typeof closedAt === 'number'
                                 ? closedAt
                                 : undefined;
                           return (
@@ -534,12 +518,12 @@ export default function SessionsView({
                               <ContextMenuTrigger asChild>
                                 <div
                                   className={cn(
-                                    "rounded border bg-background/40 p-2 text-xs transition-all",
+                                    'rounded border bg-background/40 p-2 text-xs transition-all',
                                     removalMode[s.id] &&
                                       selectedTabs[s.id]?.has(i) &&
-                                      "bg-destructive/10 border-destructive/30",
+                                      'bg-destructive/10 border-destructive/30',
                                     isAltPressed &&
-                                      "cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-4 hover:border-l-blue-500",
+                                      'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-4 hover:border-l-blue-500'
                                   )}
                                   draggable={isAltPressed}
                                   onDragStart={() =>
@@ -569,16 +553,16 @@ export default function SessionsView({
                                     )}
                                     <span
                                       className="text-foreground font-medium leading-tight flex-1 break-words"
-                                      title={title || "Untitled tab"}
+                                      title={title || 'Untitled tab'}
                                     >
-                                      {title || "Untitled tab"}
+                                      {title || 'Untitled tab'}
                                     </span>
                                   </div>
                                   {url && (
                                     <div className="mb-1">
                                       <span className="text-[10px] text-muted-foreground opacity-70">
                                         URL:
-                                      </span>{" "}
+                                      </span>{' '}
                                       <a
                                         href={url}
                                         target="_blank"
@@ -595,14 +579,14 @@ export default function SessionsView({
                                       <div>
                                         <span className="opacity-70">
                                           Closed:
-                                        </span>{" "}
-                                        {formatTimeSafe(closedMs)} •{" "}
+                                        </span>{' '}
+                                        {formatTimeSafe(closedMs)} •{' '}
                                         {formatRelativeDate(closedMs)}
                                       </div>
                                     )}
                                     {tabId && (
                                       <div>
-                                        <span className="opacity-70">ID:</span>{" "}
+                                        <span className="opacity-70">ID:</span>{' '}
                                         {tabId}
                                       </div>
                                     )}
@@ -613,8 +597,8 @@ export default function SessionsView({
                                 <ContextMenuItem
                                   onSelect={async () => {
                                     await removeTabsFromSession(s.id, [i]).then(
-                                      (updatedSessions) =>
-                                        setStoredSessions(updatedSessions),
+                                      updatedSessions =>
+                                        setStoredSessions(updatedSessions)
                                     );
                                   }}
                                   className="text-destructive"
@@ -625,7 +609,7 @@ export default function SessionsView({
                               </ContextMenuContent>
                             </ContextMenu>
                           );
-                        },
+                        }
                       )}
                     </div>
                     {removalMode[s.id] && (
@@ -686,21 +670,21 @@ export default function SessionsView({
 }
 
 function toDateTimeAttr(ts?: number) {
-  if (!ts) return "";
+  if (!ts) return '';
   try {
     return new Date(ts).toISOString();
   } catch {
-    return "";
+    return '';
   }
 }
 
 function formatRelativeDate(ts?: number) {
-  if (!ts) return "";
+  if (!ts) return '';
   const d = new Date(ts);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
+  if (diffMin < 1) return 'just now';
   if (diffMin < 60) return `${diffMin}m ago`;
   const diffHr = Math.floor(diffMin / 60);
   if (diffHr < 24) return `${diffHr}h ago`;
@@ -710,14 +694,14 @@ function formatRelativeDate(ts?: number) {
 }
 
 function formatTimeSafe(ts?: number) {
-  if (!ts) return "";
+  if (!ts) return '';
   try {
     return new Date(ts).toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
     });
   } catch {
-    return "";
+    return '';
   }
 }
 
@@ -725,7 +709,7 @@ function pickWidthVariant(
   id: string,
   index: number,
   prevIdx: number,
-  len: number,
+  len: number
 ): number {
   const base = seededIndex(id, index, len);
   if (prevIdx < 0) return base;
