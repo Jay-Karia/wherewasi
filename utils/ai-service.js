@@ -72,7 +72,7 @@ export const AIService = {
     foundSession.tabsCount = foundSession.tabs.length;
     foundSession.updatedAt = Date.now();
 
-    // Update session with new summary
+    // Update session with new summary and title
     // try {
     //   const summary = await generateSummary(foundSession);
     //   foundSession.summary = summary;
