@@ -65,6 +65,5 @@ All data is stored locally in your browser. No servers used.
 - [ ] Add summaries from Summarizer API
 - [ ] Error handling AI fails.
 - [ ] Browser processing queue.
-- [ ] Performance and optimizations
 
 **🚀 Coming Soon**
