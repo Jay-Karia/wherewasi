@@ -38,7 +38,7 @@ BUILD_DIR="$ROOT_DIR/build"
 echo "\n-- Preparing build directory --"
 rm -rf "$BUILD_DIR" && mkdir -p "$BUILD_DIR"
 
-copy_dir() { # $1 = dir name
+copy_dir() { # $1 = dir name``
     if [[ -d $1 ]]; then
         echo "Copying $1/"
         cp -R "$1" "$BUILD_DIR/$1"
@@ -51,7 +51,7 @@ done
 
 # Bundle the background service worker using Rollup
 echo "-- Bundling background worker --"
-npm run build:worker >/dev/null
+npm run build >/dev/null
 
 if [[ ! -d dashboard/dist ]]; then
     echo "dashboard/dist missing after build" >&2; exit 1; fi
