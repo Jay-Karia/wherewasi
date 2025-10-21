@@ -19,7 +19,9 @@
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write .",
     "build": "npx rollup --config",
-    "watch": "npx rollup --config --watch"
+    "watch": "npx rollup --config --watch",
+    "build:dashboard": "cd dashboard && npm run build",
+    "watch:dashboard": "cd dashboard && npm run watch"
   },
   "repository": {
     "type": "git",
