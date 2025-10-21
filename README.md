@@ -21,7 +21,7 @@ From the **Dashboard**, you can:
 - Edit session titles, remove tabs, and move tabs between sessions
 - Session sorting and filtering
 - Export/Import data as JSON for backup or sharing
-**
+
 **Privacy**
 
 All data is stored locally in your browser. No servers used.
