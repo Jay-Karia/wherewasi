@@ -3,6 +3,7 @@
 */
 
 import { generateTitle } from '../helpers/title.js';
+import { generateSummary } from '../helpers/summary';
 
 //======================CONSTANTS==============================//
 
@@ -71,13 +72,13 @@ export const StorageService = {
   */
   async createEmptySession(tab) {
     try {
-      // TODO: generate the summary here
       const emptySessionTitle = await generateTitle(tab);
+      const summary = await generateSummary();
       const session = await StorageService.saveSession({
         id: new Date().toISOString(),
         tabsCount: 1,
         title: emptySessionTitle,
-        summary: '', // generate from AI
+        summary: summary,
         tabs: [tab],
         createdAt: Date.now(),
         updatedAt: Date.now(),

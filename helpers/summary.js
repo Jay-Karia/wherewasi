@@ -8,20 +8,20 @@ export async function generateSummary(session) {
   try {
     // Check if the Summarizer API is available
     if (!('Summarizer' in self)) {
-      console.warn('Chrome Summarizer API not available');
+      console.error('WhereWasI: Chrome Summarizer API not available');
       return null;
     }
 
     // Check if summarizer is available
     const availability = await Summarizer.availability();
     if (availability.available === 'unavailable') {
-      console.warn('Summarizer is not available');
+      console.error('WhereWasI: Summarizer is not available');
       return null;
     }
 
     // Check for user activation
     if (!navigator.userActivation.isActive) {
-      console.warn('User activation is required to use the Summarizer API');
+      console.error('WhereWasI: User activation is required to use the Summarizer API');
       return null;
     }
 
@@ -31,6 +31,8 @@ export async function generateSummary(session) {
     // Prepare the session context for summarization
     const sessionContext = prepareSessionContext(session);
 
+    console.log(sessionContext);
+
     // Generate the summary
     const summary = await summarizer.summarize(sessionContext);
 
@@ -39,7 +41,7 @@ export async function generateSummary(session) {
 
     return summary || null;
   } catch (error) {
-    console.error('Error generating summary with Chrome AI:', error);
+    console.error('WhereWasI: Error generating summary with Chrome AI:', error);
     return null;
   }
 }
