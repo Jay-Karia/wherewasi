@@ -3,17 +3,13 @@ import { Button } from "./ui/button";
 import Search from "./ui/search";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { IoSettingsOutline } from "react-icons/io5";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useAtomValue } from "jotai";
-import { searchFocusAtom } from "../../atoms";
+import { useAtom, useAtomValue } from "jotai";
+import { isSettingsOpenAtom, searchFocusAtom } from "../../atoms";
 import { cn } from "@/lib/utils";
 
 export default function AppBar() {
   const searchFocus = useAtomValue(searchFocusAtom);
+  const [isSettingsOpen, setIsSettingsOpen] = useAtom(isSettingsOpenAtom);
 
   return (
     <div className="h-16 bg-base-100 px-2 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 border-b border-gray-200 dark:border-gray-700">
@@ -36,17 +32,12 @@ export default function AppBar() {
         })}
       >
         <ThemeToggle />
-
-        <Tooltip>
-          <TooltipTrigger>
-            <Button variant="ghost" size="icon" disabled>
-              <IoSettingsOutline size={20} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Coming Soon!</p>
-          </TooltipContent>
-        </Tooltip>
+        <Button variant="ghost" size="icon" onClick={() => {
+          const toggle = !isSettingsOpen;
+          setIsSettingsOpen(toggle);
+        }}>
+          <IoSettingsOutline size={20} />
+        </Button>
       </div>
     </div>
   );

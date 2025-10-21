@@ -259,9 +259,6 @@ export default function SearchResults() {
                                         <th className="py-1 pr-2 sm:pr-3 font-medium hidden md:table-cell">
                                           Closed
                                         </th>
-                                        <th className="py-1 pr-2 sm:pr-3 font-medium hidden lg:table-cell">
-                                          Tab ID
-                                        </th>
                                       </tr>
                                     </thead>
                                     <tbody className="text-[11px] sm:text-xs">
@@ -276,10 +273,6 @@ export default function SearchResults() {
                                           | string
                                           | undefined;
                                         const url = (t as any)?.url as
-                                          | string
-                                          | undefined;
-                                        const tabId = (t as any)?.id as
-                                          | number
                                           | string
                                           | undefined;
                                         const closedAt = (t as any)
@@ -361,14 +354,6 @@ export default function SearchResults() {
                                                         )}
                                                       </div>
                                                     )}
-                                                    {tabId && (
-                                                      <div className="lg:hidden">
-                                                        <span className="opacity-70">
-                                                          ID:
-                                                        </span>{" "}
-                                                        {tabId}
-                                                      </div>
-                                                    )}
                                                   </div>
                                                 </div>
                                               </div>
@@ -409,13 +394,6 @@ export default function SearchResults() {
                                                   </span>
                                                 </span>
                                               ) : (
-                                                <span className="opacity-60">
-                                                  —
-                                                </span>
-                                              )}
-                                            </td>
-                                            <td className="py-2 pr-2 sm:pr-3 text-muted-foreground hidden lg:table-cell">
-                                              {tabId ?? (
                                                 <span className="opacity-60">
                                                   —
                                                 </span>

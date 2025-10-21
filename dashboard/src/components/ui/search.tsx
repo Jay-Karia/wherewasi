@@ -31,6 +31,7 @@ export default function Search() {
           setQuery={setQuery}
           onFocus={() => setSearchFocus(true)}
           onBlur={() => setSearchFocus(false)}
+          className="pl-10"
         />
       </div>
     </div>

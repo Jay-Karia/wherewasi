@@ -19,3 +19,8 @@ export type FilterOption = {
   dateRange: FilterDateRange;
   tabCount: FilterTabCount;
 };
+
+export type Settings = {
+  geminiApiKey?: string | null;
+  geminiModel?: string;
+};
