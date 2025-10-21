@@ -267,6 +267,64 @@ export const StorageService = {
       console.error('WhereWasI: Error counting sessions:', error);
     }
   },
+
+  /*
+    Retrieves user settings from Chrome's local storage.
+    @returns {Promise<Object>} - Resolves to the settings object.
+  */
+  async getSettings() {
+    const getStorage = keys =>
+      new Promise(resolve => {
+        chrome.storage.local.get(keys, res => resolve(res));
+      });
+
+    try {
+      const data = await getStorage(['settings']);
+      return data.settings || {};
+    } catch (error) {
+      console.error('WhereWasI: Error retrieving settings:', error);
+    }
+  },
+
+  /*
+    Retrieves a specific setting by key from user settings.
+    @param {string} key - The setting key to retrieve.
+    @returns {Promise<any>} - Resolves to the value of the setting.
+  */
+  async getSetting(key) {
+    const settings = await this.getSettings();
+    return settings[key];
+  },
+
+  async saveSettings(newSettings) {
+    const getStorage = keys =>
+      new Promise(resolve => {
+        chrome.storage.local.get(keys, res => resolve(res));
+      });
+
+    const setStorage = obj =>
+      new Promise((resolve, reject) => {
+        chrome.storage.local.set(obj, () => {
+          if (chrome.runtime && chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError);
+          }
+          resolve();
+        });
+      });
+
+    try {
+      const data = await getStorage(['settings']);
+      const currentSettings = data.settings || {};
+
+      const updatedSettings = { ...currentSettings, ...newSettings };
+
+      await setStorage({ settings: updatedSettings });
+      console.log('WhereWasi: Settings saved successfully');
+      return updatedSettings;
+    } catch (error) {
+      console.error('WhereWasI: Error saving settings:', error);
+    }
+  },
 };
 
 //***********************************************************//
