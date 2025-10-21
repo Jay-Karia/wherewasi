@@ -3,12 +3,13 @@ import { Input } from "./ui/input";
 import { FiSave, FiRefreshCw, FiUpload, FiDownload, FiSettings, FiEye, FiEyeOff } from "react-icons/fi";
 import { PiSparkleFill } from "react-icons/pi";
 import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 export default function Settings() {
     const [showApiKey, setShowApiKey] = useState(false);
 
     return (
-        <div className="w-full min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-8 -mt-8">
+        <div className="w-full bg-gradient-to-br from-background via-background to-muted/20 p-8 -mt-8">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <header className="mb-8">
@@ -76,6 +77,28 @@ export default function Settings() {
                                 <p className="text-xs text-muted-foreground mt-2">
                                     Your API key is stored locally and never shared
                                 </p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    Gemini Model
+                                </label>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Select you Gemini AI Model <span className="dark:text-gray-500 text-gray-700">(default: gemini-2.5-flash)</span>
+                                </p>
+                                <div className="relative mt-2">
+                                    <Select defaultValue="gemini-2.5-flash">
+                                        <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Select a model" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                                            <SelectItem value="gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                                            <SelectItem value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</SelectItem>
+                                            <SelectItem value="gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
+                                            <SelectItem value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
                     </section>
