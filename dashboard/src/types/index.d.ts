@@ -22,5 +22,4 @@ export type FilterOption = {
 
 export type Settings = {
   geminiApiKey?: string | null;
-  geminiModel?: string;
 };

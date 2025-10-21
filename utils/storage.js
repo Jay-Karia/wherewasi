@@ -295,36 +295,6 @@ export const StorageService = {
     const settings = await this.getSettings();
     return settings[key];
   },
-
-  async saveSettings(newSettings) {
-    const getStorage = keys =>
-      new Promise(resolve => {
-        chrome.storage.local.get(keys, res => resolve(res));
-      });
-
-    const setStorage = obj =>
-      new Promise((resolve, reject) => {
-        chrome.storage.local.set(obj, () => {
-          if (chrome.runtime && chrome.runtime.lastError) {
-            return reject(chrome.runtime.lastError);
-          }
-          resolve();
-        });
-      });
-
-    try {
-      const data = await getStorage(['settings']);
-      const currentSettings = data.settings || {};
-
-      const updatedSettings = { ...currentSettings, ...newSettings };
-
-      await setStorage({ settings: updatedSettings });
-      console.log('WhereWasi: Settings saved successfully');
-      return updatedSettings;
-    } catch (error) {
-      console.error('WhereWasI: Error saving settings:', error);
-    }
-  },
 };
 
 //***********************************************************//

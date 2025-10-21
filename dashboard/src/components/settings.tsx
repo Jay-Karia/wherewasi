@@ -10,10 +10,26 @@ import {
   FiEyeOff,
 } from "react-icons/fi";
 import { PiSparkleFill } from "react-icons/pi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { getSettings, saveSettings, clearSettings } from "@/lib/utils";
+import { isSettingsOpenAtom } from "../../atoms";
+import type { Settings } from "@/types";
 
 export default function Settings() {
   const [showApiKey, setShowApiKey] = useState(false);
+  const [settings, setSettings] = useState<Settings>({});
+  const [status, setStatus] = useState<string | null>(null);
+  const [, setIsSettingsOpen] = useAtom(isSettingsOpenAtom);
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const fetchedSettings = await getSettings();
+      setSettings(fetchedSettings);
+    }
+
+    void fetchSettings();
+  }, []);
 
   return (
     <div className="w-full bg-gradient-to-br from-background via-background to-muted/20 p-8 -mt-8">
@@ -34,6 +50,14 @@ export default function Settings() {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2"
+                onClick={() => setIsSettingsOpen(false)}
+              >
+                ← Back
+              </Button>
               <Button variant="ghost" size="sm" className="gap-2">
                 <FiUpload className="w-4 h-4" />
                 Import
@@ -71,6 +95,10 @@ export default function Settings() {
                 </label>
                 <div className="relative">
                   <Input
+                    value={settings.geminiApiKey || ""}
+                    onChange={(e) =>
+                      setSettings({ ...settings, geminiApiKey: e.target.value })
+                    }
                     type={showApiKey ? "text" : "password"}
                     placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                     className="pr-10"
@@ -87,7 +115,11 @@ export default function Settings() {
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Your API key is stored locally and never shared
+                  Your API key is stored locally.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Note: After changing the API key you should refresh the
+                  extension to use the new key.
                 </p>
               </div>
             </div>
@@ -98,14 +130,47 @@ export default function Settings() {
         <div className="mt-8 pt-6 border-t border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button size="default" className="gap-2 shadow-sm">
+              <Button
+                size="default"
+                className="gap-2 shadow-sm"
+                onClick={async () => {
+                  setStatus("Saving...");
+                  try {
+                    await saveSettings(settings);
+                    setStatus("Saved");
+                    setTimeout(() => setStatus(null), 1200);
+                  } catch (err: any) {
+                    setStatus(`Save failed: ${String(err)}`);
+                  }
+                }}
+              >
                 <FiSave className="w-4 h-4" />
-                Save Settings
+                Save
               </Button>
-              <Button variant="outline" size="default" className="gap-2">
+              <Button
+                variant="outline"
+                size="default"
+                className="gap-2"
+                onClick={async () => {
+                  setStatus("Resetting...");
+                  try {
+                    await clearSettings();
+                    setSettings({});
+                    setStatus("Reset");
+                    setTimeout(() => setStatus(null), 1200);
+                  } catch (err: any) {
+                    setStatus(`Reset failed: ${String(err)}`);
+                  }
+                }}
+              >
                 <FiRefreshCw className="w-4 h-4" />
-                Reset to Default
+                Reset
               </Button>
+              {status && (
+                <div className="ml-4 text-sm text-muted-foreground">
+                  {status}
+                </div>
+              )}
             </div>
           </div>
         </div>

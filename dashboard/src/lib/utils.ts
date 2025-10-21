@@ -1,4 +1,4 @@
-import type { FilterOption, Session } from "@/types";
+import type { FilterOption, Session, Settings } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -292,6 +292,52 @@ export async function moveTabBetweenSessions(
     });
 
     return updatedSessions;
+  } else {
+    throw new Error("Chrome storage API not available");
+  }
+}
+
+export async function getSettings(): Promise<Settings> {
+  if (typeof chrome !== "undefined" && chrome.storage) {
+    const data = await new Promise<{ settings: Settings }>((resolve) => {
+      chrome.storage.local.get(["settings"], (res) => {
+        resolve(res as { settings: Settings });
+      });
+    });
+
+    return data.settings || {};
+  } else {
+    throw new Error("Chrome storage API not available");
+  }
+}
+
+export async function saveSettings(settings: Settings): Promise<void> {
+  if (typeof chrome !== "undefined" && chrome.storage) {
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ settings }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  } else {
+    throw new Error("Chrome storage API not available");
+  }
+}
+
+export async function clearSettings(): Promise<void> {
+  if (typeof chrome !== "undefined" && chrome.storage) {
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.remove(["settings"], () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
   } else {
     throw new Error("Chrome storage API not available");
   }

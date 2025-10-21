@@ -1,10 +1,4 @@
-import type {
-  FilterOption,
-  Session,
-  SessionViews,
-  SortOption,
-  Settings,
-} from "@/types";
+import type { FilterOption, Session, SessionViews, SortOption } from "@/types";
 import { atomWithStorage } from "jotai/utils";
 
 export const currentViewAtom = atomWithStorage<SessionViews>(
@@ -26,12 +20,3 @@ export const isSettingsOpenAtom = atomWithStorage<boolean>(
   "isSettingsOpen",
   false,
 );
-export const geminiApiKeyAtom = atomWithStorage<string | null>(
-  "geminiApiKey",
-  null,
-);
-
-export const settingsAtom = atomWithStorage<Settings>("settings", {
-  geminiApiKey: null,
-  geminiModel: "gemini-2.5-flash",
-});
