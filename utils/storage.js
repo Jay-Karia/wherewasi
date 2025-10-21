@@ -73,16 +73,20 @@ export const StorageService = {
   async createEmptySession(tab) {
     try {
       const emptySessionTitle = await generateTitle(tab);
-      const summary = await generateSummary();
       const session = await StorageService.saveSession({
         id: new Date().toISOString(),
         tabsCount: 1,
         title: emptySessionTitle,
-        summary: summary,
+        summary: "",
         tabs: [tab],
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
+
+      const summary = await generateSummary(session);
+      session.summary = summary;
+      await StorageService.updateSession(session.id, session);
+      
       return session;
     } catch (error) {
       console.error('WhereWasI: Error creating empty session:', error);

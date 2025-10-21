@@ -365,7 +365,7 @@ export default function SessionsView({
                               <th className="py-1 pr-3 font-medium w-8">
                                 <Checkbox
                                   className="cursor-pointer"
-                                  onCheckedChange={checked =>
+                                  onCheckedChange={(checked: any) =>
                                     checked
                                       ? selectAllTabs(s.id, s.tabs.length)
                                       : deselectAllTabs(s.id)

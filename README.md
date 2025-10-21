@@ -83,7 +83,7 @@ git clone https://github.com/Jay-Karia/wherewasi
 **v0.1.0**
 
 - [x] Improve the content provided to AI while grouping sessions.
-- [ ] Add summaries from Summarizer API
+- [x] Add summaries from Summarizer API
 - [x] Error handling AI fails.
 - [ ] Get the API key from user.
 

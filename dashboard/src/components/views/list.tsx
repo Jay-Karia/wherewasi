@@ -463,7 +463,7 @@ export default function ListView({
                                             getSelectedCount(s.id) ===
                                             (s.tabs?.length || 0)
                                           }
-                                          onCheckedChange={checked =>
+                                          onCheckedChange={(checked: any) =>
                                             checked
                                               ? selectAllTabs(
                                                   s.id,

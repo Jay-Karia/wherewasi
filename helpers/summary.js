@@ -19,19 +19,11 @@ export async function generateSummary(session) {
       return null;
     }
 
-    // Check for user activation
-    if (!navigator.userActivation.isActive) {
-      console.error('WhereWasI: User activation is required to use the Summarizer API');
-      return null;
-    }
-
     // Create summarizer instance
     const summarizer = await Summarizer.create(SUMMARIZER_OPTIONS);
 
     // Prepare the session context for summarization
     const sessionContext = prepareSessionContext(session);
-
-    console.log(sessionContext);
 
     // Generate the summary
     const summary = await summarizer.summarize(sessionContext);
@@ -61,5 +53,5 @@ function prepareSessionContext(session) {
     })
     .join('\n');
 
-  return `Session Title: ${session.title}\n\nTabs in this session:\n${tabsSummary}\n\nPlease provide a brief summary of what the user was working on based on these tabs.`;
+  return `Session Title: ${session.title}\n\nTabs in this session:\n${tabsSummary}`;
 }

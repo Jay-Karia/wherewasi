@@ -6,6 +6,7 @@
 
 import { searchSessions } from '../helpers/grouping.js';
 import { StorageService } from './storage.js';
+import { generateSummary } from '../helpers/summary.js';
 
 //=============================================================//
 
