@@ -40,17 +40,31 @@ All data is stored locally in your browser. No servers used.
 
 ---
 
-## How it works
+## Installation
 
-<!-- Installation -->
+### Chrome Web Store
 
-<!-- Technical Details -->
+*Currently the extension is not uploaded to Web Store*
 
-<!-- Contributing and Project Structure -->
+### Manual
 
-<!-- Motivation -->
+1. Clone the repository
+```sh
+git clone https://github.com/Jay-Karia/wherewasi
+```
 
-<!-- Image Gallery -->
+2. Build the extension by running the script based on your system (Windows/Unix)
+```sh
+# For Unix (Linux/Mac)
+./scripts/build.sh
+
+# For Windows (PowerShell)
+./scripts/build.ps1
+```
+
+3. Open Chrome and navigate to `chrome://extensions/`
+4. Enable "Developer mode" using the toggle in the top right corner.
+5. Click on "Load unpacked" and select the `build` folder from the cloned repository.
 
 ## Roadmap
 
