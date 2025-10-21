@@ -42,6 +42,12 @@ All data is stored locally in your browser. No servers used.
 
 ## Installation
 
+**Requirements:**
+
+- Chrome browser (version 137 or later)
+- Read the hardware requirements [here](https://developer.chrome.com/docs/ai/get-started#hardware) which needs to be satisfied for AI Summaries.
+- Gemini API Key (for tabs grouping, and title generation).
+
 ### Chrome Web Store
 
 *Currently the extension is not uploaded to Web Store*
@@ -66,6 +72,12 @@ git clone https://github.com/Jay-Karia/wherewasi
 4. Enable "Developer mode" using the toggle in the top right corner.
 5. Click on "Load unpacked" and select the `build` folder from the cloned repository.
 
+## Setup
+
+1. After installing the extension, click on the extension icon in the toolbar.
+2. Go to the settings page by clicking on the gear icon.
+3. Enter your Gemini API key in the provided field.
+
 ## Roadmap
 
 **v0.1.0**
@@ -73,6 +85,7 @@ git clone https://github.com/Jay-Karia/wherewasi
 - [x] Improve the content provided to AI while grouping sessions.
 - [ ] Add summaries from Summarizer API
 - [x] Error handling AI fails.
+- [ ] Get the API key from user.
 
 **v1.0.0**
 - [ ] Regenerate Session Title
