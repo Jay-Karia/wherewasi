@@ -22,28 +22,22 @@ export const AIService = {
     // Create a new empty session if none exist
     if (sessionsCount === 0) {
       const session = await StorageService.createEmptySession(tab);
-      console.log('No existing sessions found, created a new empty session.');
-
-      // Generate summary for the new session
-      try {
-        // const summary = await generateSummary(session);
-        const summary = "";
-        await StorageService.updateSession(session.id, { summary });
-      } catch (error) {
-        console.error('Error generating summary for new session:', error);
-      }
-
+      console.log(
+        'WhereWasI: No existing sessions found, created a new empty session.'
+      );
       return session;
     }
 
-    console.log('Existing sessions found, searching for a suitable one...');
+    console.log(
+      'WhereWasI: Existing sessions found, searching for a suitable one...'
+    );
     let foundSession = null;
 
     try {
       foundSession = await searchSessions(tab);
     } catch (error) {
       console.error(
-        'Unexpected error occurred while searching for a suitable session.',
+        'WhereWasI: Unexpected error occurred while searching for a suitable session.',
         error
       );
     }
@@ -51,21 +45,14 @@ export const AIService = {
     // If not appropriate session found, create a new one
     if (!foundSession) {
       const session = await StorageService.createEmptySession(tab);
-      console.log('No suitable session found, created a new one.');
-
-      // Generate summary for the new session
-      try {
-        // const summary = await generateSummary(session);
-        const summary = "";
-        await StorageService.updateSession(session.id, { summary });
-      } catch (error) {
-        console.error('Error generating summary for new session:', error);
-      }
+      console.log('WhereWasI: No suitable session found, created a new one.');
 
       return session;
     }
 
-    console.log('Found a suitable session, adding the closed tab to it.');
+    console.log(
+      'WhereWasI: Found a suitable session, adding the closed tab to it.'
+    );
 
     // Add the closed tab to the found session
     foundSession.tabs.push(tab);

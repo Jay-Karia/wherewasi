@@ -110,7 +110,7 @@ export default function TimelineView({
       const updatedSessions = await updateSessionTitle(sessionId, newTitle);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('Failed to update session title:', error);
+      console.error('WhereWasI: Failed to update session title:', error);
       throw error;
     }
   };
@@ -120,7 +120,7 @@ export default function TimelineView({
       const updatedSessions = await deleteSession(sessionId);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('Failed to delete session:', error);
+      console.error('WhereWasI: Failed to delete session:', error);
       throw error;
     }
   };
@@ -179,7 +179,7 @@ export default function TimelineView({
       await setStoredSessions(updatedSessions);
       cancelRemovalMode(sessionId);
     } catch (error) {
-      console.error('Failed to remove tabs:', error);
+      console.error('WhereWasI: Failed to remove tabs:', error);
       throw error;
     }
   };
@@ -203,7 +203,7 @@ export default function TimelineView({
       );
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('Failed to move tab:', error);
+      console.error('WhereWasI: Failed to move tab:', error);
       throw error;
     }
   };

@@ -58,7 +58,7 @@ All data is stored locally in your browser. No servers used.
 
 - [x] Improve the content provided to AI while grouping sessions.
 - [ ] Add summaries from Summarizer API
-- [ ] Error handling AI fails.
+- [x] Error handling AI fails.
 
 **v1.0.0**
 - [ ] Regenerate Session Title

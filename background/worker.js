@@ -26,9 +26,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         target: { tabId: tabId },
         func: scrapTabContent,
       })
-      .catch(err => console.log('Failed to inject script:', err))
+      .catch(err => console.log('WhereWasI: Failed to inject script:', err))
       .then(() => {
-        console.log('Scrapping script injected into tabId:', tabId);
+        console.log('WhereWasI: Scrapping script injected into tabId:', tabId);
       });
   }
 });
@@ -39,18 +39,17 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   // Update the cache with scraped tab content
   if (message.action === 'cacheTabContent' && sender.tab) {
     contentCache.set(sender.tab.id, message.data);
-    console.log(`Cached content for tabId: ${sender.tab.id}`);
-    console.log(contentCache);
+    console.log(`WhereWasI: Cached content for tabId: ${sender.tab.id}`);
   }
 });
 
 //======================TAB REMOVALS========================//
 
-chrome.tabs.onRemoved.addListener(async (tabId) => {
+chrome.tabs.onRemoved.addListener(async tabId => {
   try {
     const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 1 });
     if (!sessions || sessions.length === 0 || !sessions[0].tab) {
-      console.log('Could not retrieve recently closed tab info.');
+      console.log('WhereWasI: Could not retrieve recently closed tab info.');
       return;
     }
 
@@ -62,7 +61,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
       tab.url.startsWith('chrome://') ||
       tab.url.startsWith('chrome-extension://')
     ) {
-      console.log('Closed tab ignored (internal):', tab.url);
+      console.log('WhereWasI: Closed tab ignored (internal):', tab.url);
       return;
     }
 
@@ -78,17 +77,18 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
       content: scrappedContent,
     };
 
-    // Clear the tab cache
     contentCache.delete(tabId);
 
-    // Group the closed tab into a session
     try {
       await AIService.groupClosedTab(tabRecord);
     } catch (aiErr) {
-      console.error('AI grouping error:', aiErr);
+      console.error('WhereWasI: AI grouping error:', aiErr);
+
+      console.log('WhereWasI: Creating a new session as fallback...');
+      await StorageService.createEmptySession(tabRecord);
     }
   } catch (err) {
-    console.error('Error handling tab removal:', err);
+    console.error('WhereWasI: Error handling tab removal:', err);
   }
 });
 

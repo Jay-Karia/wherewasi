@@ -41,7 +41,7 @@ export function EditSessionTitle({
       await onSave(session.id, title.trim());
       onOpenChange(false);
     } catch (error) {
-      console.error("Failed to update session title:", error);
+      console.error("WhereWasI: Failed to update session title:", error);
     } finally {
       setSaving(false);
     }

@@ -59,8 +59,9 @@ export const StorageService = {
       await setStorage({ sessions: sessions });
       return session;
     } catch (error) {
-      console.error('Error saving session:', error);
-      throw error;
+      console.error('WhereWasI: Error saving session:', error);
+
+      // TODO: implement retry or cache logic
     }
   },
 
@@ -70,6 +71,7 @@ export const StorageService = {
   */
   async createEmptySession(tab) {
     try {
+      // TODO: generate the summary here
       const emptySessionTitle = await generateTitle(tab);
       const session = await StorageService.saveSession({
         id: new Date().toISOString(),
@@ -82,8 +84,9 @@ export const StorageService = {
       });
       return session;
     } catch (error) {
-      console.error('Error creating empty session:', error);
-      throw error;
+      console.error('WhereWasI: Error creating empty session:', error);
+
+      // TODO: implement retry or cache logic
     }
   },
 
@@ -102,8 +105,7 @@ export const StorageService = {
       const data = await getStorage(['sessions']);
       return Array.isArray(data.sessions) ? data.sessions : [];
     } catch (error) {
-      console.error('Error retrieving sessions:', error);
-      throw error;
+      console.error('WhereWasI: Error retrieving sessions:', error);
     }
   },
 
@@ -119,7 +121,7 @@ export const StorageService = {
 
       return session;
     } catch (error) {
-      console.error('Error retrieving session:', error);
+      console.error('WhereWasI: Error retrieving session:', error);
     }
   },
 
@@ -159,11 +161,12 @@ export const StorageService = {
       const filtered = sessions.filter(s => s.id !== sessionId);
 
       await setStorage({ sessions: filtered });
-      console.log('Session deleted successfully:', sessionId);
+      console.log('WhereWasi: Session deleted successfully:', sessionId);
       return true;
     } catch (error) {
-      console.error('Error deleting session:', error);
-      throw error;
+      console.error('WhereWasI: Error deleting session:', error);
+
+      // TODO: implement retry or cache logic
     }
   },
 
@@ -184,11 +187,12 @@ export const StorageService = {
       });
     try {
       await clearStorage();
-      console.log('All sessions cleared successfully');
+      console.log('WhereWasi: All sessions cleared successfully');
       return true;
     } catch (error) {
-      console.error('Error clearing sessions:', error);
-      throw error;
+      console.error('WhereWasI: Error clearing sessions:', error);
+
+      // TODO: implement retry or cache logic
     }
   },
 
@@ -231,11 +235,12 @@ export const StorageService = {
       sessions[index] = { ...sessions[index], ...sessionData };
 
       await setStorage({ sessions: sessions });
-      console.log('Session updated successfully:', sessionId);
+      console.log('WhereWasi: Session updated successfully:', sessionId);
       return sessions[index];
     } catch (error) {
-      console.error('Error updating session:', error);
-      throw error;
+      console.error('WhereWasI: Error updating session:', error);
+
+      // TODO: implement retry or cache logic
     }
   },
 
@@ -254,8 +259,7 @@ export const StorageService = {
       const sessions = Array.isArray(data.sessions) ? data.sessions : [];
       return sessions.length;
     } catch (error) {
-      console.error('Error counting sessions:', error);
-      throw error;
+      console.error('WhereWasI: Error counting sessions:', error);
     }
   },
 };
