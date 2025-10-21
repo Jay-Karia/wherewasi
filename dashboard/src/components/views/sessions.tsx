@@ -381,7 +381,6 @@ export default function SessionsView({
                             <th className="py-1 pr-3 font-medium">Tab</th>
                             <th className="py-1 pr-3 font-medium">URL</th>
                             <th className="py-1 pr-3 font-medium">Closed</th>
-                            <th className="py-1 pr-3 font-medium">Tab ID</th>
                           </tr>
                         </thead>
                         <tbody className="text-xs">
@@ -394,10 +393,6 @@ export default function SessionsView({
                                 | string
                                 | undefined;
                               const url = (t as any)?.url as string | undefined;
-                              const tabId = (t as any)?.id as
-                                | number
-                                | string
-                                | undefined;
                               const closedAt = (t as any)?.closedAt as
                                 | string
                                 | number
@@ -486,11 +481,6 @@ export default function SessionsView({
                                       <span className="opacity-60">—</span>
                                     )}
                                   </td>
-                                  <td className="py-2 pr-3 text-muted-foreground">
-                                    {tabId ?? (
-                                      <span className="opacity-60">—</span>
-                                    )}
-                                  </td>
                                 </tr>
                               );
                             }
@@ -507,10 +497,6 @@ export default function SessionsView({
                             | undefined;
                           const title = (t as any)?.title as string | undefined;
                           const url = (t as any)?.url as string | undefined;
-                          const tabId = (t as any)?.id as
-                            | number
-                            | string
-                            | undefined;
                           const closedAt = (t as any)?.closedAt as
                             | string
                             | number
@@ -590,12 +576,6 @@ export default function SessionsView({
                                         </span>{' '}
                                         {formatTimeSafe(closedMs)} •{' '}
                                         {formatRelativeDate(closedMs)}
-                                      </div>
-                                    )}
-                                    {tabId && (
-                                      <div>
-                                        <span className="opacity-70">ID:</span>{' '}
-                                        {tabId}
                                       </div>
                                     )}
                                   </div>

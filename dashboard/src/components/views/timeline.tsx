@@ -794,9 +794,6 @@ function ExpandedDetails({
               <th className="py-1 pr-3 font-medium hidden md:table-cell">
                 Closed
               </th>
-              <th className="py-1 pr-3 font-medium hidden lg:table-cell">
-                Tab ID
-              </th>
             </tr>
           </thead>
           <tbody className="text-xs">
@@ -804,7 +801,6 @@ function ExpandedDetails({
               const fav = (t as any)?.favIconUrl as string | undefined;
               const title = (t as any)?.title as string | undefined;
               const url = (t as any)?.url as string | undefined;
-              const tabId = (t as any)?.id as number | string | undefined;
               const closedAt = (t as any)?.closedAt as
                 | string
                 | number
@@ -899,9 +895,6 @@ function ExpandedDetails({
                     ) : (
                       <span className="opacity-60">—</span>
                     )}
-                  </td>
-                  <td className="py-2 pr-3 text-muted-foreground hidden lg:table-cell">
-                    {tabId ?? <span className="opacity-60">—</span>}
                   </td>
                 </tr>
               );
