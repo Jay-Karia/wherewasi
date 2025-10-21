@@ -1,7 +1,7 @@
 {
   "name": "Where Was I",
   "description": "A Chrome extension that remembers your search sessions and captures context.",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "popup/popup.html",

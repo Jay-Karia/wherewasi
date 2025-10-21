@@ -18,8 +18,8 @@
     "lint": "eslint . --ext .js --fix",
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write .",
-    "build": "rollup --config",
-    "watch": "rollup --config --watch"
+    "build": "npx rollup --config",
+    "watch": "npx rollup --config --watch"
   },
   "repository": {
     "type": "git",
