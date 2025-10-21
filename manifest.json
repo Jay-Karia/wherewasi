@@ -8,7 +8,7 @@
     "default_icon": "assets/logo.png"
   },
   "background": {
-    "service_worker": "build/background/worker.js",
+    "service_worker": "/background/worker.js",
     "type": "module"
   },
   "options_page": "dashboard/dist/index.html",
