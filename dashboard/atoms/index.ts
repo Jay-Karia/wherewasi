@@ -1,4 +1,10 @@
-import type { FilterOption, Session, SessionViews, SortOption, Settings } from "@/types";
+import type {
+  FilterOption,
+  Session,
+  SessionViews,
+  SortOption,
+  Settings,
+} from "@/types";
 import { atomWithStorage } from "jotai/utils";
 
 export const currentViewAtom = atomWithStorage<SessionViews>(

@@ -50,16 +50,18 @@ All data is stored locally in your browser. No servers used.
 
 ### Chrome Web Store
 
-*Currently the extension is not uploaded to Web Store*
+_Currently the extension is not uploaded to Web Store_
 
 ### Manual
 
 1. Clone the repository
+
 ```sh
 git clone https://github.com/Jay-Karia/wherewasi
 ```
 
 2. Build the extension by running the script based on your system (Windows/Unix)
+
 ```sh
 # For Unix (Linux/Mac)
 ./scripts/build.sh
@@ -89,6 +91,7 @@ git clone https://github.com/Jay-Karia/wherewasi
 - [ ] Fix critical bugs listed in issues.
 
 **v1.0.0**
+
 - [ ] Regenerate Session Title
 - [ ] Merge Sessions
 - [ ] Tabs caching

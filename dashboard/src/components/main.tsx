@@ -1,5 +1,10 @@
 import { useAtomValue } from "jotai";
-import { currentViewAtom, isSettingsOpenAtom, queryAtom, sortOptionAtom } from "../../atoms";
+import {
+  currentViewAtom,
+  isSettingsOpenAtom,
+  queryAtom,
+  sortOptionAtom,
+} from "../../atoms";
 import SessionsView from "./views/sessions";
 import TimelineView from "./views/timeline";
 import ListView from "./views/list";
@@ -19,7 +24,7 @@ export default function Main() {
   const isSettingsOpen = useAtomValue(isSettingsOpenAtom);
 
   if (query) return <SearchResults />;
-  if (isSettingsOpen) return <Settings />
+  if (isSettingsOpen) return <Settings />;
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {JSON.stringify(error)}</div>;

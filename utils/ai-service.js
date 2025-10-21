@@ -65,7 +65,10 @@ export const AIService = {
       const summary = await generateSummary(foundSession);
       foundSession.summary = summary;
     } catch (error) {
-      console.error('WhereWasI: Error generating summary for updated session:', error);
+      console.error(
+        'WhereWasI: Error generating summary for updated session:',
+        error
+      );
     }
 
     await StorageService.updateSession(foundSession.id, foundSession);

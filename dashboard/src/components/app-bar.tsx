@@ -32,10 +32,14 @@ export default function AppBar() {
         })}
       >
         <ThemeToggle />
-        <Button variant="ghost" size="icon" onClick={() => {
-          const toggle = !isSettingsOpen;
-          setIsSettingsOpen(toggle);
-        }}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            const toggle = !isSettingsOpen;
+            setIsSettingsOpen(toggle);
+          }}
+        >
           <IoSettingsOutline size={20} />
         </Button>
       </div>

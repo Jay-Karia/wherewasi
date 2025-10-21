@@ -77,7 +77,7 @@ export const StorageService = {
         id: new Date().toISOString(),
         tabsCount: 1,
         title: emptySessionTitle,
-        summary: "",
+        summary: '',
         tabs: [tab],
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -86,7 +86,7 @@ export const StorageService = {
       const summary = await generateSummary(session);
       session.summary = summary;
       await StorageService.updateSession(session.id, session);
-      
+
       return session;
     } catch (error) {
       console.error('WhereWasI: Error creating empty session:', error);
