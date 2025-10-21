@@ -86,6 +86,7 @@ git clone https://github.com/Jay-Karia/wherewasi
 - [x] Add summaries from Summarizer API
 - [x] Error handling AI fails.
 - [ ] Get the API key from user.
+- [ ] Fix critical bugs listed in issues.
 
 **v1.0.0**
 - [ ] Regenerate Session Title
