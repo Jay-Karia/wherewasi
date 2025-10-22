@@ -857,10 +857,10 @@ function ExpandedDetails({
                         ? onSelectAll?.(session.id, tabs.length)
                         : onDeselectAll?.(session.id)
                     }
-                    checked={
+                    checked={Boolean(
                       getSelectedCount?.(session.id) === tabs.length &&
-                      tabs.length > 0
-                    }
+                        tabs.length > 0
+                    )}
                     title="Select all tabs"
                   />
                 </th>
@@ -906,7 +906,7 @@ function ExpandedDetails({
                       <Checkbox
                         className="cursor-pointer"
                         onCheckedChange={() => onToggleTab?.(session.id, i)}
-                        checked={selectedTabs?.has(i) || false}
+                        checked={Boolean(selectedTabs?.has(i))}
                       />
                     </td>
                   )}

@@ -519,10 +519,10 @@ export default function ListView({
                                     {isRemovalMode && (
                                       <th className="py-1 pr-3 font-medium">
                                         <Checkbox
-                                          checked={
+                                          checked={Boolean(
                                             getSelectedCount(s.id) ===
-                                            (s.tabs?.length || 0)
-                                          }
+                                              (s.tabs?.length || 0)
+                                          )}
                                           onCheckedChange={(checked: any) =>
                                             checked
                                               ? selectAllTabs(
@@ -588,8 +588,8 @@ export default function ListView({
                                         {isRemovalMode && (
                                           <td className="py-2 pr-3">
                                             <Checkbox
-                                              checked={selectedTabs[s.id]?.has(
-                                                idx
+                                              checked={Boolean(
+                                                selectedTabs[s.id]?.has(idx)
                                               )}
                                               onCheckedChange={() =>
                                                 toggleTabSelection(s.id, idx)

@@ -418,10 +418,10 @@ export default function SessionsView({
                                       ? selectAllTabs(s.id, s.tabs.length)
                                       : deselectAllTabs(s.id)
                                   }
-                                  checked={
+                                  checked={Boolean(
                                     getSelectedCount(s.id) === s.tabs.length &&
-                                    s.tabs.length > 0
-                                  }
+                                      s.tabs.length > 0
+                                  )}
                                   title="Select all tabs"
                                 />
                               </th>
@@ -473,9 +473,9 @@ export default function SessionsView({
                                         onCheckedChange={() =>
                                           toggleTabSelection(s.id, i)
                                         }
-                                        checked={
-                                          selectedTabs[s.id]?.has(i) || false
-                                        }
+                                        checked={Boolean(
+                                          selectedTabs[s.id]?.has(i)
+                                        )}
                                       />
                                     </td>
                                   )}
