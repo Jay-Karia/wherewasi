@@ -76,7 +76,7 @@ git clone https://github.com/Jay-Karia/wherewasi
 
 ## Setup
 
-1. After installing the extension, click on the extension icon in the toolbar.
+1. After installing the extension, click on the extension icon in the toolbar and open dashboard.
 2. Go to the settings page by clicking on the gear icon.
 3. Enter your Gemini API key in the provided field.
 
