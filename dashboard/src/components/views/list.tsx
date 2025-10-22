@@ -99,21 +99,6 @@ export default function ListView({
     };
   }, []);
 
-  useEffect(() => {
-    if (!isDisabled) return;
-    const storage = (window as any).chrome?.storage?.local;
-    const timeout = setTimeout(() => {
-      setIsDisabled(false);
-      try {
-        storage?.set?.({ disabled: false });
-      } catch {
-        // ignore
-      }
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [isDisabled]);
-
   // Track Alt key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

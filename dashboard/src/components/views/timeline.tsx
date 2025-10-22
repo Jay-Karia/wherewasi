@@ -115,21 +115,6 @@ export default function TimelineView({
     };
   }, []);
 
-  useEffect(() => {
-    if (!isDisabled) return;
-    const storage = (window as any).chrome?.storage?.local;
-    const timeout = setTimeout(() => {
-      setIsDisabled(false);
-      try {
-        storage?.set?.({ disabled: false });
-      } catch {
-        // ignore
-      }
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [isDisabled]);
-
   // Track Alt key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -674,27 +659,37 @@ export default function TimelineView({
                                   )}
                                 </article>
                               </ContextMenuTrigger>
-                              <ContextMenuContent>
-                                <ContextMenuItem
-                                  onSelect={() => handleEditTitle(s)}
-                                >
-                                  <MdEdit className="mr-2 h-4 w-4" />
-                                  Edit Title
-                                </ContextMenuItem>
-                                <ContextMenuItem
-                                  onSelect={() => enterRemovalMode(s.id)}
-                                >
-                                  <FiMinus className="mr-2 h-4 w-4" />
-                                  Remove Tabs
-                                </ContextMenuItem>
-                                <ContextMenuItem
-                                  className="text-destructive"
-                                  onSelect={() => handleDeleteSession(s.id)}
-                                >
-                                  <MdDelete className="mr-2 h-4 w-4" />
-                                  Delete Session
-                                </ContextMenuItem>
-                              </ContextMenuContent>
+                              {isDisabled ? (
+                                <ContextMenuContent className="p-2 px-4">
+                                  Context menu is disabled temporarily.
+                                  <br />
+                                  <span className="text-blue-400 hover:cursor-pointer hover:underline-offset-4 hover:underline">
+                                    Learn more
+                                  </span>
+                                </ContextMenuContent>
+                              ) : (
+                                <ContextMenuContent>
+                                  <ContextMenuItem
+                                    onSelect={() => handleEditTitle(s)}
+                                  >
+                                    <MdEdit className="mr-2 h-4 w-4" />
+                                    Edit Title
+                                  </ContextMenuItem>
+                                  <ContextMenuItem
+                                    onSelect={() => enterRemovalMode(s.id)}
+                                  >
+                                    <FiMinus className="mr-2 h-4 w-4" />
+                                    Remove Tabs
+                                  </ContextMenuItem>
+                                  <ContextMenuItem
+                                    className="text-destructive"
+                                    onSelect={() => handleDeleteSession(s.id)}
+                                  >
+                                    <MdDelete className="mr-2 h-4 w-4" />
+                                    Delete Session
+                                  </ContextMenuItem>
+                                </ContextMenuContent>
+                              )}
                             </ContextMenu>
                           </div>
                         </>
