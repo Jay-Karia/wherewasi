@@ -117,21 +117,21 @@ _Extension popup_
 
 _Unpacked/loaded extension view_
 
-  ![Settings (light)](./gallery/settings-light.png)
+![Settings (light)](./gallery/settings-light.png)
 
-  *Settings — light theme*
+_Settings — light theme_
 
-  ![Settings (dark)](./gallery/settings-dark.png)
+![Settings (dark)](./gallery/settings-dark.png)
 
-  *Settings — dark theme*
+_Settings — dark theme_
 
-  ![Search results (light)](./gallery/search-results.light.png)
+![Search results (light)](./gallery/search-results.light.png)
 
-  *Search results — light theme*
+_Search results — light theme_
 
-  ![Search results (dark)](./gallery/seach-results-dark.png)
+![Search results (dark)](./gallery/seach-results-dark.png)
 
-  *Search results — dark theme*
+_Search results — dark theme_
 
 </details>
 
