@@ -40,7 +40,7 @@ export async function generateSummary(session) {
     console.error('WhereWasI: Error generating summary with Chrome AI:', error);
     return null;
   } finally {
-    // await setDisabledFalse();
+    await setDisabledFalse();
   }
 }
 
