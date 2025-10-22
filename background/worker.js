@@ -47,13 +47,47 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 
 chrome.tabs.onRemoved.addListener(async tabId => {
   try {
-    const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 1 });
-    if (!sessions || sessions.length === 0 || !sessions[0].tab) {
+    const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 5 });
+    if (!sessions || sessions.length === 0) {
+      console.log('WhereWasI: Could not retrieve recently closed sessions.');
+      return;
+    }
+
+    // Find the exact tab entry among recent sessions.
+    let foundTab = null;
+    for (const s of sessions) {
+      if (s.tab && s.tab.id === tabId) {
+        foundTab = s.tab;
+        break;
+      }
+      if (s.window && Array.isArray(s.window.tabs)) {
+        const t = s.window.tabs.find(t => t.id === tabId);
+        if (t) {
+          foundTab = t;
+          break;
+        }
+      }
+    }
+
+    // Fallback to the most recent entry if we couldn't find an exact match.
+    if (!foundTab) {
+      if (sessions[0].tab) {
+        foundTab = sessions[0].tab;
+      } else if (
+        sessions[0].window &&
+        Array.isArray(sessions[0].window.tabs) &&
+        sessions[0].window.tabs.length > 0
+      ) {
+        foundTab = sessions[0].window.tabs[0];
+      }
+    }
+
+    if (!foundTab) {
       console.log('WhereWasI: Could not retrieve recently closed tab info.');
       return;
     }
 
-    const tab = sessions[0].tab;
+    const tab = foundTab;
 
     // Filter out chrome:// and extension pages
     if (
