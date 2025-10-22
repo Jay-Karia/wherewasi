@@ -23,7 +23,7 @@ export default function Main() {
   const sortOption = useAtomValue(sortOptionAtom);
   const isSettingsOpen = useAtomValue(isSettingsOpenAtom);
 
-  if (query) return <SearchResults />;
+  if (query && !isSettingsOpen) return <SearchResults />;
   if (isSettingsOpen) return <Settings />;
 
   if (loading) return <div>Loading...</div>;
