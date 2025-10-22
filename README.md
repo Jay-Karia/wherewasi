@@ -80,11 +80,66 @@ git clone https://github.com/Jay-Karia/wherewasi
 2. Go to the settings page by clicking on the gear icon.
 3. Enter your Gemini API key in the provided field.
 
+## Gallery
+
+<details>
+  <summary>Show Images</summary>
+
+![Dashboard (light)](./gallery/dashboard-light.png)
+
+_Dashboard — light theme_
+
+![Dashboard (dark)](./gallery/dashboard-dark.png)
+
+_Dashboard — dark theme_
+
+![Sessions (light)](./gallery/sessions-view-light.png)
+
+_Sessions view — light theme_
+
+![Sessions (dark)](./gallery/sessions-view-dark.png)
+
+_Sessions view — dark theme_
+
+![Timeline (light)](./gallery/timeline-view-light.png)
+
+_Timeline — light theme_
+
+![Timeline (dark)](./gallery/timeline-view-dark.png)
+
+_Timeline — dark theme_
+
+![Popup](./gallery/popup.png)
+
+_Extension popup_
+
+![Unpacked extension](./gallery/unpacked-extension.png)
+
+_Unpacked/loaded extension view_
+
+  ![Settings (light)](./gallery/settings-light.png)
+
+  *Settings — light theme*
+
+  ![Settings (dark)](./gallery/settings-dark.png)
+
+  *Settings — dark theme*
+
+  ![Search results (light)](./gallery/search-results.light.png)
+
+  *Search results — light theme*
+
+  ![Search results (dark)](./gallery/seach-results-dark.png)
+
+  *Search results — dark theme*
+
+</details>
+
 ## Roadmap
 
 **v0.1.0**
 
-- [x] Improve the content provided to AI while grouping sessions.
+- [x] Improve the content provided</div> to AI while grouping sessions.
 - [x] Add summaries from Summarizer API
 - [x] Error handling AI fails.
 - [x] Get the API key from user.
