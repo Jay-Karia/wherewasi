@@ -3,6 +3,7 @@
 */
 
 import { SUMMARIZER_OPTIONS } from '../constants';
+import { setDisabledFalse, setDisabledTrue } from './disabled';
 
 export async function generateSummary(session) {
   try {
@@ -18,6 +19,9 @@ export async function generateSummary(session) {
       console.error('WhereWasI: Summarizer is not available');
       return null;
     }
+
+    // Set the disabled state to true during summarization
+    await setDisabledTrue();
 
     // Create summarizer instance
     const summarizer = await Summarizer.create(SUMMARIZER_OPTIONS);
@@ -35,6 +39,8 @@ export async function generateSummary(session) {
   } catch (error) {
     console.error('WhereWasI: Error generating summary with Chrome AI:', error);
     return null;
+  } finally {
+    // await setDisabledFalse();
   }
 }
 
