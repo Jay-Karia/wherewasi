@@ -33,7 +33,33 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (!isTrackAllSites) return;
 
   if (changeInfo.status === 'complete' && tab && tab.url) {
-    console.log('WhereWasI: trackAllSites enabled — site URL:', tab.url);
+    // Filter out chrome:// and extension pages
+    if (
+      tab.url.startsWith('chrome://') ||
+      tab.url.startsWith('chrome-extension://')
+    ) {
+      return;
+    }
+
+    const scrappedContent = contentCache.get(tabId) || null;
+
+    const tabRecord = {
+      id: tab.id,
+      url: tab.url,
+      title: tab.title,
+      favIconUrl: tab.favIconUrl,
+      closedAt: new Date().toISOString(),
+      content: scrappedContent,
+    };
+
+    try {
+      await AIService.groupClosedTab(tabRecord);
+    } catch (aiErr) {
+      console.error('WhereWasI: AI grouping error on tab update:', aiErr);
+
+      console.log('WhereWasI: Creating a new session as fallback...');
+      await StorageService.createEmptySession(tabRecord);
+    }
   }
 });
 
@@ -46,6 +72,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(`WhereWasI: Cached content for tabId: ${sender.tab.id}`);
   }
 
+  // Regenerate session summary
   if (message.action === 'regenerateSummary') {
     console.log(
       'WhereWasI: Regenerate summary request received:',
@@ -84,6 +111,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.tabs.onRemoved.addListener(async tabId => {
   try {
+    // Do not track when a tab is closed if "trackAllSites" is enabled as already tracks when tabs are updated
+    const isTrackAllSites = await StorageService.getSetting('trackAllSites');
+    if (isTrackAllSites) return;
+    
     const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 5 });
     if (!sessions || sessions.length === 0) {
       console.log('WhereWasI: Could not retrieve recently closed sessions.');
