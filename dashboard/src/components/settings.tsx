@@ -83,7 +83,7 @@ export default function Settings() {
                 <FiSliders className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-1">General Settings</h3>
+                <h3 className="text-lg font-semibold mb-1">General</h3>
                 <p className="text-sm text-muted-foreground">
                   General preferences and behavior for the extension
                 </p>
