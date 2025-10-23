@@ -104,7 +104,7 @@ export default function Import() {
             </div>
           )}
           {status.state === "success" && (
-            <div className="text-sm text-emerald-300 bg-emerald-900/30 border border-emerald-700/40 rounded p-2">
+            <div className="text-sm text-emerald-300 dark:bg-emerald-900/30 border border-emerald-700/40 rounded p-2">
               Imported {status.count} sessions successfully.
             </div>
           )}
