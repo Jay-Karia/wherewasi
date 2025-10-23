@@ -12,6 +12,7 @@ import { StorageService } from '../utils/storage.js';
 
 console.log('WhereWasI: Service worker loaded');
 const contentCache = new Map();
+const tabsAdded = new Set(); // Used for 'trackAllSites' mode
 
 //======================TAB UPDATES=========================//
 
@@ -53,11 +54,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     };
 
     try {
+      tabsAdded.add(tab.id);
       await AIService.groupClosedTab(tabRecord);
     } catch (aiErr) {
       console.error('WhereWasI: AI grouping error on tab update:', aiErr);
 
       console.log('WhereWasI: Creating a new session as fallback...');
+      tabsAdded.add(tab.id);
       await StorageService.createEmptySession(tabRecord);
     }
   }
@@ -65,9 +68,15 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 //===================MESSAGE LISTENER=======================//
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   // Update the cache with scraped tab content
   if (message.action === 'cacheTabContent' && sender.tab) {
+    const isTrackAllSites = await StorageService.getSetting('trackAllSites');
+    if (isTrackAllSites) {
+      console.log("WhereWasI: 'trackAllSites' is enabled, not caching tab.");
+      return;
+    }
+
     contentCache.set(sender.tab.id, message.data);
     console.log(`WhereWasI: Cached content for tabId: ${sender.tab.id}`);
   }
@@ -111,10 +120,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.tabs.onRemoved.addListener(async tabId => {
   try {
-    // Do not track when a tab is closed if "trackAllSites" is enabled as already tracks when tabs are updated
     const isTrackAllSites = await StorageService.getSetting('trackAllSites');
-    if (isTrackAllSites) return;
-    
+    if (isTrackAllSites && tabsAdded.has(tabId)) {
+      console.log(
+        `WhereWasI: 'trackAllSites' is enabled, tabId ${tabId} was already added. Skipping.`
+      );
+      tabsAdded.delete(tabId);
+      return;
+    }
     const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 5 });
     if (!sessions || sessions.length === 0) {
       console.log('WhereWasI: Could not retrieve recently closed sessions.');
