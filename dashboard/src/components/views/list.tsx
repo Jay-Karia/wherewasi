@@ -1,4 +1,4 @@
-import type { Session, SortOption } from '@/types';
+import type { Session, SortOption } from "@/types";
 import {
   cn,
   filterSessions,
@@ -7,23 +7,23 @@ import {
   removeTabsFromSession,
   moveTabBetweenSessions,
   updateSessionSummary,
-} from '@/lib/utils';
-import { tinyAccentForSeed } from './timeline';
-import { IoMdExpand } from 'react-icons/io';
-import { useState, useMemo, useEffect } from 'react';
-import { useAtomValue } from 'jotai';
-import { filtersAtom } from '../../../atoms';
+} from "@/lib/utils";
+import { tinyAccentForSeed } from "./timeline";
+import { IoMdExpand } from "react-icons/io";
+import { useState, useMemo, useEffect } from "react";
+import { useAtomValue } from "jotai";
+import { filtersAtom } from "../../../atoms";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from '@/components/ui/context-menu';
-import { MdAutorenew, MdDelete, MdEdit } from 'react-icons/md';
-import { FiMinus } from 'react-icons/fi';
-import { EditSessionTitle } from '@/components/ui/edit-session-title';
-import { useStorage } from '@/hooks/useStorage';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@/components/ui/context-menu";
+import { MdAutorenew, MdDelete, MdEdit } from "react-icons/md";
+import { FiMinus } from "react-icons/fi";
+import { EditSessionTitle } from "@/components/ui/edit-session-title";
+import { useStorage } from "@/hooks/useStorage";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function ListView({
   sessions,
@@ -37,7 +37,7 @@ export default function ListView({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>(
-    {}
+    {},
   );
   const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
   const [isAltPressed, setIsAltPressed] = useState(false);
@@ -46,9 +46,9 @@ export default function ListView({
     tabIndex: number;
   } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
-  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
+  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
   const [, setStoredSessions] = useStorage<Session[]>({
-    key: 'sessions',
+    key: "sessions",
     initialValue: [],
   });
 
@@ -61,12 +61,12 @@ export default function ListView({
     async function readInitial() {
       if (!storage) return;
       try {
-        const res = await storage.get(['disabled']);
+        const res = await storage.get(["disabled"]);
         if (mounted) setIsDisabled(Boolean(res?.disabled));
       } catch {
         // fallback to callback style
         try {
-          storage.get(['disabled'], (result: any) => {
+          storage.get(["disabled"], (result: any) => {
             if (mounted) setIsDisabled(Boolean(result?.disabled));
           });
         } catch {
@@ -78,7 +78,7 @@ export default function ListView({
     readInitial();
 
     const onChanged = (changes: any, areaName: string) => {
-      if (areaName !== 'local') return;
+      if (areaName !== "local") return;
       if (changes?.disabled) {
         setIsDisabled(Boolean(changes.disabled.newValue));
       }
@@ -103,13 +103,13 @@ export default function ListView({
   // Track Alt key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
+      if (e.key === "Alt") {
         setIsAltPressed(true);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
+      if (e.key === "Alt") {
         setIsAltPressed(false);
         setDraggedTab(null);
         setDropTarget(null);
@@ -122,14 +122,14 @@ export default function ListView({
       setDropTarget(null);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('blur', handleBlur);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 
@@ -138,7 +138,10 @@ export default function ListView({
     setEditDialogOpen(true);
   };
 
-  const handleRegenerateSummary = async (sessionId: string, currentSummary: string) => {
+  const handleRegenerateSummary = async (
+    sessionId: string,
+    currentSummary: string,
+  ) => {
     console.log("WhereWasI: Regenerating summary for session:", sessionId);
     try {
       let newSummary = currentSummary;
@@ -148,7 +151,10 @@ export default function ListView({
           const timeout = setTimeout(() => resolve(null), 5000);
           try {
             chrome.runtime.sendMessage(
-              { action: 'regenerateSummary', data: { sessionId, currentSummary } },
+              {
+                action: "regenerateSummary",
+                data: { sessionId, currentSummary },
+              },
               (resp) => {
                 clearTimeout(timeout);
                 if (chrome.runtime.lastError) {
@@ -156,7 +162,7 @@ export default function ListView({
                 } else {
                   resolve(resp);
                 }
-              }
+              },
             );
           } catch (err) {
             clearTimeout(timeout);
@@ -164,20 +170,22 @@ export default function ListView({
           }
         });
 
-        if (response && typeof response.summary === 'string') {
+        if (response && typeof response.summary === "string") {
           newSummary = response.summary;
-          console.log('WhereWasI: Received regenerated summary', newSummary);
+          console.log("WhereWasI: Received regenerated summary", newSummary);
         } else {
-          console.warn('WhereWasI: No summary returned from background; keeping existing.');
+          console.warn(
+            "WhereWasI: No summary returned from background; keeping existing.",
+          );
         }
       } catch (err) {
-        console.error('WhereWasI: Error communicating with background:', err);
+        console.error("WhereWasI: Error communicating with background:", err);
       }
 
       const updatedSessions = await updateSessionSummary(sessionId, newSummary);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to regenerate summary:', error);
+      console.error("WhereWasI: Failed to regenerate summary:", error);
       throw error;
     }
   };
@@ -187,7 +195,7 @@ export default function ListView({
       const updatedSessions = await updateSessionTitle(sessionId, newTitle);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to update session title:', error);
+      console.error("WhereWasI: Failed to update session title:", error);
       throw error;
     }
   };
@@ -197,13 +205,13 @@ export default function ListView({
       const updatedSessions = await deleteSession(sessionId);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to delete session:', error);
+      console.error("WhereWasI: Failed to delete session:", error);
       throw error;
     }
   };
 
   const toggleTabSelection = (sessionId: string, tabIndex: number) => {
-    setSelectedTabs(prev => {
+    setSelectedTabs((prev) => {
       const sessionTabs = new Set(prev[sessionId] || []);
       if (sessionTabs.has(tabIndex)) {
         sessionTabs.delete(tabIndex);
@@ -215,14 +223,14 @@ export default function ListView({
   };
 
   const selectAllTabs = (sessionId: string, tabCount: number) => {
-    setSelectedTabs(prev => ({
+    setSelectedTabs((prev) => ({
       ...prev,
       [sessionId]: new Set(Array.from({ length: tabCount }, (_, i) => i)),
     }));
   };
 
   const deselectAllTabs = (sessionId: string) => {
-    setSelectedTabs(prev => {
+    setSelectedTabs((prev) => {
       const updated = { ...prev };
       delete updated[sessionId];
       return updated;
@@ -230,13 +238,13 @@ export default function ListView({
   };
 
   const enterRemovalMode = (sessionId: string) => {
-    setRemovalMode(prev => ({ ...prev, [sessionId]: true }));
-    setExpanded(prev => ({ ...prev, [sessionId]: true }));
+    setRemovalMode((prev) => ({ ...prev, [sessionId]: true }));
+    setExpanded((prev) => ({ ...prev, [sessionId]: true }));
     deselectAllTabs(sessionId);
   };
 
   const cancelRemovalMode = (sessionId: string) => {
-    setRemovalMode(prev => {
+    setRemovalMode((prev) => {
       const updated = { ...prev };
       delete updated[sessionId];
       return updated;
@@ -251,12 +259,12 @@ export default function ListView({
     try {
       const updatedSessions = await removeTabsFromSession(
         sessionId,
-        tabsToRemove
+        tabsToRemove,
       );
       await setStoredSessions(updatedSessions);
       cancelRemovalMode(sessionId);
     } catch (error) {
-      console.error('WhereWasI: Failed to remove tabs:', error);
+      console.error("WhereWasI: Failed to remove tabs:", error);
       throw error;
     }
   };
@@ -268,7 +276,7 @@ export default function ListView({
   const handleMoveTab = async (
     sourceSessionId: string,
     targetSessionId: string,
-    tabIndex: number
+    tabIndex: number,
   ) => {
     if (sourceSessionId === targetSessionId) return;
 
@@ -276,11 +284,11 @@ export default function ListView({
       const updatedSessions = await moveTabBetweenSessions(
         sourceSessionId,
         targetSessionId,
-        tabIndex
+        tabIndex,
       );
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to move tab:', error);
+      console.error("WhereWasI: Failed to move tab:", error);
       throw error;
     }
   };
@@ -302,7 +310,7 @@ export default function ListView({
 
   const handleSessionDrop = async (
     e: React.DragEvent,
-    targetSessionId: string
+    targetSessionId: string,
   ) => {
     e.preventDefault();
     if (!draggedTab || draggedTab.sessionId === targetSessionId) {
@@ -313,7 +321,7 @@ export default function ListView({
     await handleMoveTab(
       draggedTab.sessionId,
       targetSessionId,
-      draggedTab.tabIndex
+      draggedTab.tabIndex,
     );
     setDraggedTab(null);
     setDropTarget(null);
@@ -322,13 +330,13 @@ export default function ListView({
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
-      case 'date-asc':
+      case "date-asc":
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
           const tb = (b.updatedAt ?? b.createdAt ?? 0) as number;
           return ta - tb;
         });
-      case 'date-desc':
+      case "date-desc":
       default:
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
@@ -343,15 +351,15 @@ export default function ListView({
   }, [sortedSessions, filters]);
 
   const normalized = (filteredSessions || [])
-    .map(s => ({
+    .map((s) => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
     }))
-    .filter(s => Number.isFinite(s._ts) && s._ts > 0);
+    .filter((s) => Number.isFinite(s._ts) && s._ts > 0);
 
   const groups = groupByDay(normalized);
   const dayKeys = Object.keys(groups).sort((a, b) => {
-    if (sortOption === 'date-asc') {
+    if (sortOption === "date-asc") {
       return Number(a) - Number(b);
     }
     return Number(b) - Number(a);
@@ -363,7 +371,7 @@ export default function ListView({
         const ts = Number(k);
         const items = groups[k];
         return (
-          <section key={k} className={cn(idx > 0 && 'mt-8')}>
+          <section key={k} className={cn(idx > 0 && "mt-8")}>
             <DaySeparator ts={ts} count={items.length} />
             <div className="mt-3 overflow-hidden rounded-lg border bg-card/60 mb-12">
               <div className="hidden lg:grid items-center gap-3 border-b px-4 py-2 text-xs text-muted-foreground lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,3fr)_96px_140px_64px]">
@@ -374,21 +382,21 @@ export default function ListView({
                 <div className="text-right">Details</div>
               </div>
               <ul className="divide-y divide-border/60">
-                {items.map(s => {
+                {items.map((s) => {
                   const accent = tinyAccentForSeed(s.id);
                   const isRemovalMode = removalMode[s.id];
                   return (
                     <li
                       key={s.id}
                       className={cn(
-                        'group',
+                        "group",
                         dropTarget === s.id &&
-                        'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset rounded-lg'
+                          "bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset rounded-lg",
                       )}
                       draggable={isAltPressed}
-                      onDragOver={e => handleSessionDragOver(e, s.id)}
+                      onDragOver={(e) => handleSessionDragOver(e, s.id)}
                       onDragLeave={handleSessionDragLeave}
-                      onDrop={e => handleSessionDrop(e, s.id)}
+                      onDrop={(e) => handleSessionDrop(e, s.id)}
                     >
                       <ContextMenu>
                         <ContextMenuTrigger>
@@ -404,19 +412,19 @@ export default function ListView({
                                     className="min-w-0 text-sm font-medium text-foreground break-words"
                                     title={s.title}
                                   >
-                                    {s.title || 'Untitled session'}
+                                    {s.title || "Untitled session"}
                                   </h4>
                                 </div>
                                 <button
                                   aria-expanded={!!expanded[s.id]}
                                   onClick={() => toggle(s.id)}
                                   className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60 shrink-0"
-                                  title={expanded[s.id] ? 'Collapse' : 'Expand'}
+                                  title={expanded[s.id] ? "Collapse" : "Expand"}
                                 >
                                   <IoMdExpand
                                     className={cn(
-                                      'h-4 w-4 text-muted-foreground transition-transform',
-                                      expanded[s.id] && 'rotate-180'
+                                      "h-4 w-4 text-muted-foreground transition-transform",
+                                      expanded[s.id] && "rotate-180",
                                     )}
                                   />
                                 </button>
@@ -426,12 +434,12 @@ export default function ListView({
                                 {expanded[s.id]
                                   ? s.summary
                                   : s.summary && s.summary.length > 100
-                                    ? s.summary.substring(0, 100) + '...'
-                                    : s.summary || 'No summary'}
+                                    ? s.summary.substring(0, 100) + "..."
+                                    : s.summary || "No summary"}
                               </p>
 
                               <div className="flex items-center gap-3 pl-4 text-[11px] text-muted-foreground flex-wrap">
-                                {typeof s.tabsCount === 'number' && (
+                                {typeof s.tabsCount === "number" && (
                                   <span className="rounded-full bg-muted/60 px-2 py-0.5 font-medium">
                                     {s.tabsCount} tabs
                                   </span>
@@ -452,26 +460,26 @@ export default function ListView({
                                   className="min-w-0 truncate text-sm font-medium text-foreground"
                                   title={s.title}
                                 >
-                                  {s.title || 'Untitled session'}
+                                  {s.title || "Untitled session"}
                                 </h4>
                               </div>
                               <p
                                 className={cn(
-                                  'min-w-0 text-xs text-muted-foreground',
+                                  "min-w-0 text-xs text-muted-foreground",
                                   {
-                                    'pb-4': expanded[s.id],
-                                  }
+                                    "pb-4": expanded[s.id],
+                                  },
                                 )}
                                 title={s.summary}
                               >
                                 {expanded[s.id]
                                   ? s.summary
                                   : s.summary && s.summary.length > 150
-                                    ? s.summary.substring(0, 150) + '...'
-                                    : s.summary || 'No summary'}
+                                    ? s.summary.substring(0, 150) + "..."
+                                    : s.summary || "No summary"}
                               </p>
                               <div className="flex items-center justify-end whitespace-nowrap">
-                                {typeof s.tabsCount === 'number' && (
+                                {typeof s.tabsCount === "number" && (
                                   <span className="rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                                     {s.tabsCount} tabs
                                   </span>
@@ -485,12 +493,12 @@ export default function ListView({
                                   aria-expanded={!!expanded[s.id]}
                                   onClick={() => toggle(s.id)}
                                   className="opacity-60 hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted/60"
-                                  title={expanded[s.id] ? 'Collapse' : 'Expand'}
+                                  title={expanded[s.id] ? "Collapse" : "Expand"}
                                 >
                                   <IoMdExpand
                                     className={cn(
-                                      'h-4 w-4 text-muted-foreground transition-transform',
-                                      expanded[s.id] && 'rotate-180'
+                                      "h-4 w-4 text-muted-foreground transition-transform",
+                                      expanded[s.id] && "rotate-180",
                                     )}
                                   />
                                 </button>
@@ -508,15 +516,23 @@ export default function ListView({
                           </ContextMenuContent>
                         ) : (
                           <ContextMenuContent>
-                            <ContextMenuItem onSelect={() => handleEditTitle(s)}>
+                            <ContextMenuItem
+                              onSelect={() => handleEditTitle(s)}
+                            >
                               <MdEdit className="mr-2 h-4 w-4" />
                               Edit Title
                             </ContextMenuItem>
-                            <ContextMenuItem onSelect={() => { handleRegenerateSummary(s.id, s.summary) }}>
+                            <ContextMenuItem
+                              onSelect={() => {
+                                handleRegenerateSummary(s.id, s.summary);
+                              }}
+                            >
                               <MdAutorenew className="mr-2 h-4 w-4" />
                               Regenerate Summary
                             </ContextMenuItem>
-                            <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                            <ContextMenuItem
+                              onSelect={() => enterRemovalMode(s.id)}
+                            >
                               <FiMinus className="mr-2 h-4 w-4" />
                               Remove Tabs
                             </ContextMenuItem>
@@ -536,22 +552,22 @@ export default function ListView({
                           <div className="rounded-md border bg-background/60 p-3">
                             <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
                               <div>
-                                <span className="opacity-70">Session ID:</span>{' '}
+                                <span className="opacity-70">Session ID:</span>{" "}
                                 <span className="break-all text-foreground/90">
                                   {s.id}
                                 </span>
                               </div>
                               <div>
-                                <span className="opacity-70">Created:</span>{' '}
+                                <span className="opacity-70">Created:</span>{" "}
                                 <span>
-                                  {formatTime(s.createdAt)} •{' '}
+                                  {formatTime(s.createdAt)} •{" "}
                                   {formatRelative(s.createdAt)}
                                 </span>
                               </div>
                               <div>
-                                <span className="opacity-70">Updated:</span>{' '}
+                                <span className="opacity-70">Updated:</span>{" "}
                                 <span>
-                                  {formatTime(s.updatedAt)} •{' '}
+                                  {formatTime(s.updatedAt)} •{" "}
                                   {formatRelative(s.updatedAt)}
                                 </span>
                               </div>
@@ -566,14 +582,14 @@ export default function ListView({
                                         <Checkbox
                                           checked={Boolean(
                                             getSelectedCount(s.id) ===
-                                            (s.tabs?.length || 0)
+                                              (s.tabs?.length || 0),
                                           )}
                                           onCheckedChange={(checked: any) =>
                                             checked
                                               ? selectAllTabs(
-                                                s.id,
-                                                s.tabs?.length || 0
-                                              )
+                                                  s.id,
+                                                  s.tabs?.length || 0,
+                                                )
                                               : deselectAllTabs(s.id)
                                           }
                                         />
@@ -609,21 +625,21 @@ export default function ListView({
                                       | number
                                       | undefined;
                                     const closedMs =
-                                      typeof closedAt === 'string'
+                                      typeof closedAt === "string"
                                         ? Date.parse(closedAt)
-                                        : typeof closedAt === 'number'
+                                        : typeof closedAt === "number"
                                           ? closedAt
                                           : undefined;
                                     return (
                                       <tr
                                         key={idx}
                                         className={cn(
-                                          'border-b last:border-b-0 align-top transition-all',
+                                          "border-b last:border-b-0 align-top transition-all",
                                           isRemovalMode &&
-                                          selectedTabs[s.id]?.has(idx) &&
-                                          'bg-destructive/10',
+                                            selectedTabs[s.id]?.has(idx) &&
+                                            "bg-destructive/10",
                                           isAltPressed &&
-                                          'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
+                                            "cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500",
                                         )}
                                         draggable={isAltPressed}
                                         onDragStart={() =>
@@ -634,7 +650,7 @@ export default function ListView({
                                           <td className="py-2 pr-3">
                                             <Checkbox
                                               checked={Boolean(
-                                                selectedTabs[s.id]?.has(idx)
+                                                selectedTabs[s.id]?.has(idx),
                                               )}
                                               onCheckedChange={() =>
                                                 toggleTabSelection(s.id, idx)
@@ -656,9 +672,9 @@ export default function ListView({
                                               )}
                                               <span
                                                 className="text-foreground break-words"
-                                                title={title || 'Untitled tab'}
+                                                title={title || "Untitled tab"}
                                               >
-                                                {title || 'Untitled tab'}
+                                                {title || "Untitled tab"}
                                               </span>
                                             </div>
                                             {url && (
@@ -772,7 +788,7 @@ function DaySeparator({ ts, count }: { ts: number; count: number }) {
         <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-700 shadow-sm">
           {label}
           <span className="ml-2 text-muted-foreground">
-            • {count} {count === 1 ? 'entry' : 'entries'}
+            • {count} {count === 1 ? "entry" : "entries"}
           </span>
         </span>
       </div>
@@ -787,21 +803,21 @@ function formatDay(ts: number) {
   const startOf = (T: Date) =>
     new Date(T.getFullYear(), T.getMonth(), T.getDate()).getTime();
   const diffDays = Math.floor((startOf(now) - startOf(d)) / dayMs);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
   return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 }
 
 function formatTime(ts: number) {
   const d = new Date(ts);
   return d.toLocaleTimeString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -810,7 +826,7 @@ function formatRelative(ts: number) {
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const min = Math.floor(diffMs / 60000);
-  if (min < 1) return 'just now';
+  if (min < 1) return "just now";
   if (min < 60) return `${min}m ago`;
   const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}h ago`;

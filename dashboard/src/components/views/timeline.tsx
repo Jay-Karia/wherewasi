@@ -1,4 +1,4 @@
-import type { Session, SortOption } from '@/types';
+import type { Session, SortOption } from "@/types";
 import {
   cn,
   filterSessions,
@@ -7,21 +7,26 @@ import {
   removeTabsFromSession,
   moveTabBetweenSessions,
   updateSessionSummary,
-} from '@/lib/utils';
-import { MdAutorenew, MdDelete, MdEdit, MdOutlineKeyboardArrowDown } from 'react-icons/md';
-import { FiMinus } from 'react-icons/fi';
-import { useMemo, useState, useEffect } from 'react';
-import { useAtomValue } from 'jotai';
-import { filtersAtom } from '../../../atoms';
+} from "@/lib/utils";
+import {
+  MdAutorenew,
+  MdDelete,
+  MdEdit,
+  MdOutlineKeyboardArrowDown,
+} from "react-icons/md";
+import { FiMinus } from "react-icons/fi";
+import { useMemo, useState, useEffect } from "react";
+import { useAtomValue } from "jotai";
+import { filtersAtom } from "../../../atoms";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from '@/components/ui/context-menu';
-import { EditSessionTitle } from '@/components/ui/edit-session-title';
-import { useStorage } from '@/hooks/useStorage';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@/components/ui/context-menu";
+import { EditSessionTitle } from "@/components/ui/edit-session-title";
+import { useStorage } from "@/hooks/useStorage";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {
   sessions: Session[];
@@ -52,7 +57,7 @@ export default function TimelineView({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [selectedTabs, setSelectedTabs] = useState<Record<string, Set<number>>>(
-    {}
+    {},
   );
   const [removalMode, setRemovalMode] = useState<Record<string, boolean>>({});
   const [isAltPressed, setIsAltPressed] = useState(false);
@@ -61,10 +66,10 @@ export default function TimelineView({
     tabIndex: number;
   } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
-  const toggle = (id: string) => setExpanded(m => ({ ...m, [id]: !m[id] }));
+  const toggle = (id: string) => setExpanded((m) => ({ ...m, [id]: !m[id] }));
   const filters = useAtomValue(filtersAtom);
   const [, setStoredSessions] = useStorage<Session[]>({
-    key: 'sessions',
+    key: "sessions",
     initialValue: [],
   });
 
@@ -77,12 +82,12 @@ export default function TimelineView({
     async function readInitial() {
       if (!storage) return;
       try {
-        const res = await storage.get(['disabled']);
+        const res = await storage.get(["disabled"]);
         if (mounted) setIsDisabled(Boolean(res?.disabled));
       } catch {
         // fallback to callback style
         try {
-          storage.get(['disabled'], (result: any) => {
+          storage.get(["disabled"], (result: any) => {
             if (mounted) setIsDisabled(Boolean(result?.disabled));
           });
         } catch {
@@ -94,7 +99,7 @@ export default function TimelineView({
     readInitial();
 
     const onChanged = (changes: any, areaName: string) => {
-      if (areaName !== 'local') return;
+      if (areaName !== "local") return;
       if (changes?.disabled) {
         setIsDisabled(Boolean(changes.disabled.newValue));
       }
@@ -119,13 +124,13 @@ export default function TimelineView({
   // Track Alt key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
+      if (e.key === "Alt") {
         setIsAltPressed(true);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
+      if (e.key === "Alt") {
         setIsAltPressed(false);
         setDraggedTab(null);
         setDropTarget(null);
@@ -138,14 +143,14 @@ export default function TimelineView({
       setDropTarget(null);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('blur', handleBlur);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 
@@ -154,7 +159,10 @@ export default function TimelineView({
     setEditDialogOpen(true);
   };
 
-  const handleRegenerateSummary = async (sessionId: string, currentSummary: string) => {
+  const handleRegenerateSummary = async (
+    sessionId: string,
+    currentSummary: string,
+  ) => {
     console.log("WhereWasI: Regenerating summary for session:", sessionId);
     try {
       let newSummary = currentSummary;
@@ -164,7 +172,10 @@ export default function TimelineView({
           const timeout = setTimeout(() => resolve(null), 5000);
           try {
             chrome.runtime.sendMessage(
-              { action: 'regenerateSummary', data: { sessionId, currentSummary } },
+              {
+                action: "regenerateSummary",
+                data: { sessionId, currentSummary },
+              },
               (resp) => {
                 clearTimeout(timeout);
                 if (chrome.runtime.lastError) {
@@ -172,7 +183,7 @@ export default function TimelineView({
                 } else {
                   resolve(resp);
                 }
-              }
+              },
             );
           } catch (err) {
             clearTimeout(timeout);
@@ -180,20 +191,22 @@ export default function TimelineView({
           }
         });
 
-        if (response && typeof response.summary === 'string') {
+        if (response && typeof response.summary === "string") {
           newSummary = response.summary;
-          console.log('WhereWasI: Received regenerated summary', newSummary);
+          console.log("WhereWasI: Received regenerated summary", newSummary);
         } else {
-          console.warn('WhereWasI: No summary returned from background; keeping existing.');
+          console.warn(
+            "WhereWasI: No summary returned from background; keeping existing.",
+          );
         }
       } catch (err) {
-        console.error('WhereWasI: Error communicating with background:', err);
+        console.error("WhereWasI: Error communicating with background:", err);
       }
 
       const updatedSessions = await updateSessionSummary(sessionId, newSummary);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to regenerate summary:', error);
+      console.error("WhereWasI: Failed to regenerate summary:", error);
       throw error;
     }
   };
@@ -203,7 +216,7 @@ export default function TimelineView({
       const updatedSessions = await updateSessionTitle(sessionId, newTitle);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to update session title:', error);
+      console.error("WhereWasI: Failed to update session title:", error);
       throw error;
     }
   };
@@ -213,13 +226,13 @@ export default function TimelineView({
       const updatedSessions = await deleteSession(sessionId);
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to delete session:', error);
+      console.error("WhereWasI: Failed to delete session:", error);
       throw error;
     }
   };
 
   const toggleTabSelection = (sessionId: string, tabIndex: number) => {
-    setSelectedTabs(prev => {
+    setSelectedTabs((prev) => {
       const sessionTabs = new Set(prev[sessionId] || []);
       if (sessionTabs.has(tabIndex)) {
         sessionTabs.delete(tabIndex);
@@ -231,14 +244,14 @@ export default function TimelineView({
   };
 
   const selectAllTabs = (sessionId: string, tabCount: number) => {
-    setSelectedTabs(prev => ({
+    setSelectedTabs((prev) => ({
       ...prev,
       [sessionId]: new Set(Array.from({ length: tabCount }, (_, i) => i)),
     }));
   };
 
   const deselectAllTabs = (sessionId: string) => {
-    setSelectedTabs(prev => {
+    setSelectedTabs((prev) => {
       const updated = { ...prev };
       delete updated[sessionId];
       return updated;
@@ -246,13 +259,13 @@ export default function TimelineView({
   };
 
   const enterRemovalMode = (sessionId: string) => {
-    setRemovalMode(prev => ({ ...prev, [sessionId]: true }));
-    setExpanded(prev => ({ ...prev, [sessionId]: true }));
+    setRemovalMode((prev) => ({ ...prev, [sessionId]: true }));
+    setExpanded((prev) => ({ ...prev, [sessionId]: true }));
     deselectAllTabs(sessionId);
   };
 
   const cancelRemovalMode = (sessionId: string) => {
-    setRemovalMode(prev => {
+    setRemovalMode((prev) => {
       const updated = { ...prev };
       delete updated[sessionId];
       return updated;
@@ -267,12 +280,12 @@ export default function TimelineView({
     try {
       const updatedSessions = await removeTabsFromSession(
         sessionId,
-        tabsToRemove
+        tabsToRemove,
       );
       await setStoredSessions(updatedSessions);
       cancelRemovalMode(sessionId);
     } catch (error) {
-      console.error('WhereWasI: Failed to remove tabs:', error);
+      console.error("WhereWasI: Failed to remove tabs:", error);
       throw error;
     }
   };
@@ -284,7 +297,7 @@ export default function TimelineView({
   const handleMoveTab = async (
     sourceSessionId: string,
     targetSessionId: string,
-    tabIndex: number
+    tabIndex: number,
   ) => {
     if (sourceSessionId === targetSessionId) return;
 
@@ -292,11 +305,11 @@ export default function TimelineView({
       const updatedSessions = await moveTabBetweenSessions(
         sourceSessionId,
         targetSessionId,
-        tabIndex
+        tabIndex,
       );
       await setStoredSessions(updatedSessions);
     } catch (error) {
-      console.error('WhereWasI: Failed to move tab:', error);
+      console.error("WhereWasI: Failed to move tab:", error);
       throw error;
     }
   };
@@ -318,7 +331,7 @@ export default function TimelineView({
 
   const handleSessionDrop = async (
     e: React.DragEvent,
-    targetSessionId: string
+    targetSessionId: string,
   ) => {
     e.preventDefault();
     if (!draggedTab || draggedTab.sessionId === targetSessionId) {
@@ -329,7 +342,7 @@ export default function TimelineView({
     await handleMoveTab(
       draggedTab.sessionId,
       targetSessionId,
-      draggedTab.tabIndex
+      draggedTab.tabIndex,
     );
     setDraggedTab(null);
     setDropTarget(null);
@@ -338,13 +351,13 @@ export default function TimelineView({
   const sortedSessions = useMemo(() => {
     const list = [...sessions];
     switch (sortOption) {
-      case 'date-asc':
+      case "date-asc":
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
           const tb = (b.updatedAt ?? b.createdAt ?? 0) as number;
           return ta - tb;
         });
-      case 'date-desc':
+      case "date-desc":
       default:
         return list.sort((a, b) => {
           const ta = (a.updatedAt ?? a.createdAt ?? 0) as number;
@@ -359,15 +372,15 @@ export default function TimelineView({
   }, [sortedSessions, filters]);
 
   const normalized = (filteredSessions || [])
-    .map(s => ({
+    .map((s) => ({
       ...s,
       _ts: (s.updatedAt ?? s.createdAt ?? 0) as number,
     }))
-    .filter(s => Number.isFinite(s._ts) && s._ts > 0);
+    .filter((s) => Number.isFinite(s._ts) && s._ts > 0);
 
   const groups = groupByDay(normalized);
   const dayKeys = Object.keys(groups).sort((a, b) => {
-    if (sortOption === 'date-asc') {
+    if (sortOption === "date-asc") {
       return Number(a) - Number(b);
     }
     return Number(b) - Number(a);
@@ -376,21 +389,21 @@ export default function TimelineView({
   return (
     <div
       className={cn(
-        'mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8 mb-12',
-        className
+        "mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8 mb-12",
+        className,
       )}
     >
       {dayKeys.map((dayKey, idx) => {
         const dayTs = Number(dayKey);
         const items = groups[dayKey];
         return (
-          <section key={dayKey} className={cn('relative', idx > 0 && 'mt-10')}>
+          <section key={dayKey} className={cn("relative", idx > 0 && "mt-10")}>
             <DayHeader ts={dayTs} count={items.length} />
             <div className="pointer-events-none absolute left-1/2 top-16 bottom-2 -translate-x-1/2 hidden w-px bg-border/60 md:block" />
             <ul className="mt-4 space-y-6">
               {items.map((s, i) => {
                 const accent = tinyAccentForSeed(s.id);
-                const side: 'left' | 'right' = i % 2 === 0 ? 'left' : 'right';
+                const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
                 const isExpanded = !!expanded[s.id];
                 if (isExpanded) {
                   return (
@@ -400,14 +413,14 @@ export default function TimelineView({
                           <ContextMenuTrigger>
                             <article
                               className={cn(
-                                'relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60',
+                                "relative rounded-lg border bg-card/60 p-2 sm:p-4 shadow-sm transition md:p-5 hover:shadow-md ring-1 ring-border/60",
                                 dropTarget === s.id &&
-                                'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
+                                  "bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset",
                               )}
                               draggable={isAltPressed}
-                              onDragOver={e => handleSessionDragOver(e, s.id)}
+                              onDragOver={(e) => handleSessionDragOver(e, s.id)}
                               onDragLeave={handleSessionDragLeave}
-                              onDrop={e => handleSessionDrop(e, s.id)}
+                              onDrop={(e) => handleSessionDrop(e, s.id)}
                             >
                               <header className="flex items-center justify-between gap-2">
                                 <div className="flex min-w-0 items-center gap-2">
@@ -416,10 +429,10 @@ export default function TimelineView({
                                     style={{ backgroundColor: accent }}
                                   />
                                   <h4 className="line-clamp-1 text-[14px] font-semibold text-foreground">
-                                    {s.title || 'Untitled session'}
+                                    {s.title || "Untitled session"}
                                   </h4>
                                 </div>
-                                {typeof s.tabsCount === 'number' && (
+                                {typeof s.tabsCount === "number" && (
                                   <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                                     {s.tabsCount} tabs
                                   </span>
@@ -474,15 +487,23 @@ export default function TimelineView({
                             </ContextMenuContent>
                           ) : (
                             <ContextMenuContent>
-                              <ContextMenuItem onSelect={() => handleEditTitle(s)}>
+                              <ContextMenuItem
+                                onSelect={() => handleEditTitle(s)}
+                              >
                                 <MdEdit className="mr-2 h-4 w-4" />
                                 Edit Title
                               </ContextMenuItem>
-                              <ContextMenuItem onSelect={() => { handleRegenerateSummary(s.id, s.summary) }}>
+                              <ContextMenuItem
+                                onSelect={() => {
+                                  handleRegenerateSummary(s.id, s.summary);
+                                }}
+                              >
                                 <MdAutorenew className="mr-2 h-4 w-4" />
                                 Regenerate Summary
                               </ContextMenuItem>
-                              <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                              <ContextMenuItem
+                                onSelect={() => enterRemovalMode(s.id)}
+                              >
                                 <FiMinus className="mr-2 h-4 w-4" />
                                 Remove Tabs
                               </ContextMenuItem>
@@ -503,24 +524,24 @@ export default function TimelineView({
                 return (
                   <li key={s.id}>
                     <div className="md:grid md:grid-cols-[1fr_16px_1fr] md:items-start md:gap-0">
-                      {side === 'left' ? (
+                      {side === "left" ? (
                         <>
                           <div className="md:pr-6">
                             <ContextMenu>
                               <ContextMenuTrigger>
                                 <article
                                   className={cn(
-                                    'relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md',
-                                    isExpanded && 'ring-1 ring-border/60',
+                                    "relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md",
+                                    isExpanded && "ring-1 ring-border/60",
                                     dropTarget === s.id &&
-                                    'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
+                                      "bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset",
                                   )}
                                   draggable={isAltPressed}
-                                  onDragOver={e =>
+                                  onDragOver={(e) =>
                                     handleSessionDragOver(e, s.id)
                                   }
                                   onDragLeave={handleSessionDragLeave}
-                                  onDrop={e => handleSessionDrop(e, s.id)}
+                                  onDrop={(e) => handleSessionDrop(e, s.id)}
                                 >
                                   <div
                                     className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
@@ -536,10 +557,10 @@ export default function TimelineView({
                                         className="line-clamp-1 text-[13px] font-semibold text-foreground"
                                         title={s.title}
                                       >
-                                        {s.title || 'Untitled session'}
+                                        {s.title || "Untitled session"}
                                       </h4>
                                     </div>
-                                    {typeof s.tabsCount === 'number' && (
+                                    {typeof s.tabsCount === "number" && (
                                       <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                                         {s.tabsCount} tabs
                                       </span>
@@ -548,12 +569,12 @@ export default function TimelineView({
                                       onClick={() => toggle(s.id)}
                                       aria-expanded={isExpanded}
                                       className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
-                                      title={isExpanded ? 'Collapse' : 'Expand'}
+                                      title={isExpanded ? "Collapse" : "Expand"}
                                     >
                                       <MdOutlineKeyboardArrowDown
                                         className={cn(
-                                          'h-4 w-4 transition-transform',
-                                          isExpanded && 'rotate-180'
+                                          "h-4 w-4 transition-transform",
+                                          isExpanded && "rotate-180",
                                         )}
                                       />
                                     </button>
@@ -589,15 +610,23 @@ export default function TimelineView({
                                 </ContextMenuContent>
                               ) : (
                                 <ContextMenuContent>
-                                  <ContextMenuItem onSelect={() => handleEditTitle(s)}>
+                                  <ContextMenuItem
+                                    onSelect={() => handleEditTitle(s)}
+                                  >
                                     <MdEdit className="mr-2 h-4 w-4" />
                                     Edit Title
                                   </ContextMenuItem>
-                                  <ContextMenuItem onSelect={() => { handleRegenerateSummary(s.id, s.summary) }}>
+                                  <ContextMenuItem
+                                    onSelect={() => {
+                                      handleRegenerateSummary(s.id, s.summary);
+                                    }}
+                                  >
                                     <MdAutorenew className="mr-2 h-4 w-4" />
                                     Regenerate Summary
                                   </ContextMenuItem>
-                                  <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                                  <ContextMenuItem
+                                    onSelect={() => enterRemovalMode(s.id)}
+                                  >
                                     <FiMinus className="mr-2 h-4 w-4" />
                                     Remove Tabs
                                   </ContextMenuItem>
@@ -638,17 +667,17 @@ export default function TimelineView({
                               <ContextMenuTrigger>
                                 <article
                                   className={cn(
-                                    'relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md',
-                                    isExpanded && 'ring-1 ring-border/60',
+                                    "relative rounded-lg border bg-card/60 p-2 sm:p-3 shadow-sm transition hover:shadow-md",
+                                    isExpanded && "ring-1 ring-border/60",
                                     dropTarget === s.id &&
-                                    'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset'
+                                      "bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset",
                                   )}
                                   draggable={isAltPressed}
-                                  onDragOver={e =>
+                                  onDragOver={(e) =>
                                     handleSessionDragOver(e, s.id)
                                   }
                                   onDragLeave={handleSessionDragLeave}
-                                  onDrop={e => handleSessionDrop(e, s.id)}
+                                  onDrop={(e) => handleSessionDrop(e, s.id)}
                                 >
                                   <div
                                     className="pointer-events-none absolute left-2 w-px bg-border/60 md:hidden"
@@ -661,10 +690,10 @@ export default function TimelineView({
                                         style={{ backgroundColor: accent }}
                                       />
                                       <h4 className="line-clamp-1 text-[13px] font-semibold text-foreground">
-                                        {s.title || 'Untitled session'}
+                                        {s.title || "Untitled session"}
                                       </h4>
                                     </div>
-                                    {typeof s.tabsCount === 'number' && (
+                                    {typeof s.tabsCount === "number" && (
                                       <span className="shrink-0 rounded-full bg-muted/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                                         {s.tabsCount} tabs
                                       </span>
@@ -673,12 +702,12 @@ export default function TimelineView({
                                       onClick={() => toggle(s.id)}
                                       aria-expanded={isExpanded}
                                       className="ml-1 inline-flex shrink-0 items-center justify-center rounded-md p-1 text-muted-foreground transition hover:bg-accent/60 hover:text-accent-foreground"
-                                      title={isExpanded ? 'Collapse' : 'Expand'}
+                                      title={isExpanded ? "Collapse" : "Expand"}
                                     >
                                       <MdOutlineKeyboardArrowDown
                                         className={cn(
-                                          'h-4 w-4 transition-transform',
-                                          isExpanded && 'rotate-180'
+                                          "h-4 w-4 transition-transform",
+                                          isExpanded && "rotate-180",
                                         )}
                                       />
                                     </button>
@@ -714,15 +743,23 @@ export default function TimelineView({
                                 </ContextMenuContent>
                               ) : (
                                 <ContextMenuContent>
-                                  <ContextMenuItem onSelect={() => handleEditTitle(s)}>
+                                  <ContextMenuItem
+                                    onSelect={() => handleEditTitle(s)}
+                                  >
                                     <MdEdit className="mr-2 h-4 w-4" />
                                     Edit Title
                                   </ContextMenuItem>
-                                  <ContextMenuItem onSelect={() => { handleRegenerateSummary(s.id, s.summary) }}>
+                                  <ContextMenuItem
+                                    onSelect={() => {
+                                      handleRegenerateSummary(s.id, s.summary);
+                                    }}
+                                  >
                                     <MdAutorenew className="mr-2 h-4 w-4" />
                                     Regenerate Summary
                                   </ContextMenuItem>
-                                  <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
+                                  <ContextMenuItem
+                                    onSelect={() => enterRemovalMode(s.id)}
+                                  >
                                     <FiMinus className="mr-2 h-4 w-4" />
                                     Remove Tabs
                                   </ContextMenuItem>
@@ -781,7 +818,7 @@ function DayHeader({ ts, count }: { ts: number; count: number }) {
         <span className="bg-background px-3 py-1 text-xs font-medium text-foreground rounded-full border border-gray-500 shadow-sm">
           {label}
           <span className="ml-2 text-muted-foreground">
-            • {count} {count === 1 ? 'entry' : 'entries'}
+            • {count} {count === 1 ? "entry" : "entries"}
           </span>
         </span>
       </div>
@@ -796,21 +833,21 @@ function formatDay(ts: number) {
   const startOf = (T: Date) =>
     new Date(T.getFullYear(), T.getMonth(), T.getDate()).getTime();
   const diffDays = Math.floor((startOf(now) - startOf(d)) / dayMs);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
   return d.toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 }
 
 export function formatTime(ts: number) {
   const d = new Date(ts);
   return d.toLocaleTimeString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -819,7 +856,7 @@ export function formatRelative(ts: number) {
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const min = Math.floor(diffMs / 60000);
-  if (min < 1) return 'just now';
+  if (min < 1) return "just now";
   if (min < 60) return `${min}m ago`;
   const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}h ago`;
@@ -832,7 +869,7 @@ export function toISO(ts: number) {
   try {
     return new Date(ts).toISOString();
   } catch {
-    return '';
+    return "";
   }
 }
 
@@ -871,20 +908,20 @@ function ExpandedDetails({
     <div className="mt-3 rounded-md border bg-background/60 p-2 sm:p-3">
       <div className="grid grid-cols-1 gap-2 text-[11px] text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <span className="opacity-70">Session ID:</span>{' '}
+          <span className="opacity-70">Session ID:</span>{" "}
           <span className="break-all text-foreground/90">{session.id}</span>
         </div>
         <div>
-          <span className="opacity-70">Created:</span>{' '}
+          <span className="opacity-70">Created:</span>{" "}
           <span>
-            {formatTime(session.createdAt as number)} •{' '}
+            {formatTime(session.createdAt as number)} •{" "}
             {formatRelative(session.createdAt as number)}
           </span>
         </div>
         <div>
-          <span className="opacity-70">Updated:</span>{' '}
+          <span className="opacity-70">Updated:</span>{" "}
           <span>
-            {formatTime(session.updatedAt as number)} •{' '}
+            {formatTime(session.updatedAt as number)} •{" "}
             {formatRelative(session.updatedAt as number)}
           </span>
         </div>
@@ -904,7 +941,7 @@ function ExpandedDetails({
                     }
                     checked={Boolean(
                       getSelectedCount?.(session.id) === tabs.length &&
-                      tabs.length > 0
+                        tabs.length > 0,
                     )}
                     title="Select all tabs"
                   />
@@ -929,19 +966,19 @@ function ExpandedDetails({
                 | number
                 | undefined;
               const closedMs =
-                typeof closedAt === 'string'
+                typeof closedAt === "string"
                   ? Date.parse(closedAt)
-                  : typeof closedAt === 'number'
+                  : typeof closedAt === "number"
                     ? closedAt
                     : undefined;
               return (
                 <tr
                   key={i}
                   className={cn(
-                    'border-b last:border-b-0 align-top transition-all',
-                    removalMode && selectedTabs?.has(i) && 'bg-destructive/10',
+                    "border-b last:border-b-0 align-top transition-all",
+                    removalMode && selectedTabs?.has(i) && "bg-destructive/10",
                     isAltPressed &&
-                    'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
+                      "cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500",
                   )}
                   draggable={isAltPressed}
                   onDragStart={() => onTabDragStart?.(session.id, i)}
@@ -969,9 +1006,9 @@ function ExpandedDetails({
                         )}
                         <span
                           className="break-words text-foreground"
-                          title={title || 'Untitled tab'}
+                          title={title || "Untitled tab"}
                         >
-                          {title || 'Untitled tab'}
+                          {title || "Untitled tab"}
                         </span>
                       </div>
                       {url && (
@@ -987,7 +1024,7 @@ function ExpandedDetails({
                       )}
                       {closedMs && (
                         <span className="md:hidden text-muted-foreground text-[10px] pl-6">
-                          Closed: {formatTime(closedMs)} •{' '}
+                          Closed: {formatTime(closedMs)} •{" "}
                           {formatRelative(closedMs)}
                         </span>
                       )}

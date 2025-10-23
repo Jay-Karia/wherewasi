@@ -147,7 +147,6 @@ _Search results — dark theme_
 
 **v1.0.0**
 
-- [ ] Regenerate Session Title
 - [ ] Merge Sessions
 - [ ] Tabs caching
 - [ ] Ignore injecting scripts to same window when refreshed

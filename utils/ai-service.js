@@ -91,10 +91,7 @@ export const AIService = {
 
       return { summary: newSummary };
     } catch (error) {
-      console.error(
-        'WhereWasI: Error regenerating session summary:',
-        error
-      );
+      console.error('WhereWasI: Error regenerating session summary:', error);
       throw error;
     }
   },
