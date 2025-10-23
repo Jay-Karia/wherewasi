@@ -12,7 +12,7 @@ import { StorageService } from '../utils/storage.js';
 
 console.log('WhereWasI: Service worker loaded');
 const contentCache = new Map();
-const tabsAdded = new Set(); // Used for 'trackAllSites' mode
+const sitesAdded = new Set(); // Used for 'trackAllSites' mode
 
 //======================TAB UPDATES=========================//
 
@@ -54,13 +54,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     };
 
     try {
-      tabsAdded.add(tab.id);
+      sitesAdded.add(tab.url);
       await AIService.groupClosedTab(tabRecord);
     } catch (aiErr) {
       console.error('WhereWasI: AI grouping error on tab update:', aiErr);
 
       console.log('WhereWasI: Creating a new session as fallback...');
-      tabsAdded.add(tab.id);
+      sitesAdded.add(tab.url);
       await StorageService.createEmptySession(tabRecord);
     }
   }
@@ -120,14 +120,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 chrome.tabs.onRemoved.addListener(async tabId => {
   try {
-    const isTrackAllSites = await StorageService.getSetting('trackAllSites');
-    if (isTrackAllSites && tabsAdded.has(tabId)) {
-      console.log(
-        `WhereWasI: 'trackAllSites' is enabled, tabId ${tabId} was already added. Skipping.`
-      );
-      tabsAdded.delete(tabId);
-      return;
-    }
     const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 5 });
     if (!sessions || sessions.length === 0) {
       console.log('WhereWasI: Could not retrieve recently closed sessions.');
@@ -180,6 +172,16 @@ chrome.tabs.onRemoved.addListener(async tabId => {
       return;
     }
 
+    // Check for 'trackAllSites' mode
+    const isTrackAllSites = await StorageService.getSetting('trackAllSites');
+    if (isTrackAllSites && sitesAdded.has(tab.url)) {
+      console.log(
+        `WhereWasI: 'trackAllSites' is enabled, tab URL ${tab.url} was already added. Skipping.`
+      );
+      sitesAdded.delete(tab.url);
+      return;
+    }
+    
     const scrappedContent = contentCache.get(tabId) || null;
 
     // Prepare a compact record
