@@ -6,6 +6,7 @@ import { SUMMARIZER_OPTIONS } from '../constants';
 import { setDisabledFalse, setDisabledTrue } from './disabled';
 
 export async function generateSummary(session) {
+  // TODO: set timouts
   try {
     // Check if the Summarizer API is available
     if (!('Summarizer' in self)) {

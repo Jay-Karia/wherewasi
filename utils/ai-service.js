@@ -7,6 +7,7 @@
 import { searchSessions } from '../helpers/grouping.js';
 import { StorageService } from './storage.js';
 import { generateSummary } from '../helpers/summary.js';
+import { setDisabledFalse, setDisabledTrue } from '../helpers/disabled.js';
 
 //=============================================================//
 
@@ -78,6 +79,7 @@ export const AIService = {
 
   async regenerateSessionSummary(sessionId) {
     try {
+      setDisabledTrue();
       const session = await StorageService.getSession(sessionId);
       if (!session) {
         throw new Error('Session not found for summary regeneration');
@@ -92,7 +94,7 @@ export const AIService = {
       return { summary: newSummary };
     } catch (error) {
       console.error('WhereWasI: Error regenerating session summary:', error);
-      throw error;
+      setDisabledFalse();
     }
   },
 };

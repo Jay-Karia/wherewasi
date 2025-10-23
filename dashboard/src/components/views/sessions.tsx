@@ -60,6 +60,15 @@ export default function SessionsView({
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
+    if (!isDisabled) return;
+    const t = setTimeout(async () => {
+      setIsDisabled(false);
+      await chrome.storage.local.set({ disabled: false });
+    }, 120_000); // 120 seconds
+    return () => clearTimeout(t);
+  }, [isDisabled]);
+
+  useEffect(() => {
     const storage = (window as any).chrome?.storage?.local;
     let mounted = true;
 
@@ -69,7 +78,6 @@ export default function SessionsView({
         const res = await storage.get(["disabled"]);
         if (mounted) setIsDisabled(Boolean(res?.disabled));
       } catch {
-        // fallback to callback style
         try {
           storage.get(["disabled"], (result: any) => {
             if (mounted) setIsDisabled(Boolean(result?.disabled));
@@ -92,7 +100,7 @@ export default function SessionsView({
     try {
       (window as any).chrome?.storage?.onChanged?.addListener(onChanged);
     } catch {
-      // ignore if API not available (e.g., in tests)
+      // ignore
     }
 
     return () => {
