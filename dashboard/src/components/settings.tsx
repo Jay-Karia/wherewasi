@@ -8,6 +8,7 @@ import {
   FiSettings,
   FiEye,
   FiEyeOff,
+  FiSliders,
 } from "react-icons/fi";
 import { PiSparkleFill } from "react-icons/pi";
 import { useEffect, useState } from "react";
@@ -15,10 +16,12 @@ import { useAtom } from "jotai";
 import { getSettings, saveSettings, clearSettings } from "@/lib/utils";
 import { isSettingsOpenAtom } from "../../atoms";
 import type { Settings } from "@/types";
+import { DEFAULT_SETTINGS } from "../../constants";
+import { Switch } from "@/components/ui/switch";
 
 export default function Settings() {
   const [showApiKey, setShowApiKey] = useState(false);
-  const [settings, setSettings] = useState<Settings>({});
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [status, setStatus] = useState<string | null>(null);
   const [, setIsSettingsOpen] = useAtom(isSettingsOpenAtom);
 
@@ -73,7 +76,48 @@ export default function Settings() {
 
         {/* Main Content */}
         <div className="space-y-8">
-          {/* API Configuration Section */}
+          {/* Behaviour */}
+          <section className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="p-2 bg-primary/10 rounded-lg mt-1">
+                <FiSliders className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-1">General Settings</h3>
+                <p className="text-sm text-muted-foreground">
+                  General preferences and behavior for the extension
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 ml-14">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Track all sites
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    When enabled, the extension will track every opened site.
+                    When disabled (default), it will track only closed tabs.
+                  </p>
+                </div>
+                <div className="ml-4">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <Switch
+                      checked={!!settings.trackAllSites}
+                      onCheckedChange={(checked: boolean) =>
+                        setSettings({ ...settings, trackAllSites: checked })
+                      }
+                      aria-label="Track all sites"
+                      className="peer"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* AI Configuration Section */}
           <section className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-2 bg-primary/10 rounded-lg mt-1">
@@ -155,7 +199,7 @@ export default function Settings() {
                   setStatus("Resetting...");
                   try {
                     await clearSettings();
-                    setSettings({});
+                    setSettings(DEFAULT_SETTINGS);
                     setStatus("Reset");
                     setTimeout(() => setStatus(null), 1200);
                   } catch (err: any) {

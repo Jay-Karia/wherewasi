@@ -22,4 +22,5 @@ export type FilterOption = {
 
 export type Settings = {
   geminiApiKey?: string | null;
+  trackAllSites: boolean;
 };
