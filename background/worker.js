@@ -6,6 +6,7 @@
 
 import { scrapTabContent } from '../helpers/scraper.js';
 import { AIService } from '../utils/ai-service.js';
+import { StorageService } from '../utils/storage.js';
 
 //=============================================================//
 
@@ -14,13 +15,9 @@ const contentCache = new Map();
 
 //======================TAB UPDATES=========================//
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // Inject script when the page is loaded
-  if (
-    changeInfo.status === 'complete' &&
-    tab.url &&
-    tab.url.startsWith('http')
-  ) {
+  if (changeInfo.status === 'complete' && tab.url) {
     chrome.scripting
       .executeScript({
         target: { tabId: tabId },
@@ -30,6 +27,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       .then(() => {
         console.log('WhereWasI: Scrapping script injected into tabId:', tabId);
       });
+  }
+
+  const isTrackAllSites = await StorageService.getSetting('trackAllSites');
+  if (!isTrackAllSites) return;
+
+  if (changeInfo.status === 'complete' && tab && tab.url) {
+    console.log('WhereWasI: trackAllSites enabled — site URL:', tab.url);
   }
 });
 
