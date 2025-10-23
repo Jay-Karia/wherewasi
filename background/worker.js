@@ -35,11 +35,44 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 //===================MESSAGE LISTENER=======================//
 
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Update the cache with scraped tab content
   if (message.action === 'cacheTabContent' && sender.tab) {
     contentCache.set(sender.tab.id, message.data);
     console.log(`WhereWasI: Cached content for tabId: ${sender.tab.id}`);
+  }
+
+  if (message.action === 'regenerateSummary') {
+    console.log(
+      'WhereWasI: Regenerate summary request received:',
+      message.data?.sessionId
+    );
+    (async () => {
+      try {
+        const sessionId = message.data?.sessionId;
+
+        try {
+          const result = await AIService.regenerateSessionSummary(sessionId);
+          sendResponse({ success: true, ...(result || {}) });
+        } catch (error) {
+          console.error(
+            'WhereWasI: Could not regenerate session summary:',
+            error
+          );
+        }
+
+        // Fallback: use existing summary
+        const placeholder =
+          message.data.currentSummary ||
+          `Regenerated summary for ${sessionId || 'unknown session'}`;
+        sendResponse({ success: true, summary: placeholder });
+      } catch (err) {
+        console.error('WhereWasI: Error regenerating summary in worker:', err);
+        sendResponse({ success: false, error: String(err) });
+      }
+    })();
+
+    return true;
   }
 });
 

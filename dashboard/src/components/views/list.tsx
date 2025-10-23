@@ -6,6 +6,7 @@ import {
   deleteSession,
   removeTabsFromSession,
   moveTabBetweenSessions,
+  updateSessionSummary,
 } from '@/lib/utils';
 import { tinyAccentForSeed } from './timeline';
 import { IoMdExpand } from 'react-icons/io';
@@ -18,7 +19,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { MdDelete, MdEdit } from 'react-icons/md';
+import { MdAutorenew, MdDelete, MdEdit } from 'react-icons/md';
 import { FiMinus } from 'react-icons/fi';
 import { EditSessionTitle } from '@/components/ui/edit-session-title';
 import { useStorage } from '@/hooks/useStorage';
@@ -135,6 +136,50 @@ export default function ListView({
   const handleEditTitle = (session: Session) => {
     setEditingSession(session);
     setEditDialogOpen(true);
+  };
+
+  const handleRegenerateSummary = async (sessionId: string, currentSummary: string) => {
+    console.log("WhereWasI: Regenerating summary for session:", sessionId);
+    try {
+      let newSummary = currentSummary;
+
+      try {
+        const response = await new Promise<any>((resolve, reject) => {
+          const timeout = setTimeout(() => resolve(null), 5000);
+          try {
+            chrome.runtime.sendMessage(
+              { action: 'regenerateSummary', data: { sessionId, currentSummary } },
+              (resp) => {
+                clearTimeout(timeout);
+                if (chrome.runtime.lastError) {
+                  reject(chrome.runtime.lastError);
+                } else {
+                  resolve(resp);
+                }
+              }
+            );
+          } catch (err) {
+            clearTimeout(timeout);
+            reject(err);
+          }
+        });
+
+        if (response && typeof response.summary === 'string') {
+          newSummary = response.summary;
+          console.log('WhereWasI: Received regenerated summary', newSummary);
+        } else {
+          console.warn('WhereWasI: No summary returned from background; keeping existing.');
+        }
+      } catch (err) {
+        console.error('WhereWasI: Error communicating with background:', err);
+      }
+
+      const updatedSessions = await updateSessionSummary(sessionId, newSummary);
+      await setStoredSessions(updatedSessions);
+    } catch (error) {
+      console.error('WhereWasI: Failed to regenerate summary:', error);
+      throw error;
+    }
   };
 
   const handleSaveTitle = async (sessionId: string, newTitle: string) => {
@@ -338,7 +383,7 @@ export default function ListView({
                       className={cn(
                         'group',
                         dropTarget === s.id &&
-                          'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset rounded-lg'
+                        'bg-green-50/30 dark:bg-green-950/10 ring-1 ring-green-400/20 ring-inset rounded-lg'
                       )}
                       draggable={isAltPressed}
                       onDragOver={e => handleSessionDragOver(e, s.id)}
@@ -463,21 +508,21 @@ export default function ListView({
                           </ContextMenuContent>
                         ) : (
                           <ContextMenuContent>
-                            <ContextMenuItem
-                              onSelect={() => handleEditTitle(s)}
-                            >
+                            <ContextMenuItem onSelect={() => handleEditTitle(s)}>
                               <MdEdit className="mr-2 h-4 w-4" />
                               Edit Title
                             </ContextMenuItem>
-                            <ContextMenuItem
-                              onSelect={() => enterRemovalMode(s.id)}
-                            >
+                            <ContextMenuItem onSelect={() => { handleRegenerateSummary(s.id, s.summary) }}>
+                              <MdAutorenew className="mr-2 h-4 w-4" />
+                              Regenerate Summary
+                            </ContextMenuItem>
+                            <ContextMenuItem onSelect={() => enterRemovalMode(s.id)}>
                               <FiMinus className="mr-2 h-4 w-4" />
                               Remove Tabs
                             </ContextMenuItem>
                             <ContextMenuItem
-                              className="text-destructive"
                               onSelect={() => handleDeleteSession(s.id)}
+                              className="text-destructive"
                             >
                               <MdDelete className="mr-2 h-4 w-4" />
                               Delete Session
@@ -521,14 +566,14 @@ export default function ListView({
                                         <Checkbox
                                           checked={Boolean(
                                             getSelectedCount(s.id) ===
-                                              (s.tabs?.length || 0)
+                                            (s.tabs?.length || 0)
                                           )}
                                           onCheckedChange={(checked: any) =>
                                             checked
                                               ? selectAllTabs(
-                                                  s.id,
-                                                  s.tabs?.length || 0
-                                                )
+                                                s.id,
+                                                s.tabs?.length || 0
+                                              )
                                               : deselectAllTabs(s.id)
                                           }
                                         />
@@ -575,10 +620,10 @@ export default function ListView({
                                         className={cn(
                                           'border-b last:border-b-0 align-top transition-all',
                                           isRemovalMode &&
-                                            selectedTabs[s.id]?.has(idx) &&
-                                            'bg-destructive/10',
+                                          selectedTabs[s.id]?.has(idx) &&
+                                          'bg-destructive/10',
                                           isAltPressed &&
-                                            'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
+                                          'cursor-move hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-l-2 hover:border-l-blue-500'
                                         )}
                                         draggable={isAltPressed}
                                         onDragStart={() =>

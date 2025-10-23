@@ -75,6 +75,29 @@ export const AIService = {
 
     return foundSession;
   },
+
+  async regenerateSessionSummary(sessionId) {
+    try {
+      const session = await StorageService.getSession(sessionId);
+      if (!session) {
+        throw new Error('Session not found for summary regeneration');
+      }
+
+      const newSummary = await generateSummary(session);
+      session.summary = newSummary;
+      session.updatedAt = Date.now();
+
+      await StorageService.updateSession(session.id, session);
+
+      return { summary: newSummary };
+    } catch (error) {
+      console.error(
+        'WhereWasI: Error regenerating session summary:',
+        error
+      );
+      throw error;
+    }
+  },
 };
 
 //***********************************************************//

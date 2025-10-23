@@ -1,6 +1,8 @@
 import type { FilterOption, Session, Settings } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+// @ts-ignore: no declaration file for '../../../ai/gemini.js'
+import ai from "../../../ai/gemini.js";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -338,6 +340,40 @@ export async function clearSettings(): Promise<void> {
         }
       });
     });
+  } else {
+    throw new Error("Chrome storage API not available");
+  }
+}
+
+export async function updateSessionSummary(
+  sessionId: string,
+  newSummary: string,
+): Promise<Session[]> {
+  if (typeof chrome !== "undefined" && chrome.storage) {
+    const data = await new Promise<{ sessions: Session[] }>((resolve) => {
+      chrome.storage.local.get(["sessions"], (res) => {
+        resolve(res as { sessions: Session[] });
+      });
+    });
+
+    const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+    const updatedSessions = sessions.map((s) =>
+      s.id === sessionId
+        ? { ...s, summary: newSummary, updatedAt: Date.now() }
+        : s,
+    );
+
+    await new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ sessions: updatedSessions }, () => {
+        if (chrome.runtime?.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    return updatedSessions;
   } else {
     throw new Error("Chrome storage API not available");
   }
