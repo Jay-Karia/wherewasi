@@ -181,7 +181,7 @@ chrome.tabs.onRemoved.addListener(async tabId => {
       sitesAdded.delete(tab.url);
       return;
     }
-    
+
     const scrappedContent = contentCache.get(tabId) || null;
 
     // Prepare a compact record
