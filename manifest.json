@@ -1,6 +1,6 @@
 {
   "name": "Where Was I",
-  "description": "A Chrome extension that remembers your search sessions and captures context.",
+  "description": "A Chrome extension that remembers your sessions by capturing tabs, grouping them into sessions, with AI-powered summaries.",
   "version": "0.1.0",
   "manifest_version": 3,
   "action": {
