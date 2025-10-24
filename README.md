@@ -85,49 +85,25 @@ git clone https://github.com/Jay-Karia/wherewasi
 <details>
   <summary>Show Images</summary>
 
-![Dashboard (light)](./gallery/dashboard-light.png)
+![Popup](./gallery/popup.png)
 
-_Dashboard — light theme_
+_Extension popup_
 
 ![Dashboard (dark)](./gallery/dashboard-dark.png)
 
 _Dashboard — dark theme_
 
-![Sessions (light)](./gallery/sessions-view-light.png)
-
-_Sessions view — light theme_
-
 ![Sessions (dark)](./gallery/sessions-view-dark.png)
 
 _Sessions view — dark theme_
-
-![Timeline (light)](./gallery/timeline-view-light.png)
-
-_Timeline — light theme_
 
 ![Timeline (dark)](./gallery/timeline-view-dark.png)
 
 _Timeline — dark theme_
 
-![Popup](./gallery/popup.png)
-
-_Extension popup_
-
-![Unpacked extension](./gallery/unpacked-extension.png)
-
-_Unpacked/loaded extension view_
-
-![Settings (light)](./gallery/settings-light.png)
-
-_Settings — light theme_
-
 ![Settings (dark)](./gallery/settings-dark.png)
 
 _Settings — dark theme_
-
-![Search results (light)](./gallery/search-results.light.png)
-
-_Search results — light theme_
 
 ![Search results (dark)](./gallery/seach-results-dark.png)
 
