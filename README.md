@@ -60,6 +60,30 @@ git clone https://github.com/Jay-Karia/wherewasi
 2. Go to the settings page by clicking on the gear icon.
 3. Enter your Gemini API key in the provided field.
 
+## Development
+
+1. Follow the installation steps to clone and build the extension.
+2. Make your code changes in the source files.
+3. Rebuild the extension using the build script.
+4. Reload the extension in `chrome://extensions/` to see your changes.
+
+### Scripts
+
+(Styling)
+
+- `npm run lint` - Lint the codebase using ESLint
+- `npm run format` - Format the codebase using Prettier
+
+(Worker)
+
+- `npm run build` - Build the service worker
+- `npm run watch` - Watch the service worker for changes and build automatically
+
+(Dashboard)
+
+- `npm run build:dashboard` - Build the dashboard
+- `npm run watch:dashboard` - Watch the dashboard for changes and build automatically
+
 ## Gallery
 
 <details>
@@ -96,5 +120,3 @@ _Search results_
 </details>
 
 <br>
-
-**🚀 Coming Soon**
