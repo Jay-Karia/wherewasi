@@ -18,5 +18,6 @@ All notable changes to WhereWasI will be documented here.
 - Context menu getting disabled forever.
 - "Track all sites" will skip added sites.
 - "Track all sites" will skip when a window is closed.
+- Fix duplicating session names.
 
 ---
