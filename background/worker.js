@@ -224,7 +224,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
       }
 
       sitesAdded.add(tabId);
-      await AIService.groupClosedTab({ url, tabId });
+      await AIService.groupClosedTab(tabRecord);
     } catch (aiErr) {
       console.error('WhereWasI: AI grouping error:', aiErr);
 
