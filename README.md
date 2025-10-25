@@ -65,49 +65,35 @@ git clone https://github.com/Jay-Karia/wherewasi
 <details>
   <summary>Show Images</summary>
 
-![Popup](./gallery/popup.png)
-
 _Extension popup_
 
-![Dashboard (dark)](./gallery/dashboard-dark.png)
+![Popup](./gallery/popup.png)
 
-_Dashboard — dark theme_
+_Dashboard_
 
-![Sessions (dark)](./gallery/sessions-view-dark.png)
+![Dashboard](./gallery/dashboard-dark.png)
 
-_Sessions view — dark theme_
+_Sessions view_
 
-![Timeline (dark)](./gallery/timeline-view-dark.png)
+![Sessions](./gallery/sessions-view-dark.png)
 
-_Timeline — dark theme_
+_Timeline view_
 
-![Settings (dark)](./gallery/settings-dark.png)
+![Timeline](./gallery/timeline-view-dark.png)
 
-_Settings — dark theme_
+_List view_
 
-![Search results (dark)](./gallery/seach-results-dark.png)
+![List-view](./gallery/list-view-dark.png)
 
-_Search results — dark theme_
+_Settings_
+
+![Settings](./gallery/settings-dark.png)
+
+_Search results_
+
+![Search results](./gallery/seach-results-dark.png)
 
 </details>
-
-## Roadmap
-
-**v0.1.0**
-
-- [x] Improve the content provided</div> to AI while grouping sessions.
-- [x] Add summaries from Summarizer API
-- [x] Error handling AI fails.
-- [x] Get the API key from user.
-- [x] Fix critical bugs listed in issues.
-
-**v1.0.0**
-
-- [ ] Merge Sessions
-- [ ] Tabs caching
-- [ ] Ignore injecting scripts to same window when refreshed
-- [ ] Browser processing queue.
-- [ ] Improve dashboard search with fuzzy finding.
 
 <br>
 
