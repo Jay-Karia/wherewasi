@@ -16,5 +16,6 @@ All notable changes to WhereWasI will be documented here.
 - Checkbox UI bug in list view while removing tabs
 - All the tabs can now be saved when a window is closed.
 - Context menu getting disabled forever.
+- "Track all sites" will skip added sites.
 
 ---
