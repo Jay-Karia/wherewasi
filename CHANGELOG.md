@@ -17,5 +17,6 @@ All notable changes to WhereWasI will be documented here.
 - All the tabs can now be saved when a window is closed.
 - Context menu getting disabled forever.
 - "Track all sites" will skip added sites.
+- "Track all sites" will skip when a window is closed.
 
 ---
