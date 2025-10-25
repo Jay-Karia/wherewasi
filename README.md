@@ -119,7 +119,7 @@ _Search results — dark theme_
 - [x] Add summaries from Summarizer API
 - [x] Error handling AI fails.
 - [x] Get the API key from user.
-- [ ] Fix critical bugs listed in issues.
+- [x] Fix critical bugs listed in issues.
 
 **v1.0.0**
 
