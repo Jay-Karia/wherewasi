@@ -12,7 +12,8 @@ import { StorageService } from '../utils/storage.js';
 
 console.log('WhereWasI: Service worker loaded');
 const contentCache = new Map();
-const sitesAdded = new Set(); // Used for 'trackAllSites' mode
+const sitesAdded = new Set(); // stores tabId numbers
+const addedTabUrls = new Map(); // tabId -> url
 
 //======================TAB UPDATES=========================//
 
@@ -54,13 +55,15 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     };
 
     try {
-      sitesAdded.add(tab.url);
+      sitesAdded.add(tabId);
+      addedTabUrls.set(tabId, tab.url);
       await AIService.groupClosedTab(tabRecord);
     } catch (aiErr) {
       console.error('WhereWasI: AI grouping error on tab update:', aiErr);
 
       console.log('WhereWasI: Creating a new session as fallback...');
-      sitesAdded.add(tab.url);
+      sitesAdded.add(tabId);
+      if (tab.url) addedTabUrls.set(tabId, tab.url);
       await StorageService.createEmptySession(tabRecord);
     }
   }
@@ -118,7 +121,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 //======================TAB REMOVALS========================//
 
-chrome.tabs.onRemoved.addListener(async tabId => {
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   try {
     const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 5 });
     if (!sessions || sessions.length === 0) {
@@ -174,11 +177,12 @@ chrome.tabs.onRemoved.addListener(async tabId => {
 
     // Check for 'trackAllSites' mode
     const isTrackAllSites = await StorageService.getSetting('trackAllSites');
-    if (isTrackAllSites && sitesAdded.has(tab.url)) {
+    if (isTrackAllSites && sitesAdded.has(tabId)) {
       console.log(
-        `WhereWasI: 'trackAllSites' is enabled, tab URL ${tab.url} was already added. Skipping.`
+        `WhereWasI: 'trackAllSites' is enabled, tabId ${tabId} was already added. Skipping.`
       );
-      sitesAdded.delete(tab.url);
+      sitesAdded.delete(tabId);
+      addedTabUrls.delete(tabId);
       return;
     }
 
@@ -197,7 +201,30 @@ chrome.tabs.onRemoved.addListener(async tabId => {
     contentCache.delete(tabId);
 
     try {
-      await AIService.groupClosedTab(tabRecord);
+      if (removeInfo.isWindowClosing) {
+        addedTabUrls.delete(tabId);
+        sitesAdded.delete(tabId);
+        return;
+      }
+
+      const url = addedTabUrls.get(tabId) || tab.url;
+      if (!url) {
+        console.log('WhereWasI: No URL available for removed tab', tabId);
+        return;
+      }
+
+      if (sitesAdded.has(tabId)) {
+        console.log(
+          'WhereWasI: Tab already processed, skipping removed tab',
+          tabId,
+          url
+        );
+        addedTabUrls.delete(tabId);
+        return;
+      }
+
+      sitesAdded.add(tabId);
+      await AIService.groupClosedTab({ url, tabId });
     } catch (aiErr) {
       console.error('WhereWasI: AI grouping error:', aiErr);
 
