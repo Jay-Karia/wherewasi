@@ -2,7 +2,7 @@
 
 All notable changes to WhereWasI will be documented here.
 
-## [Unreleased]
+## v0.1.0
 
 ### Added
 
@@ -21,3 +21,5 @@ All notable changes to WhereWasI will be documented here.
 - Fix duplicating session names.
 
 ---
+
+## [Unreleased]
