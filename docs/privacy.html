@@ -24,46 +24,32 @@
 			<p><small>Last updated: October 26, 2025</small></p>
 
 			<h2>Overview</h2>
-			<p>This Privacy Policy explains what data the extension may collect, how it is stored and used, and how you can control it. The extension is designed to store session information locally by default and only sends data off-device when you explicitly enable an external API or server.</p>
+			<p>This Privacy Policy explains what data the extension may collect, how it is stored and used, and how you can control it. The extension is designed to store session information locally.</p>
 
 			<h2>Data Collected</h2>
-			<p>Depending on your settings the extension may collect:</p>
 			<ul>
 				<li><strong>Tab metadata:</strong> page title, URL, favicon, and timestamps when tabs are saved or closed.</li>
-				<li><strong>Optional scraped content:</strong> a short text snippet or summary extracted from a page when you enable the scraper feature.</li>
-				<li><strong>Settings and preferences:</strong> feature flags (for example <code>trackAllSites</code>), UI preferences, and any API key you choose to provide for third-party services.</li>
+				<li><strong>Scraped content:</strong> a short text snippet or summary extracted from a page when the page is loaded.</li>
+				<li><strong>Settings:</strong> preferences, UI states, and API key your provide.</li>
 			</ul>
 
 			<h2>How Data Is Used &amp; Stored</h2>
-			<p>All data is stored locally using the browser's extension storage (typically <code>chrome.storage.local</code>). Data remains on your device unless you explicitly opt into features that send data to a third-party AI provider or enable a server proxy.</p>
+			<p>All data is stored locally using the browser's extension storage (typically <code>chrome.storage.local</code>). Data remains on your device and you have the full control over it.</p>
 
 			<h2>Third-Party Services</h2>
-			<p>AI integrations and external servers are optional. If you configure an API key or enable the provided server proxy, the extension may send scraped content or session metadata to that service to generate summaries or titles. You are responsible for reviewing the third-party provider's privacy practices. The default extension behavior does not send data to remote servers.</p>
+			<p>AI integration from Gemini AI is required as it uses to group tabs into sessions and generate session titles. Chrome's built-in AI: Summarizer AI is used to generate your session summaries. The API key for Gemini AI will be stored locally too on the device and will be removed if you uninsallt the extension. No data is sent to servers.</p>
 
 			<h2>Permissions</h2>
 			<p>The extension requests the minimal permissions required for the features you enable. Examples:</p>
 			<ul>
 				<li><code>tabs</code> — to observe tab lifecycle events (open, update, close) so sessions can be recorded.</li>
 				<li><code>storage</code> — to persist sessions and settings locally.</li>
-				<li><code>scripting</code> and host permissions — to inject a small scraper into pages only when you enable automatic scraping; these permissions may be requested at install or optionally at runtime depending on settings.</li>
-				<li><code>sessions</code> — to retrieve recently closed tab info when a tab close event occurs.</li>
+				<li><code>scripting</code> and host permissions — to inject a small scraper into pages; these permissions is requied to provide additional context to AI model for better grouping of tabs.</li>
+				<li><code>sessions</code> — to retrieve recently closed tab info when a tab/window close event occurs.</li>
 			</ul>
 
-			<h2>No Default Analytics</h2>
-			<p>The extension does not include analytics or telemetry by default. Any telemetry or remote logging must be explicitly enabled and will be documented in this policy and the repository.</p>
-
-			<h2>Your Choices</h2>
-			<ul>
-				<li>You can disable scraping or <code>trackAllSites</code> in settings to limit data collection.</li>
-				<li>Delete stored data via the extension UI or by uninstalling the extension (uninstall clears extension storage).</li>
-				<li>Do not enter API keys unless you trust the provider; consider hosting your own proxy if you prefer full control.</li>
-			</ul>
-
-			<h2>Children</h2>
-			<p>The extension is not intended for children under 13 and does not knowingly collect personal information from children.</p>
-
-			<h2>Changes</h2>
-			<p>We may update this policy. The "Last updated" date will reflect changes. Major changes will be noted in the project's changelog.</p>
+			<h2>No Analytics</h2>
+			<p>The extension does not include analytics or telemetry. Any telemetry or remote logging must be explicitly enabled and will be documented in this policy and the repository.</p>
 
 			<h2>Contact</h2>
 			<p>If you have questions or concerns, open an issue in the project's GitHub repository or email the developer:</p>
@@ -73,9 +59,6 @@
 			</p>
 
 			<hr />
-			<footer>
-				<p>Hosting on GitHub Pages: place this file in the repository's <code>/docs</code> folder, then enable Pages from the repository Settings (branch: <code>main</code>, folder: <code>/docs</code>).</p>
-			</footer>
 		</main>
 	</body>
 </html>
