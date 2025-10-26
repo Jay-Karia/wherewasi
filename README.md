@@ -4,6 +4,11 @@
     <p>
         A Chrome extension that remembers your sessions by capturing tabs, grouping<br/> them into sessions, with AI-powered summaries.
     </p>
+
+  ![GitHub Release](https://img.shields.io/github/v/release/jay-karia/wherewasi?style=flat-square&label=version&color=%233fe042)
+  ![GitHub License](https://img.shields.io/github/license/jay-karia/wherewasi?style=flat-square&color=%233f7fe0)
+
+
 </div>
 
 ---
@@ -30,7 +35,7 @@
 
 ### Chrome Web Store
 
-_Currently the extension is not uploaded to Web Store_
+_Currently the extension is in review and not yet available on Web Store_
 
 ### Manual
 
@@ -59,30 +64,6 @@ git clone https://github.com/Jay-Karia/wherewasi
 1. After installing the extension, click on the extension icon in the toolbar and open dashboard.
 2. Go to the settings page by clicking on the gear icon.
 3. Enter your Gemini API key in the provided field.
-
-## Development
-
-1. Follow the installation steps to clone and build the extension.
-2. Make your code changes in the source files.
-3. Rebuild the extension using the build script.
-4. Reload the extension in `chrome://extensions/` to see your changes.
-
-### Scripts
-
-(Styling)
-
-- `npm run lint` - Lint the codebase using ESLint
-- `npm run format` - Format the codebase using Prettier
-
-(Worker)
-
-- `npm run build` - Build the service worker
-- `npm run watch` - Watch the service worker for changes and build automatically
-
-(Dashboard)
-
-- `npm run build:dashboard` - Build the dashboard
-- `npm run watch:dashboard` - Watch the dashboard for changes and build automatically
 
 ## Gallery
 
