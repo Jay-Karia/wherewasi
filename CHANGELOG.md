@@ -12,10 +12,10 @@ All notable changes to WhereWasI will be documented here.
 
 ### Fixed
 
-- Context menu cannot me used while summary is generated.
+- Context menu cannot be used while summary is generated.
 - Checkbox UI bug in list view while removing tabs
 - All the tabs can now be saved when a window is closed.
-- Context menu getting disabled forever.
+- Context menu is getting disabled forever.
 - "Track all sites" will skip added sites.
 - "Track all sites" will skip when a window is closed.
 - Fix duplicating session names.
