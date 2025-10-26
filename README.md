@@ -100,4 +100,8 @@ _Search results_
 
 </details>
 
-<br>
+## Privacy Policy
+
+Your privacy is important to us. "Where Was I" collects minimal data necessary to provide its functionality. No personal data is collected or transmitted to any servers; all data processing occurs locally within your browser.
+
+Visit [Privacy Policy](https://jay-karia.github.io/wherewasi/docs/privacy.html) page for more details.
