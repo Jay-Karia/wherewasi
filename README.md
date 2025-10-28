@@ -45,7 +45,14 @@ _Currently the extension is in review and not yet available on Web Store_
 git clone https://github.com/Jay-Karia/wherewasi
 ```
 
-2. Build the extension by running the script based on your system (Windows/Unix)
+2. Install dependecies
+
+```sh
+npm install
+cd dasboard && npm install
+```
+
+3. Build the extension by running the script based on your system (Windows/Unix)
 
 ```sh
 # For Unix (Linux/Mac)
