@@ -35,7 +35,8 @@
 
 ### Chrome Web Store
 
-_Currently the extension is in review and not yet available on Web Store_
+Install directly from web store:
+https://chromewebstore.google.com/detail/where-was-i/adodkeanphfjocipdfkpnmpmjaoggfnf
 
 ### Manual
 
