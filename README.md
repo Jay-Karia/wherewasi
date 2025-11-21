@@ -50,7 +50,7 @@ git clone https://github.com/Jay-Karia/wherewasi
 
 ```sh
 npm install
-cd dasboard && npm install
+cd dashboard && npm install
 ```
 
 3. Build the extension by running the script based on your system (Windows/Unix)
