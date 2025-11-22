@@ -7,6 +7,7 @@
 
   ![GitHub Release](https://img.shields.io/github/v/release/jay-karia/wherewasi?style=flat-square&label=version&color=%233fe042)
   ![GitHub License](https://img.shields.io/github/license/jay-karia/wherewasi?style=flat-square&color=%233f7fe0)
+  ![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/adodkeanphfjocipdfkpnmpmjaoggfnf?style=flat-square)
 
 
 </div>
